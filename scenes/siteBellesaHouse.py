@@ -15,6 +15,8 @@ class SiteBellesaHouseSpider(BaseSceneScraper):
     name = 'BellesaHouse'
     network = 'Bellesa'
 
+    cookies = [{'name': 'bellesa_agegate', 'value': 'true', 'domain': 'bellesaplus.co', 'path': '/', 'httpOnly': False, 'secure': False}]
+
     start_urls = [
         'https://www.bellesa.co',
         'https://bellesaplus.co',
@@ -27,6 +29,7 @@ class SiteBellesaHouseSpider(BaseSceneScraper):
     }
 
     custom_scraper_settings = {
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0',
         'TWISTED_REACTOR': 'twisted.internet.asyncioreactor.AsyncioSelectorReactor',
         'AUTOTHROTTLE_ENABLED': True,
         'USE_PROXY': True,
@@ -61,7 +64,7 @@ class SiteBellesaHouseSpider(BaseSceneScraper):
         meta['playwright'] = True
         for link in self.start_urls:
             url=self.get_next_page_url(link, self.page)
-            yield scrapy.Request(url, callback=self.parse, meta=meta)
+            yield scrapy.Request(url, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def get_scenes(self, response):
         if "<pre>" in response.text.lower():

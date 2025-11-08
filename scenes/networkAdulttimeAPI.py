@@ -225,7 +225,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'https://www.modeltime.com',
         'https://www.moderndaysins.com',
         'https://www.mommysgirl.com',
-        'https://www.mypervyfamily.com',
+        ## 'https://www.mypervyfamily.com', Moved to Project1 Scraper
         'https://www.nextdoorstudios.com',
         'https://www.peternorth.com',
         'https://www.povthis.com',

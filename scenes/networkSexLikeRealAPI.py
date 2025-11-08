@@ -114,7 +114,7 @@ class SexLikeRealSpider(BaseSceneScraper):
             item['tags'] = list(map(lambda x: string.capwords(x.strip()), list(set(item['tags']))))
 
             shortsite = re.sub(r'[^a-z0-9]', '', item['site'].lower())
-            raw_matches = ['18vr', 'arporn', 'babevr', 'baberoticavr', 'badoink', 'blowvr', 'czechvr', 'fuckpassvr', 'girlsway',
+            raw_matches = ['18vr', 'arporn', 'babevr', 'baberoticavr', 'badoink', 'blowvr', 'czechvr', 'emilybloom', 'fuckpassvr', 'girlsway',
                         'joibabes', 'kinkvr', 'milfvr', 'naughtyamerica', 'only3x', 'passionsonly', 'peterskingdom', 'porncorn',
                         'porncornvr', 'povmasters', 'puretaboo', 'realjamvr', 'realvr', 'realitylovers', 'sinsvr', 'slrmilfvr',
                         'stripzvr', 'swallowbay', 'tranzvr', 'vrcosplayx', 'vrbangers', 'vrbgay', 'vrbtrans',

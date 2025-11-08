@@ -34,6 +34,7 @@ class SiteMyDirtyHobbySpecificPerformerSpider(BaseSceneScraper):
         {"site": "My Dirty Hobby: Young Devotion", "profile": "9996261-Young-Devotion", "performer": "Chloe", "date_format": "%d/%m/%y"},
         {"site": "My Dirty Hobby: Fickfreundinnen", "profile": "50381232-Fickfreundinnen", "performer": "Ramona", "date_format": "%d/%m/%y"},
         {"site": "My Dirty Hobby: Schnuggie91", "profile": "4544623-schnuggie91", "performer": "Sophie", "date_format": "%d/%m/%y"},
+        {"site": "My Dirty Hobby: Leonie-pur", "profile": "4206129-Leonie-pur", "performer": "Leonie-pur", "date_format": "%d/%m/%y"},
     ]
 
     selector_map = {

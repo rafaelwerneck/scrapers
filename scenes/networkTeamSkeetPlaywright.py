@@ -14,15 +14,15 @@ false = False
 true = True
 
 link_to_info = {
-    "mylf-reg": {"urlid": "mylf-elastic-hka5k7vyuw", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
-    "ts-reg": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
-    "su-reg": {"urlid": "sau-elastic-00gy5fg5ra", "site": "Say Uncle", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
-    "mylf-xsite": {"urlid": "mylf-elastic-hka5k7vyuw", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": True},
-    "ts-xsite": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": True},
-    "familybundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
-    "freeusebundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
-    "swap_bundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
-    "mylf_ppv": {"urlid": "ts-elastic-d5cat0jl5o", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
+    # "mylf-reg": {"urlid": "mylf-elastic-hka5k7vyuw", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
+    # "ts-reg": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
+    # "su-reg": {"urlid": "sau-elastic-00gy5fg5ra", "site": "Say Uncle", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": False},
+    # "mylf-xsite": {"urlid": "mylf-elastic-hka5k7vyuw", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": True},
+    # "ts-xsite": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": True},
+    # "familybundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
+    # "freeusebundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
+    # "swap_bundle": {"urlid": "ts-elastic-d5cat0jl5o", "site": "Team Skeet", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
+    # "mylf_ppv": {"urlid": "ts-elastic-d5cat0jl5o", "site": "MYLF", "navText": v2_videos_content_text, "contentText": v2_videos_content_text, "v2": True, "xsite": "Bundle"},
 }
 
 def format_nav_url(link, start, limit, sitekey, v2=False, xsite=False):

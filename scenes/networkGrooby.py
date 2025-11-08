@@ -7,6 +7,7 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 def match_site(argument):
     match = {
         'asianamericantgirls': "Asian-American TGirls",
+        'asiantgirl': "Asian TGirl",
         'black-tgirls': "Black TGirls",
         'blacktgirlshardcore': "Black TGirls Hardcore",
         'bobstgirls': "Bobs TGirls",
@@ -40,6 +41,7 @@ class NetworkGroobySpider(BaseSceneScraper):
 
     start_urls = [
         # 'https://www.asianamericantgirls.com', In grooby.club
+        'https://www.asiantgirl.com/',
         'https://www.black-tgirls.com',
         'https://www.blacktgirlshardcore.com',
         'https://www.bobstgirls.com',

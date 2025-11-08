@@ -17,7 +17,7 @@ from tpdb.items import SceneItem
 class NetworkManyVidsV2Spider(BaseSceneScraper):
 
     start_urls = [
-        # ['Submissive Teen POV', False, '574529'],  # Seems to have gone away, leaving for reference
+        # ~ ['Submissive Teen POV', False, '574529'],  # Seems to have gone away, leaving for reference
         ['A Taboo Fantasy', False, '1000286888'],
         ['Adult Candy Store', False, '694469'],
         ['BJ World', False, '1005948542'],
@@ -1031,10 +1031,13 @@ class NetworkManyVidsV2Spider(BaseSceneScraper):
         ['Manyvids: RocketPowersXXX', False, '1006739926'],
         ['Manyvids: Erika Chanel', True, '1004936475'],
         ['Manyvids: California_girl', True, '1004612889'],
-        # ~ ['Manyvids: ', True, ''],
-        # ~ ['Manyvids: ', True, ''],
-        # ~ ['Manyvids: ', True, ''],
-        # ~ ['Manyvids: ', True, ''],
+        ['Manyvids: Jada Stevens', True, '1004539081'],
+        ['Manyvids: Johnny767', False, '1009535595'],
+        ['Manyvids: Lev Lieben', True, '1005748422'],
+        ['Manyvids: noratheo', True, '1003491188'],
+        ['Manyvids: TatianaSteele69', True, '1006062088'],
+        # ['Manyvids: ', True, ''],
+        # ['Manyvids: ', True, ''],
     ]
 
     name = 'ManyVidsV2'

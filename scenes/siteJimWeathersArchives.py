@@ -23,7 +23,7 @@ class SiteJimWeathersArchivesSpider(BaseSceneScraper):
         'tags': '//div[@class="gallery_info"]/span[@class="update_tags"]/a/text()',
         'trailer': '//script[contains(text(), "df_movie")]/text()',
         're_trailer': r'df_movie.*?(/store.*?\.mp4)',
-        'external_id': r'.*/(\w{2,5}\-?\d{3,4})',
+        'external_id': r'./scenes/(.*?)--',
         'pagination': '/store/categories/movies_%s_d.html'
     }
 

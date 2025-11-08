@@ -13,7 +13,7 @@ videos_content_text = "videosContent"
 v2_videos_content_text = "videoscontent"
 
 link_to_info = {
-    "organic-doc-utei5Mai": {"site": "Perv Doctor", "navText": movies_nav_text, "contentText": movies_content_text, "v2": False},
+    # "organic-doc-utei5Mai": {"site": "Perv Doctor", "navText": movies_nav_text, "contentText": movies_content_text, "v2": False},
     # ~ # "Organic-bad-aiGhaiL5": {"site": "BadMILFs", "navText": movies_nav_text, "contentText": movies_content_text, "v2": False}, ### Pulled from other scrapers
 }
 

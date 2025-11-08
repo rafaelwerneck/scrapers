@@ -24,15 +24,15 @@ class SiteLusterySpider(BaseSceneScraper):
         permalinks = jsondata['currentPagePermalinks']
         for permalink in permalinks:
             meta['id'] = permalink
-            link = f"https://lustery.com/api/videos/get-by-permalinks?permalinks%5B%5D={permalink}"
+            link = f"https://lustery.com/api/video/{permalink}"
             yield scrapy.Request(link, callback=self.parse_scene, meta=meta)
 
     def parse_scene(self, response):
         meta = response.meta
         jsondata = response.json()
-        if "videos" in jsondata and jsondata['videos']:
-            scene = jsondata['videos'][0]
-            resources = jsondata['resources']
+        if "video" in jsondata and jsondata['video']:
+            scene = jsondata['video']
+            # resources = jsondata['resources']
             item = self.init_scene()
 
             item['title'] = self.cleanup_title(scene['title'])
@@ -45,16 +45,19 @@ class SiteLusterySpider(BaseSceneScraper):
             item['date'] = datetime.utcfromtimestamp(scene['publishAt']).strftime('%Y-%m-%d')
 
             item['id'] = meta['id']
-            item['url'] = f"https://lustery.com/video-preview/{meta['id']}"
+            if not scene['series']:
+                item['url'] = f"https://lustery.com/video-preview/{meta['id']}"
+            else:
+                item['url'] = f"https://lustery.com/video/series/{meta['id']}"
             item['site'] = 'Lustery'
             item['tags'] = scene['tags']
             item['duration'] = scene['duration']
             item['parent'] = 'Lustery'
             item['network'] = 'Lustery'
 
-            for resource in resources:
-                if "videoInfo" in resources[resource] and resources[resource]['videoInfo']:
-                    item['description'] = resources[resource]['videoInfo']['description']
+            # for resource in resources:
+            #     if "videoInfo" in resources[resource] and resources[resource]['videoInfo']:
+            #         item['description'] = resources[resource]['videoInfo']['description']
 
             if "coupleName" in scene and scene['coupleName']:
                 if "&" in scene['coupleName']:

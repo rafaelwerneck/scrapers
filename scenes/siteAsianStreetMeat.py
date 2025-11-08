@@ -4,7 +4,6 @@ import base64
 from io import BytesIO
 from tpdb.helpers.http import Http
 from tpdb.BaseSceneScraper import BaseSceneScraper
-from tpdb.items import SceneItem
 
 
 class SiteAsianStreetMeatSpider(BaseSceneScraper):
@@ -22,46 +21,70 @@ class SiteAsianStreetMeatSpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         scenes = response.xpath('//table[@class="glass_push_more"]')
+        counter = 0
         for scene in scenes:
-            item = SceneItem()
-            title = scene.xpath('.//tr[@class="height100"]/td[1]/div[@class="cm"][1]/a/text()')
-            if not title:
-                title = scene.xpath('.//table[@class="glass_push_more"]//video/@title')
+            counter += 1
+            if counter > 0:
+                # print(f"Counter: {counter}")
+                item = self.init_scene()
+                title = scene.xpath('.//tr[@class="height100"]/td[1]/div[@class="cm"][1]/a/text()')
+                if not title:
+                    title = scene.xpath('.//video/@title')
+                    if title:
+                        title = re.search(r' - (.*) - ', title.get()).group(1)
+
+                if not title:
+                    title = scene.xpath(".//tr[@class='height145']/td[1]/div[1]/a[1]/text()")
+
+                if title and not type(title) == str:
+                    title = title.get()
+
                 if title:
-                    title = re.search(r' - (.*) - ', title.get()).group(1)
-            else:
-                title = title.get()
+                    item['title'] = self.cleanup_title(title)
+                    description = scene.xpath('.//div[@class="blurb_v3"]//text()')
+                    if description:
+                        item['description'] = " ".join(description.getall()).strip()
+                        item['description'] = self.cleanup_description(item['description'])
+                    
+                    image = scene.xpath('.//video/@poster')
+                    if not image:
+                        image = scene.xpath('.//div[contains(@class, "plastic_picture")]/a/img/@data-original')
 
-            if title:
-                item['title'] = self.cleanup_title(title)
-                item['description'] = self.cleanup_description(scene.xpath('.//div[@class="blurb_v3"]//text()').get())
-                item['image'] = scene.xpath('.//video/@poster').get()
-                item['image_blob'] = self.get_image_blob_from_link(item['image'], headers={'Referer': 'https://asianstreetmeat.com/'})
-                item['date'] = ''
-                scenedate = re.search(r'photogroup/(\d{8})', item['image'])
-                if scenedate:
-                    item['date'] = self.parse_date(scenedate.group(1), date_formats=['%Y%m%d']).strftime('%Y-%m-%d')
-                item['performers'] = []
-                item['tags'] = ['Asian']
-                if "anal" in item['title'].lower():
-                    item['tags'].append("Anal")
-                if "lesbian" in item['title'].lower():
-                    item['tags'].append("Lesbian")
+                    if image:
+                        item['image'] = self.format_link(response, image.get())
+                        item['image_blob'] = self.get_image_blob_from_link(item['image'], headers={'Referer': 'https://asianstreetmeat.com/'})
+                    else:
+                        print(scene)
+                    
+                    # print(item['image'])
+                    
+                    item['date'] = ''
+                    scenedate = re.search(r'(?:photogroup|photoseed|photopop)/(\d{8})', item['image'])
+                    if scenedate:
+                        item['date'] = self.parse_date(scenedate.group(1), date_formats=['%Y%m%d']).strftime('%Y-%m-%d')
+                    item['performers'] = []
+                    item['tags'] = ['Asian']
+                    if "anal" in item['title'].lower():
+                        item['tags'].append("Anal")
+                    if "lesbian" in item['title'].lower():
+                        item['tags'].append("Lesbian")
 
-                item['duration'] = None
-                duration = scene.xpath('.//div[@class="cm" and contains(a/text(), "minutes")]/a/text()[1]')
-                if duration:
-                    duration = duration.getall()
-                    duration = re.search(r'(\d+)', " ".join(duration))
+                    item['duration'] = None
+                    duration = scene.xpath('.//div[@class="cm" and contains(a/text(), "minutes")]/a/text()[1]')
                     if duration:
-                        item['duration'] = str(int(duration.group(1)) * 60)
-                item['trailer'] = scene.xpath('.//video/source[contains(@src, ".mp4")]/@src').get()
-                item['id'] = re.search(r'photogroup/(\d+)', item['image']).group(1)
-                item['url'] = self.format_link(response, scene.xpath('.//div[@class="cm"]/a[contains(@href, "/join/")]/@href').get())
-                item['site'] = 'Asian Street Meat'
-                item['parent'] = 'Asian Street Meat'
-                item['network'] = 'Asian Street Meat'
-                yield self.check_item(item, self.days)
+                        duration = duration.getall()
+                        duration = re.search(r'(\d+)', " ".join(duration))
+                        if duration:
+                            item['duration'] = str(int(duration.group(1)) * 60)
+                    trailer = scene.xpath('.//video/source[contains(@src, ".mp4")]/@src')
+                    if trailer:
+                        item['trailer'] = self.format_link(response, trailer.get())
+                    item['id'] = re.search(r'(?:photogroup|photoseed|photopop)/(.*?)/', item['image']).group(1)
+                    item['url'] = self.format_link(response, scene.xpath('.//div[@class="cm"]/a[contains(@href, "/join/")]/@href').get())
+                    item['site'] = 'Asian Street Meat'
+                    item['parent'] = 'Asian Street Meat'
+                    item['network'] = 'Asian Street Meat'
+                    yield self.check_item(item, self.days)
 
     def get_image_from_link(self, image, headers):
         if image:

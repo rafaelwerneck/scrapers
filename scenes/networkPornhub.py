@@ -161,6 +161,7 @@ class NetworkPornhubSpider(BaseSceneScraper):
         ["/model/misslexa/videos?o=mr&page=%s", "Miss Lexa", "Pornhub: Miss Lexa"],
         ["/model/carrylight/videos?o=mr&page=%s", "Carry_Light", "Pornhub: Carry_Light"],
         ["/model/house-of-era/videos?o=mr&page=%s", "House of Era", "Pornhub: House of Era"],
+        ["/model/broccolibutts/videos?o=mr&page=%s", "Broccolibutts", "Pornhub: Broccolibutts"],
     ]
 
     selector_map = {
