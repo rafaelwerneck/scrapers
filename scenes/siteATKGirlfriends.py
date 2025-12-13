@@ -2,12 +2,13 @@ import re
 from datetime import date, timedelta
 import json
 import base64
+import string
 import requests
 import scrapy
 from scrapy.http import HtmlResponse
+from slugify import slugify
 
 from tpdb.BaseSceneScraper import BaseSceneScraper
-from tpdb.items import SceneItem
 
 
 class ATKGirlfriendsSpider(BaseSceneScraper):
@@ -41,85 +42,47 @@ class ATKGirlfriendsSpider(BaseSceneScraper):
         'pagination': '/tour/movies/%s'
     }
 
-    def start_requests(self):
-        for link in self.start_urls:
-            url = self.get_next_page_url(link, self.page)
-            headers = self.headers
-            headers['Content-Type'] = 'application/json'
-            my_data = {'cmd': 'request.get', 'maxTimeout': 60000, 'url': url, 'cookies': [{'name': 'mypage', 'value': str(self.page)}]}
-            yield scrapy.Request("http://192.168.1.151:8191/v1", method='POST', callback=self.parse, body=json.dumps(my_data), headers=headers, cookies=self.cookies)
-
-    def parse(self, response, **kwargs):
-        page = 1
-        jsondata = response.json()
-        htmlcode = jsondata['solution']['response']
-        response = HtmlResponse(url=response.url, body=htmlcode, encoding='utf-8')
-        cookies = jsondata['solution']['cookies']
-        for cookie in cookies:
-            if cookie['name'] == 'mypage':
-                page = int(cookie['value'])
-        scenes = self.get_scenes(response)
-        count = 0
-        for scene in scenes:
-            count += 1
-            yield scene
-
-        if count:
-            if page and page < self.limit_pages and page < 15:
-                page = page + 1
-                print('NEXT PAGE: ' + str(page))
-                headers = self.headers
-                headers['Content-Type'] = 'application/json'
-                url = self.get_next_page_url("https://www.atkgirlfriends.com/tour/movies/", page)
-                page = str(page)
-                my_data = {'cmd': 'request.get', 'maxTimeout': 60000, 'url': url, 'cookies': [{'name': 'mypage', 'value': page}]}
-                yield scrapy.Request("http://192.168.1.151:8191/v1", method='POST', callback=self.parse, body=json.dumps(my_data), headers=headers, cookies=self.cookies)
-
     def get_scenes(self, response):
+        meta = response.meta
         scenes = response.xpath('//div[contains(@class,"movie-wrap")]')
         for scene in scenes:
             link = scene.xpath('.//div[@class="movie-image"]/a/@href').get()
             link = "https://www.atkgirlfriends.com" + link
             scenedate = scene.xpath('./div[@class="vid-count left"]/text()').get()
             if scenedate:
-                scenedate = self.parse_date(scenedate.strip()).isoformat()
-            else:
-                scenedate = self.parse_date('today').isoformat()
+                meta['scenedate'] = self.parse_date(scenedate.strip()).strftime('%Y-%m-%d')
+
             if "join.atkgirlfriends.com" not in link:
-                headers = self.headers
-                headers['Content-Type'] = 'application/json'
-                my_data = {'cmd': 'request.get', 'maxTimeout': 60000, 'url': link, 'cookies': [{'name': 'mydate', 'value': scenedate}]}
-                yield scrapy.Request("http://192.168.1.151:8191/v1", method='POST', callback=self.parse_scene, body=json.dumps(my_data), headers=headers, cookies=self.cookies)
+                yield scrapy.Request(link, callback=self.parse_scene, meta=meta)
             else:
-                item = SceneItem()
+                item = self.init_scene()
                 title = scene.xpath('./div/a/text()').get()
                 if title:
                     item['title'] = self.cleanup_title(title)
                 else:
                     item['title'] = ''
 
-                if scenedate:
-                    item['date'] = scenedate
-                else:
-                    item['date'] = self.parse_date('today').isoformat()
+                if meta['scenedate']:
+                    item['date'] = meta['scenedate']
 
                 image = scene.xpath('./div/a/img/@src').get()
                 if image:
                     item['image'] = image.strip().replace("/sm_", "/")
-                else:
-                    item['image'] = None
+                    item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                if item['image']:
+                    sceneid = re.search(r'.*/\w{2,4}\d{2,4}/(\d+)/', item['image'])
+                    if sceneid:
+                        item['id'] = sceneid.group(1)
 
                 url = scene.xpath('./div/a[contains(@href,"/model/")]/@href').get()
                 if url:
                     item['url'] = "https://www.atkgirlfriends.com" + url.strip()
-                else:
-                    item['url'] = ''
 
-                externalid = item['title'].replace(" ", "-").lower()
-                externalid = re.sub('[^a-zA-Z0-9-]', '', externalid)
-                item['id'] = externalid
+                if not item['id']:
+                    externalid = item['title'].replace(" ", "-").lower()
+                    externalid = re.sub('[^a-zA-Z0-9-]', '', externalid)
+                    item['id'] = externalid
                 # ~ item['id'] = re.search(r'/model/(.*?)/', jsondata['solution']['url']).group(1)
 
                 item['performers'] = []
@@ -131,23 +94,7 @@ class ATKGirlfriendsSpider(BaseSceneScraper):
                 item['network'] = "ATK Girlfriends"
 
                 if item['title'] and item['image']:
-                    days = int(self.days)
-                    if days > 27375:
-                        filterdate = "0000-00-00"
-                    else:
-                        filterdate = date.today() - timedelta(days)
-                        filterdate = filterdate.strftime('%Y-%m-%d')
-
-                    if self.debug:
-                        if not item['date'] > filterdate:
-                            item['filtered'] = "Scene filtered due to date restraint"
-                        print(item)
-                    else:
-                        if filterdate:
-                            if item['date'] > filterdate:
-                                yield item
-                        else:
-                            yield item
+                    yield self.check_item(item, self.days)
 
     def get_tags(self, response):
         if self.get_selector_map('tags'):
@@ -165,60 +112,54 @@ class ATKGirlfriendsSpider(BaseSceneScraper):
                 return list(map(lambda x: x.strip().title(), tags))
         return []
 
-    def get_next_page_url(self, base, page):
-        url = self.format_url(base, self.get_selector_map('pagination') % page)
-        return url
-
     def parse_scene(self, response):
-        jsondata = response.json()
-        htmlcode = jsondata['solution']['response']
-        response = HtmlResponse(url=response.url, body=htmlcode, encoding='utf-8')
-        cookies = jsondata['solution']['cookies']
-        print(cookies)
-        for cookie in cookies:
-            if cookie['name'] == 'mydate':
-                scenedate = cookie['value']
-
-        item = SceneItem()
-        if scenedate:
-            item['date'] = self.parse_date(scenedate).isoformat()
-        else:
-            item['date'] = self.parse_date('today').isoformat()
+        meta = response.meta
+        item = self.init_scene()
+        if "scenedate" in meta and meta['scenedate']:
+            item['date'] = self.parse_date(meta['scenedate']).strftime('%Y-%m-%d')
 
         item['title'] = self.get_title(response)
         item['description'] = self.get_description(response)
         item['image'] = self.get_image(response)
         item['image_blob'] = self.get_image_blob_from_link(item['image'])
-        item['performers'] = self.get_performers(response)
+        item['performers'] = []
+        item['performers_data'] = []
+        performers = response.xpath('//div[contains(@class,"model-profile-wrap")]')
+        perfArray = []
+        for perf in performers:
+            temp_perf = {}
+            temp_perf['name'] = perf.xpath('./text()[1]').get()
+            temp_perf['image'] = perf.xpath('.//img/@src').get()
+            if temp_perf['name']:
+                temp_perf['name'] = string.capwords(temp_perf['name'].strip())
+                temp_perf_url = perf.xpath('./a[1]/@href').get()
+                temp_perf['id'] = re.search(r'.*/(\w{2,4}\d{2,4})/.*?$', temp_perf_url).group(1)
+                performer = temp_perf['name']
+                if " " not in performer:
+                    performer = performer + " " + temp_perf['id']
+                item['performers'].append(performer)
+                perf = {}
+                perf['name'] = performer
+                perf['image'] = temp_perf['image']
+                perf['extra'] = {'gender': "Female"}
+                perf['site'] = "ATK Girlfriends"
+                perf['url'] = f"https://www.atkgirlfriends.com{temp_perf_url}"
+                item['performers_data'].append(perf)
+                # perfArray.append(temp_perf)
+
         item['tags'] = self.get_tags(response)
-        item['id'] = re.search(r'/movie/(.*?)/', jsondata['solution']['url']).group(1)
+        item['id'] = re.search(r'/movie/(.*?)/', response.url).group(1)
         item['trailer'] = self.get_trailer(response)
-        item['url'] = jsondata['solution']['url']
+        item['url'] = response.url
         item['network'] = "ATK Girlfriends"
         item['parent'] = "ATK Girlfriends"
         item['site'] = "ATK Girlfriends"
 
-        days = int(self.days)
-        if days > 27375:
-            filterdate = "0000-00-00"
-        else:
-            filterdate = date.today() - timedelta(days)
-            filterdate = filterdate.strftime('%Y-%m-%d')
-
-        if self.debug:
-            if not item['date'] > filterdate:
-                item['filtered'] = "Scene filtered due to date restraint"
-            print(item)
-        else:
-            if filterdate:
-                if item['date'] > filterdate:
-                    yield item
-            else:
-                yield item
+        yield self.check_item(item, self.days)
 
     def get_image(self, response):
         image = super().get_image(response)
-        if not image or "192.168.1.151" in image:
+        if not image or image in response.url:
             imagealt = response.xpath('//div[contains(@style,"background")]/@style')
             if imagealt:
                 imagealt = re.search(r'url\(\"(http.*)\"\)', imagealt.get())

@@ -1,4 +1,5 @@
 import re
+import string
 import scrapy
 from tpdb.BaseSceneScraper import BaseSceneScraper
 
@@ -19,9 +20,9 @@ class SiteFratXSpider(BaseSceneScraper):
         're_description': r'.*?, \d{4} - (.*)',
         'date': '//div[@class="VideoDescription"]/text()',
         're_date': r'(\w+ \d{1,2}\w{2}?, \d{4})',
-        'image': '//div[@class="video-gallery"]/a/img[1]/@src',
-        'performers': '',
-        'tags': '',
+        'image': '//video/@poster',
+        'performers': '//ul[@class="ModelNames"]/li/a/text()',
+        'tags': '//div[@class="VideoTagsWrap"]/a/span/text()',
         'duration': '',
         'trailer': '',
         'external_id': r'id=(\d+)',
@@ -31,10 +32,24 @@ class SiteFratXSpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         meta = response.meta
-        scenes = response.xpath('//comment()[contains(., "start")]/following-sibling::div/a[1]/@href').getall()
+        scenes = response.xpath('//div[@class="video-thumb-wrap"]/a/@href').getall()
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
                 yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
 
     def get_tags(self, response):
-        return ['Gay', 'College']
+        tags = super().get_tags(response)
+        tags.extend(['College', 'Gay'])
+        return tags
+    
+    def get_performers_data(self, response):
+        performers = super().get_performers(response)
+        performers_data = []
+        for performer in performers:
+            perf = {}
+            perf['name'] = string.capwords(performer)
+            perf['extra'] = {'gender': "Male"}
+            perf['site'] = 'FratX'
+            performers_data.append(perf)
+        return performers_data
+            

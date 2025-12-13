@@ -140,3 +140,19 @@ class NubilesSpider(BaseSceneScraper):
                     return self.format_link(response, trailer)
 
         return ''
+    
+    def get_performers(self, response):
+        perf_list = response.xpath('//a[@class="content-pane-performer model"]')
+        performers = []
+        if perf_list:
+            for performer in perf_list:
+                perf_name = performer.xpath('./text()').get()
+                perf_url = performer.xpath('./@href').get()
+                perf_id = re.search(r'profile/(\d+)/', perf_url)
+                if perf_id:
+                    perf_id = perf_id.group(1)
+
+                if " " not in perf_name and perf_id:
+                    perf_name = perf_name + " " + perf_id
+                performers.append(perf_name.strip())
+        return performers

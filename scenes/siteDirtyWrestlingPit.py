@@ -5,7 +5,7 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 
 
 class SiteDirtyWrestlingPitSpider(BaseSceneScraper):
-    name = 'DirtyWrestlingPit'
+    name = 'DirtyWrestlingPitDoNotUse'
     network = 'DirtyWrestlingPit'
     parent = 'DirtyWrestlingPit'
     site = 'DirtyWrestlingPit'

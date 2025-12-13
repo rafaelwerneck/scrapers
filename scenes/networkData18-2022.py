@@ -4,6 +4,8 @@ import dateparser
 import base64
 import requests
 from tpdb.BaseSceneScraper import BaseSceneScraper
+true = True
+false = False
 
 
     # This scraper is just to fill in historical scenes from Data18 that don't exist on the "actual" sites
@@ -13,11 +15,14 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 class Data18Spider(BaseSceneScraper):
     name = 'Data182022'
 
+    cookies = [{"domain":".data18.com","expirationDate":1764284091.443671,"hostOnly":false,"httpOnly":true,"name":"data_user_captcha","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"1"},{"domain":".data18.com","expirationDate":1770850491.532554,"hostOnly":false,"httpOnly":true,"name":"data_user","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"UNK-en-1"},{"domain":".data18.com","expirationDate":1770850491.532577,"hostOnly":false,"httpOnly":true,"name":"data_user_functions","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_navigation","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"1"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_nav_custom","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"t%3D3%26b%3D1%26html%3Dagw-entertainment%26FILTER%26spage%3D3%26"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"last_media","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"scene-1173472"}]
+
     start_urls = [
 
         #### Scraped 2022-07-09
         # ~ ['http://www.data18.com', 'https://www.data18.com/sys/page.php?t=3&b=2&o=0&html=haze-her&html2=&total=57&doquery=1&cache=0&spage=%s&dopage=1', 'Haze Her', 'Haze Her', 'Bang Bros', 'https://www.data18.com/studios/haze-her/scenes'],
-        ['http://www.data18.com', 'https://www.data18.com/sys/page.php?t=3&b=1&o=0&html=pornpros_disgraced-18&html2=&total=&doquery=1&spage=%s&dopage=1', 'Disgraced 18', 'Disgraced 18', 'PornPros', 'https://www.data18.com/studios/college-rules/scenes'],
+        # ['http://www.data18.com', 'https://www.data18.com/sys/page.php?t=3&b=1&o=0&html=pornpros_disgraced-18&html2=&total=&doquery=1&spage=%s&dopage=1', 'Disgraced 18', 'Disgraced 18', 'PornPros', 'https://www.data18.com/studios/college-rules/scenes'],
+        ['http://www.data18.com', 'https://www.data18.com/sys/page.php?t=3&b=1&o=0&html=agw-entertainment&html2=&total=166&doquery=1&spage=%s&dopage=1', 'AGW Entertainment', 'Angela White', 'Angela White', 'https://www.data18.com/studios/agw-entertainment'],
     ]
 
     selector_map = {

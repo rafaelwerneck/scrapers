@@ -17,21 +17,7 @@ class FrolicMeSpider(BaseSceneScraper):
 
     title_trash = ['- film', '- Film']
 
-    cookies =[
-        {
-            "domain": "www.frolicme.com",
-            "hostOnly": true,
-            "httpOnly": false,
-            "name": "fm_av_token",
-            "path": "/",
-            "sameSite": "unspecified",
-            "secure": true,
-            "session": true,
-            "storeId": "0",
-            "value": "1760971669.tier_2.2.yes.23924626553c7b06eb7af8ca29b07325d0a7e9d18cf6efd9fca7319cb1a51baa59d5e0cd0d.7b361cbfc6e82d7c12fb640be43fab23f069af202670416a7006f13c4fe8b4e9"
-        }
-    ]
-
+    cookies = [{"domain":"www.frolicme.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"unspecified","secure":false,"session":true,"storeId":"0","value":"lukn5q3qb7ipfems5t80k8vh56"},{"domain":"www.frolicme.com","hostOnly":true,"httpOnly":false,"name":"fm_av_token","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"1766863237.tier_2.2.yes.2a5f5d188ff2c24eee11a194fe46444472be48ae7a3ff41723c841ca14067126430d520cc8.2e51f2ada520babb6e3a08c9675507417a9e7b1a1b276caeff309cde951b59c5"},{"domain":".frolicme.com","expirationDate":1795807590,"hostOnly":false,"httpOnly":false,"name":"ph_phc_uJiIolIQ5UQvYwAjdRUv5ynCce9T80jxH61zPJm15M4_posthog","path":"/","sameSite":"lax","secure":true,"session":false,"storeId":"0","value":"%7B%22distinct_id%22%3A%2201996798-6ed2-7c39-b8f3-66f28b368b3a%22%2C%22%24sesid%22%3A%5B1764271590493%2C%22019ac6c2-c777-7378-b59a-8db44500df44%22%2C1764271245175%5D%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fwww.frolicme.com%2Ffilms%2F%3Forder_by%3Ddate_desc%22%7D%7D"}]
 
 
     selector_map = {

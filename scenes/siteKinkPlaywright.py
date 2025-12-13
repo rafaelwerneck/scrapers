@@ -1,4 +1,5 @@
 import re
+import json
 import string
 import scrapy
 from tpdb.BaseSceneScraper import BaseSceneScraper
@@ -35,7 +36,7 @@ class NetworkKinkSpider(BaseSceneScraper):
 
     selector_map = {
         'title': '//title/text()',
-        'description': '//span[@class="description-text"]/p/text()|//h4[contains(text(), "Description")]/following-sibling::span[1]/p/text()',
+        'description': '//span[contains(text(), "Description:")]/following-sibling::span[1]//text()',
         'date': '//span[@class="shoot-date"]/text()|//div[contains(@class, "shoot-detail-legend")]/span[contains(@class, "text-muted")]/text()',
         'image': '//meta[@name="twitter:image"]/@content|//video/@poster|//a[contains(@class, "ratio-poster")]/img/@src',
         'duration': '//span[@class="clock"]/text()',
@@ -72,12 +73,17 @@ class NetworkKinkSpider(BaseSceneScraper):
     }
 
     def start_requests(self):
-        yield scrapy.Request("https://www.kink.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies, meta={"playwright": True})
+        meta = {}
+        meta['playwright'] = True
+        meta['page'] = self.page
+        yield scrapy.Request("https://www.kink.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies, meta=meta)
 
     def start_requests2(self, response):
+        meta = response.meta
         for pagination in self.paginations:
             link = self.get_next_page_url(self.url, self.page, pagination)
-            yield scrapy.Request(link, callback=self.parse, meta={'page': self.page, 'pagination': pagination, "playwright": True}, headers=self.headers, cookies=self.cookies)
+            meta['pagination'] = pagination
+            yield scrapy.Request(link, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def parse(self, response, **kwargs):
         if response.status == 200:
@@ -96,21 +102,51 @@ class NetworkKinkSpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         meta = response.meta
-        scenes = response.xpath('//div[contains(@class, "d-block")]/a/@href').getall()
+        scenes = response.xpath('//div[contains(@class, "shoot-thumbnail")]/ancestor::div[@class="col"]')
         for scene in scenes:
-            if re.search(self.get_selector_map('external_id'), scene):
-                yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
+            parse_scene = True
+            scenedate = scene.xpath('.//small/span[contains(text(), ",")]/text()')
+            if scenedate:
+                scenedate = scenedate.get()
+                scenedate = self.parse_date(scenedate, date_formats=['%b %d, %Y']).strftime('%Y-%m-%d')
+                meta['date'] = scenedate
+                if not self.check_item(meta, self.days):
+                    parse_scene = False
+
+            scene = scene.xpath('.//a[contains(@class, "d-block")]/img/../@href').get()
+            meta['id'] = re.search(self.get_selector_map('external_id'), scene).group(1)
+            if meta['id'] and parse_scene:
+                url = self.format_url(response.url, scene)
+                yield scrapy.Request(url, callback=self.parse_scene, meta=meta)
 
     def get_site(self, response):
         return response.xpath('//div[@class="shoot-page"]/@data-sitename|//div[contains(@class, "shoot-detail-legend")]/span/a/text()').get().strip()
 
     def get_performers(self, response):
-        performers = super().get_performers(response)
+        performers = []
+        perf_list = response.xpath('//script[contains(@type, "json") and contains(text(), "actor")]/text()')
+        if perf_list:
+            perf_list = json.loads(perf_list.get())
+            for performer in perf_list['actor']:
+                if 'assorted cast' not in performer['name'].lower():
+                    perf_name = performer['name']
+                    perf_id = re.search(r'model/(\d+)', performer['url']).group(1)
+                    if " " not in perf_name:
+                        perf_name = perf_name + " " + perf_id
+                    performers.append(perf_name)
         performers = list(map(lambda x: string.capwords(x.strip(",").strip().lower()), performers))
-        if performers == ['Assorted Cast']:
-            performers = []
         return performers
 
+    def get_director(self, response):
+        director = None
+        dir_list = response.xpath('//script[contains(@type, "json") and contains(text(), "director")]/text()')
+        if dir_list:
+            dir_list = json.loads(dir_list.get())
+            if "director" in dir_list and dir_list['director']:
+                if 'assorted cast' not in dir_list['director']['name'].lower():
+                    director = string.capwords(dir_list['director']['name'])
+        return director
+    
     def get_tags(self, response):
         tags = super().get_tags(response)
         tags = list(map(lambda x: string.capwords(x.strip(",").strip().lower()), tags))
@@ -118,21 +154,38 @@ class NetworkKinkSpider(BaseSceneScraper):
         return tags
 
     def get_next_page_url(self, url, page, pagination):
-        return self.format_url(url, pagination % page)
+        url = self.format_url(url, pagination % page)
+        return url
 
     def parse_scene(self, response):
-        item = SceneItem()
+
+        local_run = self.settings.get('local')
+        show_blob = self.settings.get('showblob')
+        force_update = self.settings.get('force_update')
+        if force_update:
+            force_update = True
+        force_fields = self.settings.get('force_fields')
+        if force_fields:
+            force_fields = force_fields.split(",")
+
+        meta = response.meta
+        item = self.init_scene()
 
         item['title'] = self.get_title(response)
         item['description'] = self.get_description(response)
         item['site'] = self.get_site(response)
+        if not item['site']:
+            item['site'] = self.network
         item['date'] = self.get_date(response)
+        item['director'] = self.get_director(response)
         item['image'] = self.get_image(response)
-        item['image_blob'] = self.get_image_blob(response)
-        if "&amp" in item['image']:
-            item['image'] = re.search(r'(.*?)\&amp', item['image']).group(1)
-        if "&s" in item['image']:
-            item['image'] = re.search(r'(.*?)\&s', item['image']).group(1)
+        if item['image']:
+            if (not force_update or (force_update and "image" in force_fields)) and (not local_run or (local_run and show_blob)):
+                item['image_blob'] = self.get_image_blob(item['image'])
+            if "&amp" in item['image']:
+                item['image'] = re.search(r'(.*?)\&amp', item['image']).group(1)
+            if "&s" in item['image']:
+                item['image'] = re.search(r'(.*?)\&s', item['image']).group(1)
         item['performers'] = self.get_performers(response)
         item['tags'] = self.get_tags(response)
         item['markers'] = self.get_markers(response)

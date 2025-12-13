@@ -17,7 +17,7 @@ class SieTeenyTabooSpider(BaseSceneScraper):
     ]
 
     # ~ cookies = [{"name": "warn", "value": "true"}]
-    cookies = [{"domain":".teenytaboo.com","expirationDate":1781966799.731742,"hostOnly":false,"httpOnly":false,"name":"_ga","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"GA1.1.1321320240.1747406374"},{"domain":".teenytaboo.com","expirationDate":1781967409.431503,"hostOnly":false,"httpOnly":false,"name":"_ga_JX9WTNWZ9D","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"GS2.1.s1747406373$o1$g1$t1747407409$j0$l0$h0"},{"domain":"teenytaboo.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"unspecified","secure":false,"session":true,"storeId":"0","value":"anvo6alorj9kr570llt2997amh"},{"domain":"teenytaboo.com","expirationDate":1753191987,"hostOnly":true,"httpOnly":false,"name":"warn","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"true"}]
+    cookies = [{"domain":"teenytaboo.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"0htiftg2inhvda6js3gkt6b93o"},{"domain":"teenytaboo.com","expirationDate":1767716489,"hostOnly":true,"httpOnly":false,"name":"warn","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"true"},{"domain":"teenytaboo.com","hostOnly":true,"httpOnly":true,"name":"e1n3md44JfuLO8Ar","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"AQAAMqGLg3EZO6N13I0lsy8Ju7yWjuPZ8J6z7s9tL63FyqnzqDVpAAAAAADgAQDpqbkVY2H11WMHqvEPfWx6fQEA7-3JFxl0hs0Q_rhKiVdymA_jC5_pVUTe3EKnIK7fqCxqw8-9gtWhsmcmM526HVjwz0N99t3muDltocMVP9sSE7T_ANBKUKhukBb6DDWWF3cIASBG94Bywba-gP0i_uxyMrp5kau8sEOmD77qdHHvDoz6O-6FCrswPL9FE80GbPpHuiPL1JQCkNPrpzlTmnIRcB8T4ueYgBOeLHx6BRXrfpbwe_W1p1B8U1dDuOu3Xx8o_337jd_aASXszI5i4QosbmIkjUQvt6_tsU4VvI2J9y3KDoAn1Mh7rKDUcJ3o72Pgw6wM5K3UORUg5HYaRwKjUvX_IE98T4-XMuyHvjyn_Ea9GLp2Gb3Z-uJtpZTEKZPZvp0C1aTdIB2eKfIopkmTT8aSMV-5xnvCP9zXIRS7L_YtNdG_zPSkWbN_7Yv8nTAytZIkMIPb12-aRAIZLKc896zugKuF1r10QMsyqOhcfB-YPHRpmmcfl3byqutdT7h20p7Jhq_lSB"}]
 
     selector_map = {
         'title': '//h1[contains(@class, "customhcolor")]/text()',
@@ -68,7 +68,7 @@ class SieTeenyTabooSpider(BaseSceneScraper):
         meta['playwright'] = True
 
         for link in self.start_urls:
-            yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+            yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta)
 
     def get_scenes(self, response):
         scenes = response.xpath('//div[contains(@class,"videoimg_wrapper")]/a/@href').getall()

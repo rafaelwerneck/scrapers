@@ -111,7 +111,7 @@ class AdultTimeAPISecondarySpider(BaseSceneScraper):
         "superhornyfuntime",
         "theyeslist",
         "totalhentai",
-        "touchmywife",
+        # "touchmywife",
         "toughlovex",
         "toywithme",
         "trans500",

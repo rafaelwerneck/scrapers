@@ -1,32 +1,11 @@
 import scrapy
-
+import re
 from tpdb.BasePerformerScraper import BasePerformerScraper
 from tpdb.items import PerformerItem
 
 
 class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
     selector_map = {
-        'name': '',
-        'image': '',
-        'image_blob': True,
-        'bio': '',
-        'gender': '',
-        'astrology': '',
-        'birthday': '',
-        'birthplace': '',
-        'cupsize': '',
-        'ethnicity': '',
-        'eyecolor': '',
-        'fakeboobs': '',
-        'haircolor': '',
-        'height': '',
-        'measurements': '',
-        'nationality': '',
-        'piercings': '',
-        'tattoos': '',
-        'weight': '',
-
-
         'external_id': r'model/(.*)/'
     }
 
@@ -36,11 +15,11 @@ class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
     start_url = 'https://www.kink.com'
 
     paginations = [
-        '/search?type=performers&genderIds=woman&sort=latestActivity&page=%s',
-        '/search?type=performers&genderIds=man&sort=latestActivity&page=%s',
-        '/search?type=performers&genderIds=tswoman&sort=latestActivity&page=%s',
-        '/search?type=performers&genderIds=nonbinary&sort=latestActivity&page=%s',
-        '/search?type=performers&genderIds=tsman&sort=latestActivity&page=%s',
+        '/models?genderIds=woman&sort=latestActivity&page=%s',
+        '/models?genderIds=man&sort=latestActivity&page=%s',
+        '/models?genderIds=tswoman&sort=latestActivity&page=%s',
+        '/models?genderIds=nonbinary&sort=latestActivity&page=%s',
+        '/models?genderIds=tsman&sort=latestActivity&page=%s',
     ]
 
     headers = {
@@ -85,10 +64,12 @@ class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
         meta['playwright'] = True
         for pagination in self.paginations:
             meta['pagination'] = pagination
+            meta['page'] = self.page
             link = self.start_url
             yield scrapy.Request(url=self.get_next_page_url(link, self.page, pagination), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def parse(self, response, **kwargs):
+        meta = response.meta
         performers = self.get_performers(response)
         count = 0
         for performer in performers:
@@ -97,10 +78,10 @@ class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
 
         if count:
             if 'page' in response.meta and response.meta['page'] < self.limit_pages:
-                meta = response.meta
                 meta['page'] = meta['page'] + 1
-                print('NEXT PAGE: ' + str(meta['page']))
-                yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page'], meta['pagination']), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+                url=self.get_next_page_url(response.url, meta['page'], meta['pagination'])
+                print(f'NEXT PAGE: {str(meta["page"])}  ({url})')
+                yield scrapy.Request(url, callback=self.parse, meta=meta)
 
     def get_next_page_url(self, base, page, pagination):
         return self.format_url(base, pagination % page)
@@ -110,41 +91,35 @@ class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
             return 'Female'
         if "=man" in pagination:
             return 'Male'
-        if "=ts" in pagination or "=non" in pagination:
-            return 'Trans'
+        if "=tswoman" in pagination:
+            return 'Trans Female'
+        if "=tsman" in pagination:
+            return 'Trans Male'
+        if "=nonbinary" in pagination:
+            return 'Non Binary'        
         return ""
 
     def get_performers(self, response):
         meta = response.meta
-        performers = response.xpath('//div[@class="model"]')
+        performers = response.xpath('//div[@class="col"]/div[contains(@class, "position-relative")]')
         for performer in performers:
-            item = PerformerItem()
-            item['name'] = self.cleanup_title(performer.xpath('.//a[@class="model-name"]/text()').get())
-            item['url'] = self.format_link(response, performer.xpath('.//a[@class="model-name"]/@href').get())
-            image = performer.xpath('.//img/@src')
-            item['image'] = ""
-            item['image_blob'] = ""
+            item = self.init_performer()
+            perf_id = performer.xpath('./div[contains(@class, "favorite-button")]/@data-id').get()
+            perf_name = self.cleanup_title(performer.xpath('./span[contains(@class, "d-block")]/span[contains(@class, "text-white")]/text()').get())
+            if " " not in perf_name:
+                perf_name = perf_name + " " + perf_id
+            item['name'] = perf_name
+            image = performer.xpath('./a/img/@data-src')
+            if not image:
+                image = performer.xpath('./a/img/@src')
             if image:
                 image = image.get()
-                if "missing-image" not in image:
+                if "missing-image" not in image.lower() and  "missing-model" not in image.lower():
                     item['image'] = self.format_link(response, image)
                     item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                    if "?" in item['image']:
+                        item['image'] = re.search(r'(.*)\?', item['image']).group(1)
+            item['url'] = self.format_link(response, performer.xpath('./a/@href').get())
             item['network'] = "Kink"
             item['gender'] = self.get_gender(meta['pagination'])
-            item['bio'] = None
-            item['astrology'] = None
-            item['birthday'] = None
-            item['birthplace'] = None
-            item['ethnicity'] = None
-            item['eyecolor'] = None
-            item['haircolor'] = None
-            item['height'] = None
-            item['measurements'] = None
-            item['cupsize'] = None
-            item['nationality'] = None
-            item['piercings'] = None
-            item['tattoos'] = None
-            item['weight'] = None
-            item['fakeboobs'] = None
-
             yield item

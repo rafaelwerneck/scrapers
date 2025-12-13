@@ -16,15 +16,9 @@ class SiteSketchySexSpider(BaseSceneScraper):
     selector_map = {
         'title': '//div[@class="info"]/div[@class="name"]/span/text()',
         'description': '//div[@class="VideoDescription"]/text()',
-        'date': '//div[@class="info"]/div[@class="date"]/text()',
-        're_date': r'(\w+ \d+, \d{4})',
-        'date_formats': ['%b %d, %Y'],
-        'image': '//script[contains(text(), "poster")]/text()',
-        're_image': r'poster.*?(http.*?)[\'\"]',
-        'performers': '',
-        'tags': '',
-        'duration': '',
-        'trailer': '',
+        'image': '//video/@poster',
+        'performers': '//ul[@class="ModelNames"]/li/a/text()',
+        'tags': '//div[@class="VideoTagsWrap"]/a/span/text()',
         'external_id': r'id=(\d+)',
         'pagination': '/index.php?page=%s',
         'type': 'Scene',
@@ -32,10 +26,17 @@ class SiteSketchySexSpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         meta = response.meta
-        scenes = response.xpath('//div[@class="episode-item"]//a/@href').getall()
+        scenes = response.xpath('//div[@class="video-item"]')
         for scene in scenes:
+            scenedate = scene.xpath('.//span[contains(@class, "video-date")]/text()')
+            if scenedate:
+                meta['date'] = self.parse_date(scenedate.get().strip(), date_formats=['%b %d, %Y']).strftime('%Y-%m-%d')
+
+            scene = scene.xpath('./div[contains(@class,"video-thumb")]/a/@href').get()
             if re.search(self.get_selector_map('external_id'), scene):
                 yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
 
     def get_tags(self, response):
-        return ['Gay']
+        tags = super().get_tags(response)
+        tags.extend(['Gay'])
+        return tags

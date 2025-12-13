@@ -1,5 +1,7 @@
+import base64
 import re
 import string
+import requests
 import scrapy
 
 from tpdb.BaseSceneScraper import BaseSceneScraper
@@ -382,8 +384,9 @@ class AdultTimeAPISpider(BaseSceneScraper):
                 item['date'] = self.parse_date(scene['release_date']).isoformat()
             else:
                 item['date'] = self.parse_date('today').isoformat()
-            item['performers'] = list(
-                map(lambda x: x['name'], scene['actors']))
+            # item['performers'] = list(
+            #     map(lambda x: x['name'], scene['actors']))
+
             item['tags'] = list(map(lambda x: x['name'], scene['categories']))
             item['tags'] = list(filter(None, item['tags']))
 
@@ -643,6 +646,28 @@ class AdultTimeAPISpider(BaseSceneScraper):
             if 'zerotolerance' in referrerurl:
                 item['parent'] = "Zero Tolerance"
                 item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+
+            item['performers'] = []
+            item['performers_data'] = []
+            for performer in scene['actors']:
+                perf_name = performer['name']
+                if " " not in perf_name:
+                    perf_name = perf_name + " " + performer['actor_id']
+                item['performers'].append(perf_name)
+                perf = {}
+                perf['name'] = perf_name
+                if "gender" in performer:
+                    if performer['gender'].title() == "Shemale":
+                        performer['gender'] = "Transgender Female"
+                    perf['extra'] = {'gender': performer['gender'].title()}
+                perf['site'] = item['site']
+                perf['image'] = f"https://transform.gammacdn.com/actors/{performer['actor_id']}/{performer['actor_id']}_500x750.jpg?width=500&height=750&format=webp"
+                if not force_update or (force_update and "performers" in force_fields):
+                # perf['image_blob'] = self.get_image_blob_from_link(perf['image'])
+                    req = requests.get(perf['image'])
+                    if req.ok:
+                        perf['image_blob'] = base64.b64encode(req.content).decode('utf-8')
+                item['performers_data'].append(perf)
 
             #  The following sites were brought in from other scrapers.  Date limits are to avoid dupes
             donotyield = 0

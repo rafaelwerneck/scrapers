@@ -29,7 +29,8 @@ class SexLikeRealSpider(BaseSceneScraper):
         'trailer': '',
         # ~ 'pagination': '/scenes?type`=premium&sort=most_recent&page=%s'
         'pagination': '/v3/scenes?page=%s&perPage=24&sort=recent&type=new'
-        # ~ 'pagination': '/trans/studios/transexvr?page=%s'
+        # 'pagination': '/v3/scenes?studios=245&page=%s&perPage=24&sort=mostRecent'
+        # 'pagination': '/v3/scenes?studios=556&page=%s&perPage=24&sort=mostRecent'
     }
 
     def start_requests(self):
@@ -116,7 +117,7 @@ class SexLikeRealSpider(BaseSceneScraper):
             shortsite = re.sub(r'[^a-z0-9]', '', item['site'].lower())
             raw_matches = ['18vr', 'arporn', 'babevr', 'baberoticavr', 'badoink', 'blowvr', 'czechvr', 'emilybloom', 'fuckpassvr', 'girlsway',
                         'joibabes', 'kinkvr', 'milfvr', 'naughtyamerica', 'only3x', 'passionsonly', 'peterskingdom', 'porncorn',
-                        'porncornvr', 'povmasters', 'puretaboo', 'realjamvr', 'realvr', 'realitylovers', 'sinsvr', 'slrmilfvr',
+                        'porncornvr', 'povmasters', 'puretaboo', 'realjamvr', 'realvr', 'realitylovers', 'sexbabesvr', 'sinsvr', 'slrmilfvr',
                         'stripzvr', 'swallowbay', 'tranzvr', 'vrcosplayx', 'vrbangers', 'vrbgay', 'vrbtrans',
                         'vrconk', 'vrhush', 'vrlatina', 'virtualrealamateur', 'virtualrealpassion', 'virtualrealporn',
                         'virtualrealtrans', 'virtualtaboo', 'wankitnowvr', 'wankzvr']

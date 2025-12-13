@@ -14,7 +14,8 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
         # ~ ['https://rachel-steele.com', '/x-new/new-preview-list.php?page=%s&user=rachel-steele', 'Rachel Steele'],
         # ~ ['https://4tomiko.com', '/x-new/new-preview-list.php?page=%s&user=4tomiko.com', '4Tomiko'],
         # ~ ['https://sandrasilvers.com', '/x-new/new-preview-list.php?page=%s&user=', 'Sandra Silvers'],
-        ['https://officeperils.com', '/x-new/new-preview-list.php?page=%s&user=officeperils.com', 'Office Perils'],
+        # ['https://officeperils.com', '/x-new/new-preview-list.php?page=%s&user=officeperils.com', 'Office Perils'],
+        ['https://ericarossbound.com', '/x-new/new-preview-grid.php?page=%s&user=ericarossbound.com', 'Erica Ross Bound'],
         # ~ ['https://gndbondage.com', '/x-new/new-preview-list.php?page=%s&user=gndbondage.com', 'Girls Next Door Bondage'],
         # ~ ['https://sereneisley.com', '/x-new/new-preview-list.php?page=%s&user=sereneisley.com', 'Serene Isley'],
         # ~ ['https://www.nyxonsbondagefiles.com', '/x-new/new-preview-list.php?page=%s&user=nyxonsbondagefiles', 'Nyxons Bondage Files'],
@@ -103,7 +104,7 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         meta = response.meta
-        if "officeperils" in response.url:
+        if "officeperils" in response.url or  "ericarossbound" in response.url:
             scenes = response.xpath('//*[self::h3 or self::h4]/following-sibling::p[contains(text(), "video")]/ancestor::li')
         else:
             scenes = response.xpath('//li[contains(@class,"first")]')
@@ -149,7 +150,7 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
                 item['description'] = " ".join(description).replace('\xa0', '').strip()
 
                 duration_desc = re.sub(r'[^a-z0-9:]+', '', item['description'].lower())
-                duration = re.search(r'((?:\d{1,2}\:)?\d{2}\:\d{2})video', duration_desc)
+                duration = re.search(r'((?:\d{1,2}:)?\d{1,2}:\d{2})video', duration_desc)
                 if duration:
                     item['duration'] = self.duration_to_seconds(duration.group(1))
 

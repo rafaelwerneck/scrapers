@@ -6,7 +6,7 @@ import scrapy
 from tpdb.BaseSceneScraper import BaseSceneScraper
 
 
-class SiteDirtyWrestlingPitSpider(BaseSceneScraper):
+class SiteSexyFightingZoneSpider(BaseSceneScraper):
     name = 'DirtyWrestlingPit'
     site = 'Dirty Wrestling Pit'
     parent = 'Dirty Wrestling Pit'

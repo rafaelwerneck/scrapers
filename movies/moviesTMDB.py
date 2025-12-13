@@ -1,4 +1,5 @@
 import re
+import os
 import requests
 import string
 import json
@@ -24,22 +25,69 @@ class MoviesTMDBSpider(BaseSceneScraper):
     }
 
     def start_requests(self):
+        print("Hello! Starting TMDB Movie Scraper")
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
-        print('My public IP address is: {}'.format(ip))
+        print(f'My public IP address is: {ip}')
 
-        meta = {}
-        meta['page'] = self.page
+        meta = {'page': self.page}
 
+        # --- 1. Load URLs from file ---
+        filepath = r"c:\temp\request.txt"
+        if os.path.exists(filepath):
+            with open(filepath, "r", encoding="utf-8") as f:
+                urls = [line.strip() for line in f if line.strip()]
+        else:
+            urls = []
+
+        # If the file contained URLs, use them
+        if urls:
+            for url in urls:
+                # Only handle themoviedb URLs
+                if "themoviedb" not in url.lower():
+                    continue
+
+                # Extract the numeric ID prefix (same regex you already use)
+                match = re.search(r'.*/(\d{3,10}-)', url)
+                if not match:
+                    continue
+
+                movie_id = match.group(1)
+                link = (
+                    f"https://api.themoviedb.org/3/movie/{movie_id}"
+                    f"?api_key={self.api_key}&language=en-US"
+                    f"&append_to_response=credits,genres,keywords,%20collections"
+                )
+
+                yield scrapy.Request(
+                    link,
+                    callback=self.parse_movie,
+                    headers=self.headers,
+                    cookies=self.cookies
+                )
+            return  # <-- Done processing file-based URLs
+
+        # --- 2. Fall back to existing behavior if no file URLs were found ---
         singleurl = self.settings.get('url')
         if singleurl:
-            singleurl = re.search(r'.*/(\d{3,10}-)', singleurl)
-            if singleurl:
-                singleurl = singleurl.group(1)
-                link = f'https://api.themoviedb.org/3/movie/{singleurl}?api_key={self.api_key}&language=en-US&append_to_response=credits,genres,keywords,%20collections'
+            match = re.search(r'.*/(\d{3,10}-)', singleurl)
+            if match:
+                movie_id = match.group(1)
+                link = (
+                    f'https://api.themoviedb.org/3/movie/{movie_id}'
+                    f'?api_key={self.api_key}&language=en-US'
+                    f'&append_to_response=credits,genres,keywords,%20collections'
+                )
                 yield scrapy.Request(link, callback=self.parse_movie)
         else:
             for link in self.start_urls:
-                yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+                yield scrapy.Request(
+                    url=self.get_next_page_url(link, self.page),
+                    callback=self.parse,
+                    meta=meta,
+                    headers=self.headers,
+                    cookies=self.cookies
+                )
+
 
     def get_movies(self, response):
         jsondata = json.loads(response.text)
@@ -58,6 +106,8 @@ class MoviesTMDBSpider(BaseSceneScraper):
         item['title'] = string.capwords(jsondata['title'])
         item['description'] = jsondata['overview']
         item['date'] = jsondata['release_date']
+        if not item['date'] or item['date'] == '0000-00-00':
+            item['date'] = None
         if 'keywords' in jsondata['keywords']:
             item['tags'] = list(map(lambda x: string.capwords(x['name']), jsondata['keywords']['keywords']))
 

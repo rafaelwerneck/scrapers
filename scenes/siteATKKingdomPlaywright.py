@@ -1,4 +1,5 @@
 import re
+import string
 import scrapy
 from slugify import slugify
 from tpdb.BaseSceneScraper import BaseSceneScraper
@@ -98,7 +99,11 @@ class ATKKingdomPlaywrightSpider(BaseSceneScraper):
                 else:
                     scenedate = None
                 performer = scene.xpath('./div[@class="video-name"]/a/text()').get()
-                performer = performer.strip()
+                performer_url = scene.xpath('./div[@class="video-name"]/a/@href').get()
+                performer_id = re.search(r'model/(\w{2,4}\d{2,4})/', performer_url).group(1)
+                performer = string.capwords(performer.strip())
+                if " " not in performer:
+                    performer = performer + " " + performer_id
                 if not performer:
                     performer = ''
                 duration = scene.xpath('.//div[@class="movie-duration"]/text()')
@@ -124,7 +129,11 @@ class ATKKingdomPlaywrightSpider(BaseSceneScraper):
                 else:
                     scenedate = None
                 performer = scene.xpath('./div/span[contains(@class,"video_name")]/a/text()').get()
-                performer = performer.strip()
+                performer_url = scene.xpath('./div/span[contains(@class,"video_name")]/a/@href').get()
+                performer_id = re.search(r'model/(\w{2,4}\d{2,4})/', performer_url).group(1)
+                performer = string.capwords(performer.strip())
+                if " " not in performer:
+                    performer = performer + " " + performer_id
                 if not performer:
                     performer = ''
                 duration = scene.xpath('.//span[contains(@class, "video_duration")]/text()')
@@ -196,6 +205,8 @@ class ATKKingdomPlaywrightSpider(BaseSceneScraper):
                 performer = scene.xpath('./div[@class="video-name"]/a/text()')
                 if performer:
                     item['performers'] = [performer.get().strip()]
+                    performer_url = scene.xpath('./div[@class="video-name"]/a/@href').get()
+                    print(performer_url)
                 else:
                     item['performers'] = []
                 item['description'] = ""
@@ -230,7 +241,8 @@ class ATKKingdomPlaywrightSpider(BaseSceneScraper):
         item = SceneItem()
         item['date'] = meta['date']
         item['performers'] = meta['performers']
-        item['duration'] = meta['duration']
+        if "duration" in meta and meta['duration']:
+            item['duration'] = meta['duration']
 
         item['title'] = self.get_title(response)
         if not item['title']:

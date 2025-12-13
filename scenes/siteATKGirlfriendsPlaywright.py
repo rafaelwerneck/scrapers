@@ -1,6 +1,10 @@
 import re
+from requests import get
 import scrapy
+import string
 
+from scrapy_playwright.page import PageMethod
+from slugify import slugify
 from tpdb.BaseSceneScraper import BaseSceneScraper
 from tpdb.items import SceneItem
 
@@ -60,16 +64,18 @@ class ATKGirlfriendsPlaywrightSpider(BaseSceneScraper):
     }
 
     def start_requests(self):
+        ip = get('https://api.ipify.org').content.decode('utf8')
+        print('My public IP address is: {}'.format(ip))
+
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True
+        meta['playwright_page_methods'] = [
+            PageMethod('wait_for_selector', 'div[class*="movie-wrap"]'),
+        ]
+        
         for link in self.start_urls:
-            yield scrapy.Request("https://www.atkgirlfriends.com/", callback=self.start_requests2, meta=meta, headers=self.headers, cookies=self.cookies)
-
-    def start_requests2(self, response):
-        meta = response.meta
-        for link in self.start_urls:
-            yield scrapy.Request(url=self.get_next_page_url(link, meta['page']), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+            yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def get_scenes(self, response):
         meta = response.meta
@@ -77,93 +83,47 @@ class ATKGirlfriendsPlaywrightSpider(BaseSceneScraper):
         for scene in scenes:
             link = scene.xpath('.//div[@class="movie-image"]/a/@href').get()
             link = "https://www.atkgirlfriends.com" + link
-            scenedate = scene.xpath('.//div[contains(@class,"left")]/text()').get()
+            scenedate = scene.xpath('./div[@class="vid-count left"]/text()').get()
             if scenedate:
-                meta['date'] = self.parse_date(scenedate.strip()).isoformat()
-            else:
-                meta['date'] = None
-            duration = scene.xpath('.//div[@class="movie-duration"]/text()')
-            if duration:
-                meta['duration'] = self.duration_to_seconds(duration.get())
-            else:
-                meta['duration'] = None
+                meta['scenedate'] = self.parse_date(scenedate.strip()).strftime('%Y-%m-%d')
+
             if "join.atkgirlfriends.com" not in link:
-                item = SceneItem()
-                title = scene.xpath('./div/a/text()').getall()
-                title = " ".join(title)
-                title = title.strip()
-                if title:
-                    item['title'] = self.cleanup_title(title)
-                else:
-                    item['title'] = ''
-                image = scene.xpath('.//img/@alt').get()
-                if "compilation" in image.lower():
-                    item['title'] = "Compilation: " + item['title']
-
-                item['date'] = meta['date']
-                item['duration'] = meta['duration']
-
-                image = scene.xpath('./div/a/img/@src').get()
-                if image:
-                    item['image'] = image.strip().replace("/sm_", "/")
-                else:
-                    item['image'] = None
-
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
-                item['image'] = re.search(r'(.*\.\w{3,4})', item['image']).group(1)
-
-                url = scene.xpath('./div/a[contains(@href,"/model/")]/@href').get()
-                if url:
-                    item['url'] = "https://www.atkgirlfriends.com" + url.strip()
-                else:
-                    item['url'] = ''
-                sceneid = re.search(r'.*/(\d+)/', item['image'])
-                if sceneid:
-                    item['id'] = sceneid.group(1)
-                item['performers'] = []
-                item['tags'] = []
-                item['trailer'] = ''
-                item['description'] = ''
-                item['site'] = "ATK Girlfriends"
-                item['parent'] = "ATK Girlfriends"
-                item['network'] = "ATK Girlfriends"
-
-                if item['title'] and item['image']:
-                    meta['item'] = item.copy()
-                    yield scrapy.Request(link, callback=self.parse_scene, headers=self.headers, cookies=self.cookies, meta=meta)
+                yield scrapy.Request(link, callback=self.parse_scene, meta=meta)
             else:
-                item = SceneItem()
-                title = scene.xpath('./div/a/text()').getall()
-                title = " ".join(title)
-                title = title.strip()
+                item = self.init_scene()
+                title = scene.xpath('./div/a/text()').get()
                 if title:
                     item['title'] = self.cleanup_title(title)
                 else:
                     item['title'] = ''
-                image = scene.xpath('.//img/@alt').get()
-                if "compilation" in image.lower():
-                    item['title'] = "Compilation: " + item['title']
+                if meta['scenedate']:
+                    item['date'] = meta['scenedate']
 
-                item['date'] = meta['date']
-                item['duration'] = meta['duration']
-
-                image = scene.xpath('./div/a/img/@src').get()
+                image = scene.xpath('./div/a/img/@src')
                 if image:
+                    image = image.get()
+                    if "url('http" in image:
+                        image = re.search(r'url\(\'(http.*)', image)
+                        if image:
+                            image = image.group(1)  
                     item['image'] = image.strip().replace("/sm_", "/")
-                else:
-                    item['image'] = None
+                    item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
-                item['image'] = re.search(r'(.*\.\w{3,4})', item['image']).group(1)
+                if item['image']:
+                    sceneid = re.search(r'.*/\w{2,4}\d{2,4}/(\d+)/', item['image'])
+                    if sceneid:
+                        item['id'] = sceneid.group(1)
 
                 url = scene.xpath('./div/a[contains(@href,"/model/")]/@href').get()
                 if url:
                     item['url'] = "https://www.atkgirlfriends.com" + url.strip()
-                else:
-                    item['url'] = ''
-                sceneid = re.search(r'.*/(\d+)/', item['image'])
-                if sceneid:
-                    item['id'] = sceneid.group(1)
+
+                if not item['id']:
+                    externalid = item['title'].replace(" ", "-").lower()
+                    externalid = re.sub('[^a-zA-Z0-9-]', '', externalid)
+                    item['id'] = externalid
+                # ~ item['id'] = re.search(r'/model/(.*?)/', jsondata['solution']['url']).group(1)
+
                 item['performers'] = []
                 item['tags'] = []
                 item['trailer'] = ''
@@ -173,7 +133,11 @@ class ATKGirlfriendsPlaywrightSpider(BaseSceneScraper):
                 item['network'] = "ATK Girlfriends"
 
                 if item['title'] and item['image']:
-                    yield self.check_item(item, self.days)
+                    if "url" in item and item['url'] and "com001" not in item['url'] and "compilation" not in item['url'].lower():
+                        meta['item'] = item.copy()
+                        yield scrapy.Request(item['url'], callback=self.parse_join_scene, meta=meta)
+                    else:
+                        yield self.check_item(item, self.days)
 
     def get_tags(self, response):
         if self.get_selector_map('tags'):
@@ -193,38 +157,107 @@ class ATKGirlfriendsPlaywrightSpider(BaseSceneScraper):
 
     def parse_scene(self, response):
         meta = response.meta
-        item = SceneItem()
+        item = self.init_scene()
+        if "scenedate" in meta and meta['scenedate']:
+            item['date'] = self.parse_date(meta['scenedate']).strftime('%Y-%m-%d')
 
         item['title'] = self.get_title(response)
-        if item['title']:
-            item['date'] = meta['date']
-            item['duration'] = meta['duration']
-            item['description'] = self.get_description(response)
-            item['image'] = self.get_image(response)
+        item['description'] = self.get_description(response)
+        item['image'] = self.get_image(response)
+        if item['image']:
+            item['image'] = item['image']
+            if "url('http" in item['image']:
+                item['image'] = re.search(r'url\(\'(http.*)', item['image'])
+                if item['image']:
+                    item['image'] = item['image'].group(1)  
             item['image_blob'] = self.get_image_blob_from_link(item['image'])
-            item['performers'] = self.get_performers(response)
-            item['tags'] = self.get_tags(response)
-            item['id'] = re.search(r'/movie/(\d+)/', response.url).group(1)
-            item['trailer'] = self.get_trailer(response)
-            item['url'] = response.url
-            item['network'] = "ATK Girlfriends"
-            item['parent'] = "ATK Girlfriends"
-            item['site'] = "ATK Girlfriends"
-        else:
-            item = meta['item']
+        item['performers'] = []
+        item['performers_data'] = []
+        performers = response.xpath('//div[contains(@class,"model-profile-wrap")]')
+        perfArray = []
+        for perf in performers:
+            temp_perf = {}
+            temp_perf['name'] = perf.xpath('./text()[1]').get()
+            temp_perf['image'] = perf.xpath('.//img/@src').get()
+            if temp_perf['name']:
+                temp_perf['name'] = string.capwords(temp_perf['name'].strip())
+                temp_perf_url = perf.xpath('./a[1]/@href').get()
+                temp_perf['id'] = re.search(r'.*/(\w{2,4}\d{2,4})/.*?$', temp_perf_url).group(1)
+                performer = temp_perf['name']
+                if " " not in performer:
+                    performer = performer + " " + temp_perf['id']
+                item['performers'].append(performer)
+                perf = {}
+                perf['name'] = performer
+                perf['image'] = temp_perf['image']
+                perf['extra'] = {'gender': "Female"}
+                perf['site'] = "ATK Girlfriends"
+                perf['url'] = f"https://www.atkgirlfriends.com{temp_perf_url}"
+                item['performers_data'].append(perf)
+                # perfArray.append(temp_perf)
+
+        item['tags'] = self.get_tags(response)
+        item['id'] = re.search(r'/movie/(.*?)/', response.url).group(1)
+        item['trailer'] = self.get_trailer(response)
+        item['url'] = response.url
+        item['network'] = "ATK Girlfriends"
+        item['parent'] = "ATK Girlfriends"
+        item['site'] = "ATK Girlfriends"
+
         yield self.check_item(item, self.days)
 
     def get_image(self, response):
         image = super().get_image(response)
-        if not image or "/" not in image:
-            image = response.xpath('//div[contains(@style,"background")]/@style')
-            if image:
-                image = image.get()
-        if "url(" in image:
-            image = re.search(r'url\([\"\'](http.*)(?:[\"\']\))?$', image)
-            if image:
-                image = image.group(1)
+        if not image or image in response.url:
+            imagealt = response.xpath('//div[contains(@style,"background")]/@style')
+            if imagealt:
+                imagealt = re.search(r'url\(\"(http.*)\"\)', imagealt.get())
+                if imagealt:
+                    imagealt = imagealt.group(1)
+                    imagealt = self.format_link(response, imagealt)
+                    return imagealt.replace(" ", "%20")
+        return image
 
-        if image:
-            image = self.format_link(response, image)
-        return image.replace(" ", "%20")
+    def parse_join_scene(self, response):
+        meta = response.meta
+        item = meta['item']
+        item['performers'] = []
+        item['performers_data'] = []
+        performers = response.xpath('//div[contains(@class,"model-profile-wrap")]')
+        perfArray = []
+        for perf in performers:
+            temp_perf = {}
+            temp_perf['name'] = perf.xpath('//h1[contains(@class, "page-title")]/text()').get()
+            temp_perf['image'] = perf.xpath('.//img/@src').get()
+            if temp_perf['name']:
+                temp_perf['name'] = string.capwords(temp_perf['name'].strip())
+                temp_perf_url = response.url
+                temp_perf['id'] = re.search(r'.*model/(\w{2,4}\d{2,4})/', temp_perf_url).group(1)
+                performer = temp_perf['name']
+                if " " not in performer:
+                    performer = performer + " " + temp_perf['id']
+                item['performers'].append(performer)
+                perf = {}
+                perf['name'] = performer
+                perf['image'] = temp_perf['image']
+                perf['extra'] = {'gender': "Female"}
+                perf['site'] = "ATK Girlfriends"
+                perf['url'] = response.url
+                item['performers_data'].append(perf)
+                # perfArray.append(temp_perf)
+
+        desc_xpath = (
+            f'//h1[contains(@class, "video-title") and '
+            f'contains(translate(text(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), '
+            f'"{item["title"].lower()}")]'
+            f'/ancestor::div[contains(@class,"movie-wrap-index")]'
+            f'//b[contains(text(), "Description:")]/following-sibling::text()'
+        )
+
+        description = response.xpath(desc_xpath)
+
+        if description:
+            description = " ".join(description.getall()).strip()
+            item['description'] = description
+
+        yield self.check_item(item, self.days)

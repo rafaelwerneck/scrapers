@@ -61,13 +61,16 @@ class VixenScraper(BaseSceneScraper):
         scenes = jsondata['edges']
         for item in scenes:
             sceneid = item['node']['slug']
-            yield scrapy.Request(
-                url=response.url,
-                callback=self.parse_scene,
-                method='POST',
-                headers={'Content-Type': 'application/json'},
-                body=self.get_graphql_body(sceneid, response.url),
-            )
+            scene = self.init_scene()
+            scene['date'] = self.parse_date(item['node']['releaseDate']).strftime('%Y-%m-%d')
+            if self.check_item(scene, self.days):
+              yield scrapy.Request(
+                  url=response.url,
+                  callback=self.parse_scene,
+                  method='POST',
+                  headers={'Content-Type': 'application/json'},
+                  body=self.get_graphql_body(sceneid, response.url),
+              )
 
         if 'page' in response.meta and response.meta['page'] < self.limit_pages and jsondata['pageInfo']['hasNextPage']:
             meta = response.meta
@@ -102,45 +105,46 @@ class VixenScraper(BaseSceneScraper):
         scene['network'] = 'Vixen'
         scene['parent'] = site
 
-        scene['date'] = self.parse_date(data['releaseDate']).isoformat()
-        scene['url'] = self.format_link(response, '/videos/' + data['slug'])
+        scene['date'] = self.parse_date(data['releaseDate']).strftime('%Y-%m-%d')
+        if self.check_item(scene, self.days):
+          scene['url'] = self.format_link(response, '/videos/' + data['slug'])
 
-        if "directors" in data and len(data['directors']):
-            scene['director'] = data['directors'][0]['name']
+          if "directors" in data and len(data['directors']):
+              scene['director'] = data['directors'][0]['name']
 
-        scene['performers'] = []
-        for model in data['models']:
-            scene['performers'].append(model['name'])
+          scene['performers'] = []
+          for model in data['models']:
+              scene['performers'].append(model['name'])
 
-        scene['tags'] = []
-        if data['tags']:
-            for tag in data['tags']:
-                scene['tags'].append(tag)
+          scene['tags'] = []
+          if data['tags']:
+              for tag in data['tags']:
+                  scene['tags'].append(tag)
 
-        scene['markers'] = []
-        if 'chapters' in data:
-            if data['chapters']:
-                for timetag in data['chapters']['video']:
-                    timestamp = {}
-                    timestamp['name'] = self.cleanup_title(timetag['title'])
-                    timestamp['start'] = str(timetag['seconds'])
-                    scene['markers'].append(timestamp)
-                    scene['tags'].append(timestamp['name'])
+          scene['markers'] = []
+          if 'chapters' in data:
+              if data['chapters']:
+                  for timetag in data['chapters']['video']:
+                      timestamp = {}
+                      timestamp['name'] = self.cleanup_title(timetag['title'])
+                      timestamp['start'] = str(timetag['seconds'])
+                      scene['markers'].append(timestamp)
+                      scene['tags'].append(timestamp['name'])
 
-        scene['tags'] = list(map(lambda x: string.capwords(x.strip()), list(set(scene['tags']))))
+          scene['tags'] = list(map(lambda x: string.capwords(x.strip()), list(set(scene['tags']))))
 
-        largest = 0
-        for image in data['images']['poster']:
-            if image['width'] > largest:
-                scene['image'] = image['src']
-            largest = image['width']
+          largest = 0
+          for image in data['images']['poster']:
+              if image['width'] > largest:
+                  scene['image'] = image['src']
+              largest = image['width']
 
-        largest = 0
-        scene['image_blob'] = self.get_image_blob_from_link(scene['image'])
+          largest = 0
+          scene['image_blob'] = self.get_image_blob_from_link(scene['image'])
 
-        scene['trailer'] = ''
+          scene['trailer'] = ''
 
-        yield self.check_item(scene, self.days)
+          yield self.check_item(scene, self.days)
 
         # ~ except Exception:
             # ~ print(f"Failed Request on: {response.url}")
@@ -186,6 +190,7 @@ query getFilteredVideos(
         id: uuid
         videoId
         slug
+        releaseDate
       }
     }
     pageInfo {

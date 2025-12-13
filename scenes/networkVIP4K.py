@@ -59,10 +59,15 @@ class NetworkVIP4KSpider(BaseSceneScraper):
     def get_image(self, response):
         image = super().get_image(response)
         if not image or image in response.url:
-            image = response.xpath('//link[@rel="preload" and @as="image"]/@href')
+            image = response.xpath('//div[@class="watch__content"]//picture//source[not(contains(@media, "max-width")) and contains(@srcset, ".jpg")]/@srcset')
             if image:
                 image = image.get()
                 image = self.format_link(response, image)
+            else:
+                image = response.xpath('//link[@rel="preload" and @as="image"]/@href')
+                if image:
+                    image = image.get()
+                    image = self.format_link(response, image)
         if not image:
             image = ""
         return image

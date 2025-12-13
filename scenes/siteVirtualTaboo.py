@@ -49,6 +49,8 @@ class SiteVirtualTabooSpider(BaseSceneScraper):
         item['trailer'] = ''
         item['url'] = response.url
         item['id'] = re.search(r'videos/(.*)', item['url']).group(1)
+        if re.search(r'.*(-vt\w+)$', item['id']):
+            item['id'] = re.sub(r'-vt\w+$', '', item['id'])
         item['date'] = self.get_date(response)
         if not item['date']:
             item['date'] = self.parse_date(jsondata['uploadDate'].strip()).isoformat()

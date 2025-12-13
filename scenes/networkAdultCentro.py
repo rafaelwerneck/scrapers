@@ -171,12 +171,15 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
             uri = urlparse(base)
             base = uri.scheme + "://" + uri.netloc
         page = str((int(page) - 1) * 10)
-        if 'mylifeinmiami' in base or "brookelynn" in base:
+        if "brookelynn" in base:
             page_url = base + '/sapi/' + token + '/event.last?_method=event.last&tz=-4&limit=10&offset={}&transitParameters[showOnHome]=true' + transit
+        elif 'mylifeinmiami' in base:
+            page_url = base + '/sapi/' + token + '/content.load?_method=content.load&tz=-4&limit=10&offset={}&transitParameters[preset]=scene' + transit
         else:
             page_url = base + '/sapi/' + token + '/content.load?_method=content.load&tz=-4&limit=10&offset={}&transitParameters[preset]=videos' + transit
 
-        return self.format_url(base, page_url.format(page))
+        url = self.format_url(base, page_url.format(page))
+        return url
 
     def get_scenes(self, response):
         meta = response.meta
@@ -184,7 +187,7 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
         jsondata = jsondata['response']['collection']
 
         for scene in jsondata:
-            if "miami" in response.url or "brookelynn" in response.url:
+            if "brookelynn" in response.url:
                 scene_id = scene['_typedParams']['id']
             else:
                 scene_id = scene['id']

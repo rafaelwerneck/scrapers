@@ -1,16 +1,15 @@
 import re
+import os
 import scrapy
 from tpdb.BasePerformerScraper import BasePerformerScraper
 
 
 class SitePrivatePerformerSpider(BasePerformerScraper):
     selector_map = {
-        'name': '//div[contains(@class, "bio-pornstar")]/h1/text()',
-        'image': '//a[contains(@class, "picture-pornstar")]/picture/source[1]/@srcset',
+        'name': '//div[contains(@class,"pornstar-wrapper")]//h1/text()',
         'measurements': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Measurements")]/following-sibling::text()',
         'height': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Height")]/following-sibling::text()',
         'weight': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Weight")]/following-sibling::text()',
-        'birthplace': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Birth")]/following-sibling::text()',
         'nationality': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Nationality")]/following-sibling::text()',
         'astrology': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Sign")]/following-sibling::text()',
         'haircolor': '//ul[contains(@class, "model-facts")]//em[contains(text(), "Hair")]/following-sibling::text()',
@@ -21,28 +20,82 @@ class SitePrivatePerformerSpider(BasePerformerScraper):
         'pagination': '/pornstars/%s/',
         'external_id': r'models\/(.*).html'
     }
+    custom_settings = {'CONCURRENT_REQUESTS': '1'}
+    
+    paginations = [
+        '/pornstars/female/%s/',
+        # '/pornstars/male/%s/',
+    ]
 
     name = 'PrivatePerformer'
     network = 'Private'
 
-    start_urls = [
-        'https://www.private.com',
-    ]
+    start_url = 'https://www.private.com'
 
-    def get_gender(self, response):
-        bio = super().get_bio(response)
-        if bio:
-            bio = bio.lower()
-            if " she " in bio or " her " in bio or " girl " in bio or " babe " in bio:
-                return "Female"
-            if " he " in bio:
-                return "Male"
-        return ""
+    def start_requests(self):
+        meta = {}
+        meta['page'] = self.page
+
+        for pagination in self.paginations:
+            meta['pagination'] = pagination
+            if "female" in pagination:
+                meta['gender'] = "Female"
+            else:
+                meta['gender'] = "Male"
+            yield scrapy.Request(url=self.get_next_page_url(self.start_url, self.page, meta['pagination']), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+
+    def parse(self, response, **kwargs):
+        performers = self.get_performers(response)
+        count = 0
+        for performer in performers:
+            count += 1
+            yield performer
+
+        if 'page' in response.meta and response.meta['page'] < self.limit_pages:
+            meta = response.meta
+            meta['page'] = meta['page'] + 1
+            link = self.get_next_page_url(response.url, meta['page'], meta['pagination'])
+            print(f'NEXT PAGE: {meta["page"]}  ({link})')
+            yield scrapy.Request(url=link, callback=self.parse, meta=meta)
+
+    def get_next_page_url(self, base, page, pagination):
+        return self.format_url(base, pagination % page)
 
     def get_performers(self, response):
-        performers = response.xpath('//div[@class="model"]/a/@href').getall()
+        meta = response.meta
+        performers = response.xpath('//div[@class="model"]')
         for performer in performers:
-            yield scrapy.Request(url=self.format_link(response, performer), callback=self.parse_performer)
+            image_list = performer.xpath('.//img/@srcset').get()
+            if image_list:
+                image = max(re.findall(r'(https?://\S+)\s+(\d+)w', image_list), key=lambda x: int(x[1]))[0]
+                if "na_pornstar" not in image:
+                    meta['image'] = self.format_link(response, image)
+                    meta['image_blob'] = ""
+                    # meta['image_blob'] = self.get_image_blob_from_link(meta['image'])
+                    bare_image = re.search(r'(.*)\?', meta['image'])
+                    if bare_image:
+                        meta['image'] = bare_image.group(1)
+                else:
+                    meta['image'] = ''
+                    meta['image_blob'] = ''
+
+            performer = performer.xpath('./a/@href').get()
+            if not meta['image']:
+                yield scrapy.Request(url=self.format_link(response, performer), callback=self.parse_performer, meta=meta)
+
+    def get_name(self, response):
+        meta = response.meta
+        name = super().get_name(response)
+        perfid = re.search(r'.*/(\d+)', response.url).group(1)
+        if name and " " not in name:
+            name = name + " " + perfid
+
+        if "image" not in meta or not meta['image']:
+            perf_url = f"https://theporndb.net/performer-sites/765-{name.lower().replace(' ', '-')}"
+            with open("private_missing_images.txt", "a", encoding="utf-8") as f:
+                f.write(f"NO IMAGE FOR PERFORMER: {name} - {response.url} - URL: {perf_url}\n")
+            print(f"NO IMAGE FOR PERFORMER: {name} - {response.url} - TRYING {perf_url}")
+        return name
 
     def get_measurements(self, response):
         if 'measurements' in self.selector_map:
@@ -59,14 +112,6 @@ class SitePrivatePerformerSpider(BasePerformerScraper):
                 if cupsize:
                     return cupsize.strip()
         return ''
-
-    def get_image(self, response):
-        image = super().get_image(response)
-        if "%" in image:
-            return re.search(r'(.*?)%', image).group(1)
-        if " " in image:
-            return re.search(r'(.*?) ', image).group(1)
-        return image
 
     def get_height(self, response):
         height = super().get_height(response)

@@ -1,7 +1,10 @@
 import re
+import string
 import scrapy
 
 from tpdb.BaseSceneScraper import BaseSceneScraper
+true = True
+false = False
 
 
 class SiteAuntJudysSpider(BaseSceneScraper):
@@ -28,21 +31,23 @@ class SiteAuntJudysSpider(BaseSceneScraper):
     }
 
     def get_scenes(self, response):
+        # print(response.text)
+        meta = response.meta
         scenes = response.xpath('//div[@class="update_details"]')
+        attrs = ["@src0_3x", "@src0_2x", "@src0_1x", "@src"]
         for scene in scenes:
-            image = scene.xpath('./a/img/@src0_3x').get()
-            if not image:
-                image = scene.xpath('./a/img/@src0_2x').get()
-            if not image:
-                image = scene.xpath('./a/img/@src0_1x').get()
-            if not image:
-                image = scene.xpath('./a/img/@src').get()
-            image = self.format_link(response, image)
-            image_blob = self.get_image_blob_from_link(image)
+            for attr in attrs:
+                image = scene.xpath(f'./a/img/{attr}').get()
+                if image:
+                    break
+            if image:
+                meta['image'] = self.format_link(response, image)
+                meta['image_blob'] = self.get_image_blob_from_link(meta['image'])
 
             scene = scene.xpath('./a/@href').get()
             if re.search(self.get_selector_map('external_id'), scene):
-                yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta={'image': image, 'image_blob': image_blob})
+                url = self.format_link(response, scene)
+                yield scrapy.Request(url=url, callback=self.parse_scene, meta=meta)
 
     def get_site(self, response):
         if "xxx" in response.url:
@@ -68,3 +73,58 @@ class SiteAuntJudysSpider(BaseSceneScraper):
     def get_id(self, response):
         externid = super().get_id(response)
         return externid.lower()
+
+    def get_performers(self, response):
+        perf_list = response.xpath('//div[@class="gallery_info"]/p/span[@class="update_models"]/a')
+        performers = []
+        for performer in perf_list:
+            performer_name = performer.xpath('./text()')
+            performer_url = performer.xpath('./@href').get()
+            if "auntjudys.com" in performer_url:
+                performer_id = re.search(r'-(\w{2,4}\d{2,4})\.', performer_url)
+                disambiguation = "999"
+            elif "auntjudysxxx.com" in performer_url:
+                performer_id = re.search(r'(\d+)\.', performer_url)
+                disambiguation = "998"
+            if performer_id:
+                performer_id = performer_id.group(1)
+            if performer_name:
+                performer_name = performer_name.get().strip()
+                performer_name = string.capwords(performer_name)
+                if " " not in performer_name:
+                    if performer_id:
+                        performer_name = performer_name + " " + performer_id
+                    else:
+                        performer_name = performer_name + " " + disambiguation
+                performers.append(performer_name)
+        return performers
+    
+    def get_performers_data(self, response):
+        perf_list = response.xpath('//div[@class="gallery_info"]/p/span[@class="update_models"]/a')
+        performers_data = []
+        for performer in perf_list:
+            perf = {}
+            performer_name = performer.xpath('./text()')
+            performer_url = performer.xpath('./@href').get()
+            if "auntjudys.com" in performer_url:
+                performer_id = re.search(r'-(\w{2,4}\d{2,4})\.', performer_url)
+                disambiguation = "999"
+            elif "auntjudysxxx.com" in performer_url:
+                performer_id = re.search(r'(\d+)\.', performer_url)
+                disambiguation = "998"
+            if performer_id:
+                performer_id = performer_id.group(1)
+            if performer_name:
+                performer_name = performer_name.get().strip()
+                performer_name = string.capwords(performer_name)
+                if " " not in performer_name:
+                    if performer_id:
+                        performer_name = performer_name + " " + performer_id
+                    else:
+                        performer_name = performer_name + " " + disambiguation
+                perf['name'] = performer_name
+                perf['url'] = self.format_link(response, performer_url)
+                perf['extra'] = {'gender': "Female"}
+                perf['site'] = self.get_site(response)
+                performers_data.append(perf)
+        return performers_data

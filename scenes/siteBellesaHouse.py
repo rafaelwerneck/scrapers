@@ -67,10 +67,13 @@ class SiteBellesaHouseSpider(BaseSceneScraper):
             yield scrapy.Request(url, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def get_scenes(self, response):
-        if "<pre>" in response.text.lower():
+        if "</pre>" in response.text.lower():
             raw_json = response.css("pre::text").get()
         else:
             raw_json = response.text
+        if "</pre>" in raw_json.lower():
+            raw_json = re.search(r'<pre.*?>(.*?)<\/pre>', raw_json, re.DOTALL | re.IGNORECASE).group(1)
+
         jsondata = json.loads(raw_json)
         for scene in jsondata:
             item = self.init_scene()

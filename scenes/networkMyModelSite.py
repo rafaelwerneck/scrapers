@@ -63,6 +63,10 @@ class SiteMyModelSiteSpider(BaseSceneScraper):
             "api": "bondageliberation.mymember.site",
             "name": "Bondage Liberation",
         },
+        "bondagefashionmexico.com": {
+            "api": "bondage-fashion-mx.mymember.site",
+            "name": "Bondage Fashion Mexico",
+        },
         "brookesballoons.com": {
             "api": "brookesballoons.mymember.site",
             "name": "BrookesBalloons",

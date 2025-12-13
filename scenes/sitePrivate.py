@@ -1,3 +1,4 @@
+from os import name
 import re
 import scrapy
 
@@ -10,7 +11,7 @@ class PrivateSpider(BaseSceneScraper):
 
     start_urls = [
         'https://www.private.com',
-        'https://www.privateblack.com',
+        # 'https://www.privateblack.com',
         # 'https://www.analintroductions.com'
         # 'https://www.blacksonsluts.com'
         # 'https://www.iconfessfiles.com'
@@ -58,3 +59,15 @@ class PrivateSpider(BaseSceneScraper):
         elif "privateblack" in response.url:
             return "Private Black"
         return "Private"
+
+    def get_performers(self, response):
+        perf_list = response.xpath('//ul[contains(@class,"scene-models-list")]/li/a[@data-track="PORNSTAR_NAME"]')
+        performers = []
+        for performer in perf_list:
+            perf_name = performer.xpath('./text()').get().strip()
+            perf_url = performer.xpath('./@href').get()
+            perf_id = re.search(r'.*/(\d+)', perf_url).group(1)
+            if " " not in perf_name:
+                perf_name = perf_name + " " + perf_id
+            performers.append(perf_name)
+        return performers

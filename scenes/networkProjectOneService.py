@@ -1,3 +1,6 @@
+## Unused scraper file, moved to NetworkAylo.py
+## Keeping this intact in case any sites don't come over with new API scraper
+
 import re
 import string
 from urllib.parse import urlencode
@@ -21,44 +24,44 @@ class ProjectOneServiceSpider(BaseSceneScraper):
                        # ~ }
 
     start_urls = [
-        'https://www.babes.com',
-        'https://www.biempire.com',
-        'https://www.bromo.com',
-        'https://www.dancingbear.com',
-        'https://www.deviante.com',
-        'https://www.czechhunter.com/',
-        'https://www.digitalplayground.com',
-        'https://www.dilfed.com',
-        # 'https://www.gilfed.com', API responses from this site are borked
-        'https://www.erito.com',
-        'https://www.fakehub.com',
-        'https://www.guyselector.com',
-        'https://www.iconmale.com',
-        'https://www.letsdoeit.com',
-        'https://www.men.com',
-        'https://www.metrohd.com',
-        'https://www.milehighmedia.com',
-        'https://www.milfed.com',
-        'https://www.mofos.com',
-        'https://www.nextdoorhobby.com',
-        'https://www.noirmale.com',
-        'https://www.propertysex.com',
-        'https://www.realitydudesnetwork.com',
-        'https://www.realitykings.com',
-        'https://www.seancody.com',
-        'https://www.sexselector.com',
-        'https://www.sexyhub.com',
-        'https://www.squirted.com',
-        'https://www.thegayoffice.com',
-        'https://www.transangelsnetwork.com',
-        'https://www.transharder.com',  # Seems to be the same as TransAngels, but some additional
-        'https://www.transsensual.com',  # Seems to be the same as TransAngels, but some additional
-        'https://www.trueamateurs.com',
-        'https://www.tube8vip.com',
-        'https://www.twistys.com',
-        'https://virtualporn.com',
-        'https://www.voyr.com',
-        'https://www.whynotbi.com',
+        # 'https://www.babes.com',
+        # 'https://www.biempire.com',
+        # 'https://www.bromo.com',
+        # 'https://www.dancingbear.com',
+        # 'https://www.deviante.com',
+        # 'https://www.czechhunter.com/',
+        # 'https://www.digitalplayground.com',
+        # 'https://www.dilfed.com',
+        # ### 'https://www.gilfed.com', API responses from this site are borked
+        # 'https://www.erito.com',
+        # 'https://www.fakehub.com',
+        # 'https://www.guyselector.com',
+        # 'https://www.iconmale.com',
+        # 'https://www.letsdoeit.com',
+        # 'https://www.men.com',
+        # 'https://www.metrohd.com',
+        # 'https://www.milehighmedia.com',
+        # 'https://www.milfed.com',
+        # 'https://www.mofos.com',
+        # 'https://www.nextdoorhobby.com',
+        # 'https://www.noirmale.com',
+        # 'https://www.propertysex.com',
+        # 'https://www.realitydudesnetwork.com',
+        # 'https://www.realitykings.com',
+        # 'https://www.seancody.com',
+        # 'https://www.sexselector.com',
+        # 'https://www.sexyhub.com',
+        # 'https://www.squirted.com',
+        # 'https://www.thegayoffice.com',
+        # 'https://www.transangelsnetwork.com',
+        # 'https://www.transharder.com',  # Seems to be the same as TransAngels, but some additional
+        # 'https://www.transsensual.com',  # Seems to be the same as TransAngels, but some additional
+        # 'https://www.trueamateurs.com',
+        # 'https://www.tube8vip.com',
+        # 'https://www.twistys.com',
+        # 'https://virtualporn.com',
+        # 'https://www.voyr.com',
+        # 'https://www.whynotbi.com',
     ]
 
     selector_map = {

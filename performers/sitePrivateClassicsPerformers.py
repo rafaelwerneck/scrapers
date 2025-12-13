@@ -1,29 +1,28 @@
 import re
+import string
 import scrapy
 from tpdb.BasePerformerScraper import BasePerformerScraper
 
 
 class SitePrivateClassicsPerformerSpider(BasePerformerScraper):
     selector_map = {
-        'name': '//div[contains(@class, "user-tools")]/preceding-sibling::h1/text()',
-        'image': '//div[contains(@class, "pic-model")]/a/img/@src',
-        'height': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Height")]/strong/text()',
-        'weight': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Weight")]/strong/text()',
+        'height': '//p[contains(text(), "Height")]/strong/text()',
+        'weight': '//p[contains(text(), "Weight")]/strong/text()',
         'birthplace': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Birth")]/strong/text()',
-        'nationality': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Nationality")]/strong/text()',
-        'astrology': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Sign")]/strong/text()',
-        'haircolor': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Hair")]/strong/text()',
-        'eyecolor': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Eye")]/strong/text()',
-        'measurements': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Measurements")]/strong/text()',
-        'tattoos': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Tattoos")]/strong/text()',
-        'piercings': '//div[contains(@class, "user-tools")]/following-sibling::div[contains(@class, "content-info")]/p[contains(text(), "Piercings")]/strong/text()',
-        'bio': '//div[contains(@class, "user-tools")]/following-sibling::p[contains(@class, "description")]/text()',
+        'nationality': '//p[contains(text(), "Nationality")]/strong/text()',
+        'astrology': '//p[contains(text(), "Sign")]/strong/text()',
+        'haircolor': '//p[contains(text(), "Hair color")]/strong/text()',
+        'eyecolor': '//p[contains(text(), "Eye color")]/strong/text()',
+        'measurements': '//p[contains(text(), "Measurements")]/strong/text()',
+        'tattoos': '//p[contains(text(), "Tattoos")]/strong/text()',
+        'piercings': '//p[contains(text(), "Piercings")]/strong/text()',
+        'bio': '//div[contains(@class,"content-info-model")]/p[@class="description"]/text()',
         'pagination': '/en/pornstars/%s/',
         'external_id': r'models\/(.*).html'
     }
 
     name = 'PrivateClassicsPerformer'
-    network = 'Private'
+    network = 'Private Classics'
 
     start_urls = [
         'https://www.privateclassics.com',
@@ -33,9 +32,31 @@ class SitePrivateClassicsPerformerSpider(BasePerformerScraper):
         return 'Female'
 
     def get_performers(self, response):
-        performers = response.xpath('//article[contains(@class, "model")]/h1/a/@href').getall()
+        meta = response.meta
+        performers = response.xpath('//article[contains(@class, "model")]')
         for performer in performers:
-            yield scrapy.Request(url=self.format_link(response, performer), callback=self.parse_performer)
+            perf_url = performer.xpath('./figure/a/@href').get()
+            perf_id = re.search(r'.*/(\d+)', perf_url).group(1)
+            perf_name = performer.xpath('.//h1/a/text()')
+            if perf_name:
+                perf_name = perf_name.get().strip()
+                if " " not in perf_name:
+                    perf_name = perf_name + " " + perf_id
+            meta['name'] = perf_name
+
+            image = performer.xpath('.//figure/a/img/@src')
+            if image:
+                meta['image'] = self.format_link(response, image.get().strip())
+                meta['image_blob'] = self.get_image_blob_from_link(meta['image'])
+                bare_image = re.search(r'(.*)\?', meta['image'])
+                if bare_image:
+                    meta['image'] = bare_image.group(1)
+
+            meta['gender'] = "Female"
+            meta['site'] = "Private Classics"
+            meta['network'] = "Private Classics"
+
+            yield scrapy.Request(url=self.format_link(response, perf_url), callback=self.parse_performer, meta=meta)
 
     def get_measurements(self, response):
         if 'measurements' in self.selector_map:
@@ -82,3 +103,9 @@ class SitePrivateClassicsPerformerSpider(BasePerformerScraper):
         if not piercings.replace("-", "").strip():
             piercings = ""
         return piercings
+    
+    def get_network(self, response):
+        return "Private Classics"
+    
+    def get_site(self, response):
+        return "Private Classics"
