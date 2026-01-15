@@ -132,6 +132,7 @@ def match_site(argument):
         'sexwithkathianobili': 'Sex With Kathia Nobili',
         'soapymassage': 'Soapy Massage',
         'showersolos': 'Shower Solos',
+        'spankbanggold': 'SpankBang Gold',
         'speculumplays': 'Speculum Plays',
         'squirtalicious': 'Squirtalicious',
         'stagcollectivesolos': 'Stag Collective Solos',
@@ -222,7 +223,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'https://www.lesbianx.com',
         'https://www.lethalhardcore.com',
         'https://www.lethalhardcorevr.com',
-        'https://www.lewood.com',
+        ## 'https://www.lewood.com', Moved to its own scraper
         'https://www.mixedx.com',
         'https://www.modeltime.com',
         'https://www.moderndaysins.com',
@@ -237,6 +238,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'https://www.ragingstallion.com',
         'https://www.roccosiffredi.com',
         'https://www.shapeofbeauty.com',
+        'https://www.spankbanggold.com',
         'https://www.tabooheat.com',
         'https://www.thebrats.com',
         'https://www.touchmywife.com',
@@ -330,11 +332,12 @@ class AdultTimeAPISpider(BaseSceneScraper):
 
     def get_scenes(self, response):
         # ~ print(response.json()['results'])
+        donotyield = 0
         referrerurl = response.meta["url"]
         for scene in response.json()['results'][0]['hits']:
             # ~ if 'upcoming' in scene and scene['upcoming'] == 1:
             # ~ continue
-            item = SceneItem()
+            item = self.init_scene()
 
             force_update = self.settings.get('force_update')
             if force_update:
@@ -343,369 +346,378 @@ class AdultTimeAPISpider(BaseSceneScraper):
             if force_fields:
                 force_fields = force_fields.split(",")
 
-            if not force_update or (force_update and "image" in force_fields):
-                item['image'] = ''
-                for size in self.image_sizes:
-                    if size in scene['pictures']:
-                        item['image'] = 'https://images-fame.gammacdn.com/movies' + \
-                                        scene['pictures'][size]
-                        break
-
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
-                # ~ item['image_blob'] = None
-            else:
-                item['image'] = ''
-                item['image_blob'] = ''
-
-            item['trailer'] = ''
-            if "trailers" in scene and scene['trailers']:
-                for size in self.trailer_sizes:
-                    if size in scene['trailers']:
-                        item['trailer'] = scene['trailers'][size]
-                        break
-
-            item['id'] = scene['objectID'].split('-')[0]
-
-            if 'title' in scene and scene['title']:
-                item['title'] = scene['title']
-            else:
-                item['title'] = scene['movie_title']
-
-            item['title'] = string.capwords(item['title'])
-
-            if 'description' in scene:
-                item['description'] = scene['description']
-            elif 'description' in scene['_highlightResult']:
-                item['description'] = scene['_highlightResult']['description']['value']
-            if 'description' not in item:
-                item['description'] = ''
-
             if self.parse_date(scene['release_date']):
-                item['date'] = self.parse_date(scene['release_date']).isoformat()
-            else:
-                item['date'] = self.parse_date('today').isoformat()
-            # item['performers'] = list(
-            #     map(lambda x: x['name'], scene['actors']))
+                item['date'] = self.parse_date(scene['release_date']).strftime('%Y-%m-%d')
 
-            item['tags'] = list(map(lambda x: x['name'], scene['categories']))
-            item['tags'] = list(filter(None, item['tags']))
+            if self.check_item(item, self.days):
 
-            item['duration'] = str(scene['length'])
+                if not force_update or (force_update and "image" in force_fields):
+                    item['image'] = ''
+                    for size in self.image_sizes:
+                        if size in scene['pictures']:
+                            item['image'] = 'https://images-fame.gammacdn.com/movies' + \
+                                            scene['pictures'][size]
+                            break
 
-            if "directors" in scene and len(scene['directors']):
-                item['director'] = scene['directors'][0]['name']
-
-            item['markers'] = []
-            if 'action_tags' in scene:
-                if scene['action_tags']:
-                    for action in scene['action_tags']:
-                        marker = {}
-                        marker['name'] = action['name']
-                        if marker['name'] not in item['tags']:
-                            item['tags'].append(marker['name'])
-                        marker['start'] = str(action['timecode'])
-                        item['markers'].append(marker)
-
-            item['site'] = scene['sitename']
-            item['site'] = match_site(item['site'])
-            item['network'] = self.network
-            if '21sextreme' in referrerurl:
-                item['parent'] = "21Sextreme"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if '21sextury' in referrerurl:
-                item['parent'] = "21Sextury"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if '21naturals' in referrerurl:
-                item['parent'] = "21Naturals"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'activeduty' in referrerurl:
-                item['parent'] = "Active Duty"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'adam-and-eve' in referrerurl:
-                item['parent'] = "Adam and Eve Pictures"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'addicted2girls' in referrerurl:
-                item['parent'] = "Addicted2Girls"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'asmr-fantasy' in referrerurl:
-                item['parent'] = "ASMR Fantasy"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'ageandbeauty' in referrerurl:
-                item['parent'] = "Age And Beauty"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'agentredgirl' in referrerurl:
-                item['parent'] = "Agent Red Girl"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'biphoria' in referrerurl:
-                item['parent'] = "BiPhoria"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'blowpass' in referrerurl:
-                item['parent'] = "BlowPass"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'couple-swapping' in referrerurl:
-                item['parent'] = "Couple Swapping"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'chaosmen' in referrerurl:
-                item['parent'] = "Chaos Men"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'diabolic' in referrerurl:
-                item['parent'] = "Diabolic"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'devilsfilm' in referrerurl:
-                item['parent'] = "Devils Film"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'dfxtra' in referrerurl:
-                item['network'] = "dogfartnetwork"
-                item['site'] = scene['serie_name']
-                item['parent'] = "dogfartnetwork"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'downlowboys' in referrerurl:
-                item['parent'] = "Downlow Boys"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-                item['tags'].append("Gay")
-            if 'dpfanatics' in referrerurl:
-                item['parent'] = "Devils Film"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'clubinfernodungeon' in referrerurl:
-                item['parent'] = "Club Inferno Dungeon"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'evilangel' in referrerurl:
-                item['parent'] = "Evil Angel"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'falconstudios' in referrerurl:
-                item['network'] = "Falcon Studios"
-                item['site'] = scene['studio_name']
-                item['parent'] = "Falcon Studios"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'famedigital' in referrerurl:
-                item['parent'] = "Fame Digital"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'fantasymassage' in referrerurl:
-                item['parent'] = "Fantasy Massage"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'femboyish' in referrerurl:
-                item['parent'] = "Femboyish"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'filthykings' in referrerurl:
-                item['parent'] = "Filthy Kings"
-                item['site'] = scene['serie_name']
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'footsiebabes' in referrerurl:
-                item['parent'] = "Footsie Babes"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'gangbangcreampie' in referrerurl:
-                item['parent'] = "Gangbang Creampie"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'genderx' in referrerurl:
-                item['parent'] = "Gender X"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'girlfriendsfilms' in referrerurl:
-                item['parent'] = "Girlfriends Films"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'girlsway' in referrerurl:
-                item['parent'] = "Girlsway"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'gloryholesecrets' in referrerurl:
-                item['parent'] = "Gloryhole Secrets"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'interracialvision' in referrerurl:
-                item['parent'] = "Interracialvision"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'jerk-buddies' in referrerurl:
-                item['parent'] = "Jerk Buddies"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'joymii' in referrerurl:
-                item['parent'] = "JoyMii"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'kiss-me-fuck-me' in referrerurl:
-                item['parent'] = "Kiss Me Fuck Me"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'ladygonzo' in referrerurl:
-                item['parent'] = "Lady Gonzo"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'lethalhardcore' in referrerurl:
-                item['parent'] = "Lethal Hardcore"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'lez-be-bad' in referrerurl:
-                item['parent'] = "Lez Be Bad"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'lewood' in referrerurl:
-                item['parent'] = "Lewood"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'mixedx' in referrerurl:
-                item['parent'] = "Mixed X"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'modeltime' in referrerurl:
-                item['parent'] = "Model Time"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'moderndaysins' in referrerurl:
-                item['parent'] = "Modern Day Sins"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'isthisreal' in referrerurl:
-                item['parent'] = "Is This Real"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'mommysgirl' in referrerurl:
-                item['parent'] = "Mommys Girl"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'mypervyfamily' in referrerurl:
-                item['parent'] = "My Pervy Family"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'naked-yoga-life' in referrerurl:
-                item['parent'] = "Naked Yoga Life"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'nextdoorstudios' in referrerurl:
-                item['parent'] = "Next Door Studios"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'oopsie' in referrerurl:
-                item['parent'] = "Oopsie"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'peternorth' in referrerurl:
-                item['parent'] = "Peter North"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'povthis' in referrerurl:
-                item['parent'] = "POV This"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'prettydirty' in referrerurl:
-                item['parent'] = "Pretty Dirty"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'pridestudios' in referrerurl:
-                item['parent'] = "Pride Studios"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'puretaboo' in referrerurl:
-                item['parent'] = "Pure Taboo"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'puretaboo' in referrerurl:
-                item['parent'] = "Pure Taboo"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'ragingstallion' in referrerurl:
-                item['parent'] = "Raging Stallion Studios"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'roccosiffredi' in referrerurl:
-                item['parent'] = "Rocco Siffredi"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'shower-solos' in referrerurl:
-                item['parent'] = "Shower Solos"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'shapeofbeauty' in referrerurl:
-                item['parent'] = "Shape of Beauty"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'she-wants-him' in referrerurl:
-                item['parent'] = "She Wants Him"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'tabooheat' in referrerurl:
-                item['parent'] = "Taboo Heat"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'teen-sneaks' in referrerurl:
-                item['parent'] = "Teen Sneaks"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'thebrats' in referrerurl:
-                item['parent'] = "Teen Sneaks"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'the-mike-and-joanna-show' in referrerurl:
-                item['parent'] = "The Mike and Joanna Show"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'with-love-lexi' in referrerurl:
-                item['parent'] = "With Love Lexi"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'switch' in referrerurl:
-                if item['site'].lower() == "switch":
-                    item['parent'] = "Switch"
+                    item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                    # ~ item['image_blob'] = None
                 else:
-                    item['parent'] = item['site']
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'touchmywife' in referrerurl:
-                item['parent'] = "Touch My Wife"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'transfixed' in referrerurl:
-                item['parent'] = "Transfixed"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'transsexualangel' in referrerurl:
-                item['parent'] = "Evil Angel"
-                item['site'] = "Transsexual Angel"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'transsexualroadtrip' in referrerurl:
-                item['parent'] = "Transsexual Roadtrip"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'truelesbian' in referrerurl:
-                item['site'] = "True Lesbian"
-                item['parent'] = "True Lesbian"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'tsfactor' in referrerurl:
-                item['site'] = "TS Factor"
-                item['parent'] = "TS Factor"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/evilangel/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'vivid' in referrerurl:
-                item['parent'] = "Vivid"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'wicked' in referrerurl:
-                item['parent'] = "Wicked"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'xempire' in referrerurl or 'allblackx' in referrerurl or 'darkx' in referrerurl or 'eroticax' in referrerurl or 'hardx' in referrerurl or 'lesbianx' in referrerurl:
-                item['parent'] = "XEmpire"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
-            if 'zerotolerance' in referrerurl:
-                item['parent'] = "Zero Tolerance"
-                item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                    item['image'] = ''
+                    item['image_blob'] = ''
 
-            item['performers'] = []
-            item['performers_data'] = []
-            for performer in scene['actors']:
-                perf_name = performer['name']
-                if " " not in perf_name:
-                    perf_name = perf_name + " " + performer['actor_id']
-                item['performers'].append(perf_name)
-                perf = {}
-                perf['name'] = perf_name
-                if "gender" in performer:
-                    if performer['gender'].title() == "Shemale":
-                        performer['gender'] = "Transgender Female"
-                    perf['extra'] = {'gender': performer['gender'].title()}
-                perf['site'] = item['site']
-                perf['image'] = f"https://transform.gammacdn.com/actors/{performer['actor_id']}/{performer['actor_id']}_500x750.jpg?width=500&height=750&format=webp"
-                if not force_update or (force_update and "performers" in force_fields):
-                # perf['image_blob'] = self.get_image_blob_from_link(perf['image'])
-                    req = requests.get(perf['image'])
-                    if req.ok:
-                        perf['image_blob'] = base64.b64encode(req.content).decode('utf-8')
-                item['performers_data'].append(perf)
+                item['trailer'] = ''
+                if "trailers" in scene and scene['trailers']:
+                    for size in self.trailer_sizes:
+                        if size in scene['trailers']:
+                            item['trailer'] = scene['trailers'][size]
+                            break
 
-            #  The following sites were brought in from other scrapers.  Date limits are to avoid dupes
-            donotyield = 0
-            if (('mypervyfamily' in item['url'] and item['date'] < "2021-10-06") or ('Filthy Blowjobs' in item['site'] and item['date'] < "2021-09-14") or ('Filthy Massage' in item['site'] and item['date'] < "2021-09-28") or ('Filthy Newbies' in item['site'] and item['date'] < "2021-09-21") or ('Filthy POV' in item['site'] and item['date'] < "2021-10-05") or ('Filthy Taboo' in item['site'] and item['date'] < "2021-10-09")):
-                donotyield = 1
+                item['id'] = scene['objectID'].split('-')[0]
 
-            if ('Falcon Studios' in item['network'] and item['date'] < "2023-04-01"):
-                donotyield = 1
+                if 'title' in scene and scene['title']:
+                    item['title'] = scene['title']
+                else:
+                    item['title'] = scene['movie_title']
 
-            if ('TS Factor' in item['site'] and item['date'] < "2021-11-24"):
-                donotyield = 1
+                item['title'] = string.capwords(item['title'])
 
-            if ('activeduty' in item['url'] and item['date'] < "2023-02-20"):
-                donotyield = 1
+                if 'description' in scene:
+                    item['description'] = scene['description']
+                elif 'description' in scene['_highlightResult']:
+                    item['description'] = scene['_highlightResult']['description']['value']
+                if 'description' not in item:
+                    item['description'] = ''
 
-            # ~ if ('gangbangcreampie' in item['url'] and item['date'] < "2022-10-29"):
-                # ~ donotyield = 1
+                # item['performers'] = list(
+                #     map(lambda x: x['name'], scene['actors']))
 
-            if ('gloryholesecrets' in item['url'] and item['date'] < "2022-10-01"):
-                donotyield = 1
+                item['tags'] = list(map(lambda x: x['name'], scene['categories']))
+                item['tags'] = list(filter(None, item['tags']))
 
-            if ('jerk-buddies' in item['url'] and item['date'] < "2024-04-01"):
-                donotyield = 1
+                item['duration'] = str(scene['length'])
 
-            if (('Lusty Grandmas' in item['site'] and item['date'] < "2019-02-01") or ('Grandpas Fuck Teens' in item['site'] and item['date'] < "2019-02-06") or ('Baby Got Balls' in item['site'] and item['date'] < "2008-05-04") or ('Creampie Reality' in item['site'] and item['date'] < "2006-10-04") or ('Cumming Matures' in item['site'] and item['date'] < "2009-12-01")):
-                donotyield = 1
+                if "directors" in scene and len(scene['directors']):
+                    item['director'] = scene['directors'][0]['name']
 
-            if (('Dominated Girls' in item['site'] and item['date'] < "2013-08-26") or ('Home Porn Reality' in item['site'] and item['date'] < "2010-06-18") or ('Mandy Is Kinky' in item['site'] and item['date'] < "2008-04-30") or ('Mighty Mistress' in item['site'] and item['date'] < "2014-05-20") or ('Teach Me Fisting' in item['site'] and item['date'] < "2019-01-29") or ('Zoliboy' in item['site'] and item['date'] < "2018-03-18") or ('Pee And Blow' in item['site'] and item['date'] < "2009-12-16") or ('Speculum Plays' in item['site'] and item['date'] < "2007-09-07")):
-                donotyield = 1
+                item['markers'] = []
+                if 'action_tags' in scene:
+                    if scene['action_tags']:
+                        for action in scene['action_tags']:
+                            marker = {}
+                            marker['name'] = action['name']
+                            if marker['name'] not in item['tags']:
+                                item['tags'].append(marker['name'])
+                            marker['start'] = str(action['timecode'])
+                            item['markers'].append(marker)
 
-            #  Old Young Lesbian Love is returned both from Girlsway and 21Sextreme.  Only pull from Girlsway
-            if "oldyounglesbianlove" in scene['sitename'] and "21sextreme" in referrerurl:
-                donotyield = 1
+                item['site'] = scene['sitename']
+                item['site'] = match_site(item['site'])
+                item['network'] = self.network
+                if '21sextreme' in referrerurl:
+                    item['parent'] = "21Sextreme"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if '21sextury' in referrerurl:
+                    item['parent'] = "21Sextury"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if '21naturals' in referrerurl:
+                    item['parent'] = "21Naturals"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'activeduty' in referrerurl:
+                    item['parent'] = "Active Duty"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'adam-and-eve' in referrerurl:
+                    item['parent'] = "Adam and Eve Pictures"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'addicted2girls' in referrerurl:
+                    item['parent'] = "Addicted2Girls"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'asmr-fantasy' in referrerurl:
+                    item['parent'] = "ASMR Fantasy"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'ageandbeauty' in referrerurl:
+                    item['parent'] = "Age And Beauty"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'agentredgirl' in referrerurl:
+                    item['parent'] = "Agent Red Girl"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'biphoria' in referrerurl:
+                    item['parent'] = "BiPhoria"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'blowpass' in referrerurl:
+                    item['parent'] = "BlowPass"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'couple-swapping' in referrerurl:
+                    item['parent'] = "Couple Swapping"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'chaosmen' in referrerurl:
+                    item['parent'] = "Chaos Men"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'diabolic' in referrerurl:
+                    item['parent'] = "Diabolic"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'devilsfilm' in referrerurl:
+                    item['parent'] = "Devils Film"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'dfxtra' in referrerurl:
+                    item['network'] = "dogfartnetwork"
+                    item['site'] = scene['serie_name']
+                    item['parent'] = "dogfartnetwork"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'downlowboys' in referrerurl:
+                    item['parent'] = "Downlow Boys"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                    item['tags'].append("Gay")
+                if 'dpfanatics' in referrerurl:
+                    item['parent'] = "Devils Film"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'clubinfernodungeon' in referrerurl:
+                    item['parent'] = "Club Inferno Dungeon"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'evilangel' in referrerurl:
+                    item['parent'] = "Evil Angel"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'falconstudios' in referrerurl:
+                    item['network'] = "Falcon Studios"
+                    item['site'] = scene['studio_name']
+                    item['parent'] = "Falcon Studios"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'famedigital' in referrerurl:
+                    item['parent'] = "Fame Digital"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'fantasymassage' in referrerurl:
+                    item['parent'] = "Fantasy Massage"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'femboyish' in referrerurl:
+                    item['parent'] = "Femboyish"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'filthykings' in referrerurl:
+                    item['parent'] = "Filthy Kings"
+                    item['site'] = scene['serie_name']
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'footsiebabes' in referrerurl:
+                    item['parent'] = "Footsie Babes"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'gangbangcreampie' in referrerurl:
+                    item['parent'] = "Gangbang Creampie"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'genderx' in referrerurl:
+                    item['parent'] = "Gender X"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'girlfriendsfilms' in referrerurl:
+                    item['parent'] = "Girlfriends Films"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'girlsway' in referrerurl:
+                    item['parent'] = "Girlsway"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'gloryholesecrets' in referrerurl:
+                    item['parent'] = "Gloryhole Secrets"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'interracialvision' in referrerurl:
+                    item['parent'] = "Interracialvision"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'jerk-buddies' in referrerurl:
+                    item['parent'] = "Jerk Buddies"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'joymii' in referrerurl:
+                    item['parent'] = "JoyMii"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'kiss-me-fuck-me' in referrerurl:
+                    item['parent'] = "Kiss Me Fuck Me"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'ladygonzo' in referrerurl:
+                    item['parent'] = "Lady Gonzo"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'lethalhardcore' in referrerurl:
+                    item['parent'] = "Lethal Hardcore"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'lez-be-bad' in referrerurl:
+                    item['parent'] = "Lez Be Bad"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'lewood' in referrerurl:
+                    item['parent'] = "Lewood"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'mixedx' in referrerurl:
+                    item['parent'] = "Mixed X"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'modeltime' in referrerurl:
+                    item['parent'] = "Model Time"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'moderndaysins' in referrerurl:
+                    item['parent'] = "Modern Day Sins"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'isthisreal' in referrerurl:
+                    item['parent'] = "Is This Real"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'mommysgirl' in referrerurl:
+                    item['parent'] = "Mommys Girl"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'mypervyfamily' in referrerurl:
+                    item['parent'] = "My Pervy Family"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'naked-yoga-life' in referrerurl:
+                    item['parent'] = "Naked Yoga Life"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'nextdoorstudios' in referrerurl:
+                    item['parent'] = "Next Door Studios"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'oopsie' in referrerurl:
+                    item['parent'] = "Oopsie"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'peternorth' in referrerurl:
+                    item['parent'] = "Peter North"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'povthis' in referrerurl:
+                    item['parent'] = "POV This"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'prettydirty' in referrerurl:
+                    item['parent'] = "Pretty Dirty"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'pridestudios' in referrerurl:
+                    item['parent'] = "Pride Studios"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'puretaboo' in referrerurl:
+                    item['parent'] = "Pure Taboo"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'puretaboo' in referrerurl:
+                    item['parent'] = "Pure Taboo"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'ragingstallion' in referrerurl:
+                    item['parent'] = "Raging Stallion Studios"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'roccosiffredi' in referrerurl:
+                    item['parent'] = "Rocco Siffredi"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'shower-solos' in referrerurl:
+                    item['parent'] = "Shower Solos"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'shapeofbeauty' in referrerurl:
+                    item['parent'] = "Shape of Beauty"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'she-wants-him' in referrerurl:
+                    item['parent'] = "She Wants Him"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'spankbanggold' in referrerurl:
+                    item['site'] = scene['serie_name']
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                    item['parent'] = "Spankbang Gold"
+                    if "spankbanggold" not in item['site'].lower().replace(" ", ""):
+                        donotyield = 1
+                    else:
+                        donotyield = 0
 
-            matches = ['evilangelpartner', 'nudefightclub']
-            if not any(x in scene['sitename'] for x in matches):
-                if not donotyield:
-                    yield self.check_item(item, self.days)
+                if 'tabooheat' in referrerurl:
+                    item['parent'] = "Taboo Heat"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'teen-sneaks' in referrerurl:
+                    item['parent'] = "Teen Sneaks"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'thebrats' in referrerurl:
+                    item['parent'] = "Teen Sneaks"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'the-mike-and-joanna-show' in referrerurl:
+                    item['parent'] = "The Mike and Joanna Show"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'with-love-lexi' in referrerurl:
+                    item['parent'] = "With Love Lexi"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'switch' in referrerurl:
+                    if item['site'].lower() == "switch":
+                        item['parent'] = "Switch"
+                    else:
+                        item['parent'] = item['site']
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'touchmywife' in referrerurl:
+                    item['parent'] = "Touch My Wife"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'transfixed' in referrerurl:
+                    item['parent'] = "Transfixed"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'transsexualangel' in referrerurl:
+                    item['parent'] = "Evil Angel"
+                    item['site'] = "Transsexual Angel"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'transsexualroadtrip' in referrerurl:
+                    item['parent'] = "Transsexual Roadtrip"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'truelesbian' in referrerurl:
+                    item['site'] = "True Lesbian"
+                    item['parent'] = "True Lesbian"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'tsfactor' in referrerurl:
+                    item['site'] = "TS Factor"
+                    item['parent'] = "TS Factor"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/evilangel/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'vivid' in referrerurl:
+                    item['parent'] = "Vivid"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'wicked' in referrerurl:
+                    item['parent'] = "Wicked"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'xempire' in referrerurl or 'allblackx' in referrerurl or 'darkx' in referrerurl or 'eroticax' in referrerurl or 'hardx' in referrerurl or 'lesbianx' in referrerurl:
+                    item['parent'] = "XEmpire"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+                if 'zerotolerance' in referrerurl:
+                    item['parent'] = "Zero Tolerance"
+                    item['url'] = self.format_url(response.meta['url'], '/en/video/' + scene['sitename'] + '/' + scene['url_title'] + '/' + str(scene['clip_id']))
+
+                item['performers'] = []
+                item['performers_data'] = []
+                for performer in scene['actors']:
+                    perf_name = performer['name']
+                    if " " not in perf_name:
+                        perf_name = perf_name + " " + performer['actor_id']
+                    item['performers'].append(perf_name)
+                    perf = {}
+                    perf['name'] = perf_name
+                    if "gender" in performer:
+                        if performer['gender'].title() == "Shemale":
+                            performer['gender'] = "Transgender Female"
+                        perf['extra'] = {'gender': performer['gender'].title()}
+                    perf['site'] = item['site']
+                    perf['image'] = f"https://transform.gammacdn.com/actors/{performer['actor_id']}/{performer['actor_id']}_500x750.jpg?width=500&height=750&format=webp"
+                    if not force_update or (force_update and "performers" in force_fields):
+                    # perf['image_blob'] = self.get_image_blob_from_link(perf['image'])
+                        req = requests.get(perf['image'])
+                        if req.ok:
+                            perf['image_blob'] = base64.b64encode(req.content).decode('utf-8')
+                    item['performers_data'].append(perf)
+
+                #  The following sites were brought in from other scrapers.  Date limits are to avoid dupes
+                if (('mypervyfamily' in item['url'] and item['date'] < "2021-10-06") or ('Filthy Blowjobs' in item['site'] and item['date'] < "2021-09-14") or ('Filthy Massage' in item['site'] and item['date'] < "2021-09-28") or ('Filthy Newbies' in item['site'] and item['date'] < "2021-09-21") or ('Filthy POV' in item['site'] and item['date'] < "2021-10-05") or ('Filthy Taboo' in item['site'] and item['date'] < "2021-10-09")):
+                    donotyield = 1
+
+                if ('Falcon Studios' in item['network'] and item['date'] < "2023-04-01"):
+                    donotyield = 1
+
+                if ('TS Factor' in item['site'] and item['date'] < "2021-11-24"):
+                    donotyield = 1
+
+                if ('activeduty' in item['url'] and item['date'] < "2023-02-20"):
+                    donotyield = 1
+
+                # ~ if ('gangbangcreampie' in item['url'] and item['date'] < "2022-10-29"):
+                    # ~ donotyield = 1
+
+                if ('gloryholesecrets' in item['url'] and item['date'] < "2022-10-01"):
+                    donotyield = 1
+
+                if ('jerk-buddies' in item['url'] and item['date'] < "2024-04-01"):
+                    donotyield = 1
+
+                if (('Lusty Grandmas' in item['site'] and item['date'] < "2019-02-01") or ('Grandpas Fuck Teens' in item['site'] and item['date'] < "2019-02-06") or ('Baby Got Balls' in item['site'] and item['date'] < "2008-05-04") or ('Creampie Reality' in item['site'] and item['date'] < "2006-10-04") or ('Cumming Matures' in item['site'] and item['date'] < "2009-12-01")):
+                    donotyield = 1
+
+                if (('Dominated Girls' in item['site'] and item['date'] < "2013-08-26") or ('Home Porn Reality' in item['site'] and item['date'] < "2010-06-18") or ('Mandy Is Kinky' in item['site'] and item['date'] < "2008-04-30") or ('Mighty Mistress' in item['site'] and item['date'] < "2014-05-20") or ('Teach Me Fisting' in item['site'] and item['date'] < "2019-01-29") or ('Zoliboy' in item['site'] and item['date'] < "2018-03-18") or ('Pee And Blow' in item['site'] and item['date'] < "2009-12-16") or ('Speculum Plays' in item['site'] and item['date'] < "2007-09-07")):
+                    donotyield = 1
+
+                #  Old Young Lesbian Love is returned both from Girlsway and 21Sextreme.  Only pull from Girlsway
+                if "oldyounglesbianlove" in scene['sitename'] and "21sextreme" in referrerurl:
+                    donotyield = 1
+
+                matches = ['evilangelpartner', 'nudefightclub']
+                if not any(x in scene['sitename'] for x in matches):
+                    if not donotyield:
+                        yield self.check_item(item, self.days)
 
     def call_algolia(self, page, token, referrer):
         # ~ print (f'Page: {page}        Token: {token}     Referrer: {referrer}')
@@ -855,6 +867,8 @@ class AdultTimeAPISpider(BaseSceneScraper):
             jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=60&maxValuesPerFacet=1000&page=' + str(page) + '&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=false&facets=%5B%22categories.name%22%2C%22availableOnSite%22%2C%22upcoming%22%5D&tagFilters=&facetFilters=%5B%5B%22upcoming%3A0%22%5D%5D"},{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=1&maxValuesPerFacet=1000&page=0&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=false&attributesToRetrieve=%5B%5D&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&analytics=false&clickAnalytics=false&facets=upcoming"}]}'
         if 'shower-solos' in referrer:
             jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=24&page=' + str(page) + '&attributesToRetrieve=%5B%22action_tags%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22download_sizes%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22download_file_sizes%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%5D&clickAnalytics=true&facets=%5B%5D&tagFilters=&facetFilters=%5B%22upcoming%3A0%22%2C%5B%22availableOnSite%3Ashowersolos%22%5D%5D"},{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=1&page=0&attributesToRetrieve=%5B%22action_tags%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22download_sizes%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22download_file_sizes%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%5D&clickAnalytics=false&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&analytics=false&facets=availableOnSite&facetFilters=%5B%22upcoming%3A0%22%5D"}]}'
+        if 'spankbanggold' in referrer:
+            jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Aspankbanggold%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&clickAnalytics=true&facetingAfterDistinct=true&facets=%5B%22categories.url_name%22%5D&filters=(NOT%20categories.name%3A\'VR\')%20AND%20(upcoming%3A\'0\')&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=60&maxValuesPerFacet=1000&page=' + str(page) + '&query=&tagFilters="}]}'
         if 'switch' in referrer:
             jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=60&maxValuesPerFacet=1000&page=' + str(page) + '&analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Amembers%22%2C%22site%3Aadulttime%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&attributesToRetrieve=%5B%22isVR%22%2C%22video_formats%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%2C%22hasPpu%22%2C%22ppu_infos%22%2C%22action_tags%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=true&clickAnalytics=true&filters=(content_tags%3A\'trans\'%20OR%20content_tags%3A\'straight\'%20OR%20content_tags%3A\'lesbian\'%20OR%20content_tags%3A\'gay\'%20OR%20content_tags%3A\'bisex\')&facets=%5B%22hasSubtitle%22%2C%22categories.name%22%2C%22video_formats.format%22%2C%22length_range_15min%22%2C%22actors.name%22%2C%22subtitles.languages%22%2C%22availableOnSite%22%2C%22upcoming%22%2C%22serie_name%22%2C%22network.lvl0%22%5D&tagFilters=&facetFilters=%5B%5B%22serie_name%3ASwitch%22%5D%2C%5B%22upcoming%3A0%22%5D%5D"}]}'
         if 'teen-sneaks' in referrer:
@@ -866,7 +880,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         if 'touchmywife' in referrer:
             jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=60&maxValuesPerFacet=10&page=' + str(page) + '&analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atouchmywife%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=false&clickAnalytics=true&facets=%5B%22categories.name%22%2C%22channels.id%22%2C%22availableOnSite%22%2C%22upcoming%22%5D&tagFilters=&facetFilters=%5B%5B%22upcoming%3A0%22%5D%5D"},{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=1&maxValuesPerFacet=10&page=0&analytics=false&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atouchmywife%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=false&clickAnalytics=false&attributesToRetrieve=%5B%5D&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=upcoming"}]}'
         if 'transfixed' in referrer:
-            jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=60&maxValuesPerFacet=10&page=' + str(page) + '&analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atranssexualroadtrip%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&attributesToRetrieve=%5B%22action_tags%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22download_sizes%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22download_file_sizes%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=true&clickAnalytics=true&filters=&facets=%5B%22availableOnSite%22%2C%22upcoming%22%5D&tagFilters=&facetFilters=%5B%5B%22upcoming%3A0%22%5D%2C%5B%22availableOnSite%3Atranssexualroadtrip%22%5D%5D"},{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=1&maxValuesPerFacet=10&page=0&analytics=false&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atranssexualroadtrip%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&attributesToRetrieve=%5B%22action_tags%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22download_sizes%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22download_file_sizes%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=true&clickAnalytics=false&filters=&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=upcoming&facetFilters=%5B%5B%22availableOnSite%3Atranssexualroadtrip%22%5D%5D"},{"indexName":"all_scenes_latest_desc","params":"query=&hitsPerPage=1&maxValuesPerFacet=10&page=0&analytics=false&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atranssexualroadtrip%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&attributesToRetrieve=%5B%22action_tags%22%2C%22clip_id%22%2C%22title%22%2C%22url_title%22%2C%22pictures%22%2C%22categories%22%2C%22actors%22%2C%22release_date%22%2C%22sitename%22%2C%22download_sizes%22%2C%22clip_length%22%2C%22upcoming%22%2C%22network_name%22%2C%22length%22%2C%22ratings_up%22%2C%22ratings_down%22%2C%22rating_rank%22%2C%22clip_path%22%2C%22channels%22%2C%22mainChannel%22%2C%22views%22%2C%22award_winning%22%2C%22directors%22%2C%22download_file_sizes%22%2C%22trailers%22%2C%22subtitles%22%2C%22objectID%22%2C%22subtitle_id%22%2C%22source_clip_id%22%5D&highlightPreTag=%3Cais-highlight-0000000000%3E&highlightPostTag=%3C%2Fais-highlight-0000000000%3E&facetingAfterDistinct=true&clickAnalytics=false&filters=&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=availableOnSite&facetFilters=%5B%5B%22upcoming%3A0%22%5D%5D"}]}'
+            jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atransfixed%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&clickAnalytics=true&facetingAfterDistinct=true&facets=%5B%22categories.url_name%22%2C%22sitename%22%5D&filters=(content_tags%3A\'trans\')%20AND%20(upcoming%3A\'0\')%20AND%20availableOnSite%3Adevilsfilm%20OR%20availableOnSite%3Aburningangel%20OR%20availableOnSite%3Apuretaboo%20OR%20availableOnSite%3Atransfixed%20OR%20availableOnSite%3Awelikegirls%20OR%20availableOnSite%3Acaughtfapping%20OR%20availableOnSite%3ABeingTrans247%20OR%20availableOnSite%3ATransgressiveFilms-channel%20OR%20availableOnSite%3Amuses-channel%20OR%20availableOnSite%3Adolls-channel&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=60&maxValuesPerFacet=1000&page=' + str(page) + '&query=&tagFilters="}]}'
         if 'transsexualangel' in referrer:
             jbody = '{"requests":[{"indexName":"all_scenes_latest_desc","params":"analytics=true&analyticsTags=%5B%22component%3Asearchlisting%22%2C%22section%3Afreetour%22%2C%22site%3Atranssexualangel%22%2C%22context%3Avideos%22%2C%22device%3Adesktop%22%5D&clickAnalytics=true&facetingAfterDistinct=true&facets=%5B%22categories.url_name%22%5D&filters=(categories.name%3A\'Trans\')%20AND%20(compilation%3A\'0\')%20AND%20(NOT%20categories.name%3A\'Member%20Compilation\')%20AND%20(compilation%3A\'0\')%20AND%20(upcoming%3A\'0\')%20AND%20availableOnSite%3Aevilangel%20OR%20availableOnSite%3Atranssexualangel&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=60&maxValuesPerFacet=1000&page=' + str(page) + '&query=&tagFilters="}]}'
         if 'transsexualroadtrip' in referrer:

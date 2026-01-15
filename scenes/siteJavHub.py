@@ -1,104 +1,92 @@
 import re
-from datetime import date, timedelta
 import scrapy
+import string
 from tpdb.BaseSceneScraper import BaseSceneScraper
-from tpdb.items import SceneItem
 
 
 class SiteJavHubSpider(BaseSceneScraper):
     name = 'JavHub'
-    network = 'JavHub'
-    parent = 'JavHub'
-    site = 'JavHub'
 
-    start_urls = [
-        'https://tour.javhub.com',
-    ]
+    start_url = 'https://tour.javhub.com/'
 
     selector_map = {
-        'title': '//div[@class="row"]/div/h5[contains(@class, "mt-3")]/text()',
-        'description': '//p[@class="MsoNormal"]/text()',
-        'date': '//span[@class="date"]/text()',
-        'image': '//div[contains(@class, "ypp-video-player-wrap")]//video/@poster',
-        'performers': '//span[contains(text(), "Starring")]/following-sibling::a/text()',
-        'tags': '',
-        'external_id': r'videos/(\d+)/.*',
-        'trailer': '',
-        'pagination': '/scenes?page=%s'
+        'external_id': r'',
+        'pagination': '/_next/data/<buildID>/videos.json?page=%s&order_by=publish_date&sort_by=desc',
     }
 
-    def get_scenes(self, response):
-        scenes = response.xpath('//div[contains(@class,"content-item")]')
+    def start_requests(self):
+        meta = {}
+        meta['page'] = self.page
+        yield scrapy.Request('https://tour.javhub.com/', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)
+
+    def start_requests_2(self, response):
+        meta = response.meta
+        buildId = re.search(r'\"buildId\":\"(.*?)\"', response.text)
+        if buildId:
+            meta['buildID'] = buildId.group(1)
+            link = self.get_next_page_url(self.start_url, self.page, meta['buildID'])
+            yield scrapy.Request(link, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+
+    def parse(self, response, **kwargs):
+        scenes = self.get_scenes(response)
+        count = 0
         for scene in scenes:
-            sceneurl = scene.xpath('./div/a/@href').get()
-            if re.search(self.get_selector_map('external_id'), sceneurl):
-                yield scrapy.Request(url=self.format_link(response, sceneurl), callback=self.parse_scene)
-            elif "/join" in sceneurl:
-                item = SceneItem()
+            count += 1
+            yield scene
 
-                title = scene.xpath('.//h3[@class="title"]/a/text()')
-                if title:
-                    item['title'] = self.cleanup_title(title.get())
-                else:
-                    item['title'] = ''
+        if count:
+            if 'page' in response.meta and response.meta['page'] < self.limit_pages:
+                meta = response.meta
+                meta['page'] = meta['page'] + 1
+                print('NEXT PAGE: ' + str(meta['page']))
+                yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page'], meta['buildID']), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
-                scenedate = scene.xpath('.//span[@class="pub-date"]/text()')
-                if scenedate:
-                    scenedate = scenedate.get()
-                    scenedate = re.search(r'(\w+ \d{1,2}, \d{4})', scenedate)
-                    if scenedate:
-                        item['date'] = self.parse_date(scenedate.group(1), date_formats=['%B %d, %Y']).isoformat()
-                else:
-                    item['date'] = self.parse_date('today').isoformat()
+    def get_next_page_url(self, base, page, buildID):
+        pagination = self.get_selector_map('pagination')
+        pagination = pagination.replace("<buildID>", buildID)
+        return self.format_url(base, pagination % page)
 
-                image = scene.xpath('./div/a/@data-images')
-                if image:
-                    image = re.search(r'(http.*?\.jpg)', image.get().replace("\\", "")).group(1)
-                    item['image'] = self.format_link(response, image)
-                    externalid = re.search(r'.*/(\w{8,15}?)/.*', item['image']).group(1)
-                    item['id'] = externalid.lower()
-                else:
-                    item['image'] = ''
-                    externalid = item['title'].replace(" ", "-").lower()
-                    item['id'] = re.sub('[^a-zA-Z0-9-]', '', externalid)
+    def get_scenes(self, response):
+        meta = response.meta
+        jsondata = response.json()
+        jsondata = jsondata['pageProps']['contents']['data']
+        for scene in jsondata:
+            meta['id'] = scene['id']
+            link = f"https://tour.javhub.com/_next/data/{meta['buildID']}/videos/{scene['slug']}.json"
+            yield scrapy.Request(link, callback=self.parse_scene, meta=meta)
 
-                performers = scene.xpath('.//h4[@class="models"]/a/text()')
-                if performers:
-                    item['performers'] = list(map(lambda x: x.strip().title(), performers.getall()))
-                else:
-                    item['performers'] = []
+    def parse_scene(self, response):
+        jsondata = response.json()
+        jsondata = jsondata['pageProps']['content']
+        item = self.init_scene()
+        item['site'] = "JavHub"
+        item['parent'] = "JavHub"
+        item['network'] = "JavHub"
+        item['date'] = self.parse_date(jsondata['publish_date'], date_formats=['%Y/%m/%d']).strftime('%Y-%m-%d')
+        if self.check_item(item, self.days):
+            if "seconds_duration" in jsondata and jsondata['seconds_duration']:
+                item['duration'] = str(jsondata['seconds_duration'])
+            item['title'] = self.cleanup_title(string.capwords(jsondata['title']))
+            if 'description' in jsondata and jsondata['description']:
+                item['description'] = self.cleanup_text(jsondata['description'])
+            item['performers_data'] = []
+            for model in jsondata['models_thumbs']:
+                perf = {}
+                perf['extra'] = {}
+                perf['extra']['gender'] = "Female"
+                perf['name'] = string.capwords(model['name'])
+                perf['image'] = model['thumb'].replace(" ", "%20")
+                perf['image_blob'] = self.get_image_blob_from_link(model['thumb'])
+                perf['site'] = "JavHub"
+                perf['network'] = "JavHub"
+                item['performers_data'].append(perf)
+                item['performers'].append(string.capwords(model['name']))
 
-                item['description'] = ''
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
-                item['tags'] = ['Asian']
-                item['trailer'] = ''
-                item['url'] = response.url
-                item['network'] = 'JavHub'
-                item['parent'] = 'JavHub'
-                item['site'] = 'JavHub'
+            item['id'] = jsondata['id']
+            item['image'] = jsondata['thumb'].replace(" ", "%20")
+            item['image_blob'] = self.get_image_blob_from_link(item['image'])
+            item['tags'] = list(map(lambda x: string.capwords(x.replace(",", "").strip()), jsondata['tags']))
+            item['tags'] = [x for x in item['tags'] if x.strip()]
+            item['url'] = f"https://tour.javhub.com/videos/{jsondata['slug']}"
 
-                if item['id'] and item['title']:
-                    days = int(self.days)
-                    if days > 27375:
-                        filterdate = "0000-00-00"
-                    else:
-                        filterdate = date.today() - timedelta(days)
-                        filterdate = filterdate.strftime('%Y-%m-%d')
-
-                    if self.debug:
-                        if not item['date'] > filterdate:
-                            item['filtered'] = "Scene filtered due to date restraint"
-                        print(item)
-                    else:
-                        if filterdate:
-                            if item['date'] > filterdate:
-                                yield item
-                        else:
-                            yield item
-
-    def get_tags(self, response):
-        return ['Asian']
-
-    def get_description(self, response):
-        description = super().get_description(response)
-        return description.replace("\r", "").replace("\n", " ").replace("\t", " ")
+            yield self.check_item(item, self.days)

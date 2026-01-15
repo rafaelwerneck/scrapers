@@ -185,7 +185,7 @@ class AndomarkSpider(BaseSceneScraper):
             scenes = response.xpath('//div[@class="update_details"]/a[1]/@href').getall()
         elif '4k' in response.url:
             scenes = response.xpath('//h5/a/@href').getall()
-        elif 'shiny' in response.url:
+        elif 'shiny' in response.url or "sofiemariexxx" in response.url:
             scenes = response.xpath('//div[@class="videoPic"]/a/@href').getall()
         else:
             scenes = response.xpath('//div[@class="updateItem"]/a/@href').getall()
@@ -231,6 +231,8 @@ class AndomarkSpider(BaseSceneScraper):
             if not date:
                 date = response.xpath('//span[@class="update_date"]/text()').get()
             if not date:
+                date = response.xpath('//ul[@class="videoInfo"]/li[contains(text(), "/")]/text()').get()
+            if not date:
                 date = response.xpath('//div[contains(@class, "gallery_info")]/div/div/div[contains(@class,"update_date")]/text()').get()
             if not date:
                 date = response.xpath('//p[@class="date"]/text()').get()
@@ -246,7 +248,14 @@ class AndomarkSpider(BaseSceneScraper):
         return ''
 
     def get_title(self, response):
-        if 'minkaxxx' in response.url or 'sexykaren' in response.url or 'houseofyre' in response.url or 'shinybound' in response.url:
+        if "sofiemariexxx" in response.url:
+            titlesearch = '//h4/text()'
+            if titlesearch:
+                title = response.xpath(titlesearch).getall()
+                title = "".join(title).replace("/", "").strip()
+                return string.capwords(title)
+
+        elif 'minkaxxx' in response.url or 'sexykaren' in response.url or 'houseofyre' in response.url or 'shinybound' in response.url:
             titlesearch = '//meta[@name="twitter:title"]/@content'
         elif 'meanawolf' in response.url:
             titlesearch = '//div[@class="trailerArea"]/h1/text()'
@@ -296,6 +305,8 @@ class AndomarkSpider(BaseSceneScraper):
         else:
             imagesearch = '//meta[@property="og:image"]/@content'
             image = response.xpath(imagesearch).get()
+            if "-2x" in image:
+                image = image.replace("-2x", "-4x")
 
         if not image:
             image = response.xpath('//meta[@name="twitter:image"]/@content').get()
@@ -304,7 +315,9 @@ class AndomarkSpider(BaseSceneScraper):
         return self.format_link(response, image.replace(" ", "%20"))
 
     def get_tags(self, response):
-        if 'minkaxxx' in response.url or 'sexykaren' in response.url:
+        if "sofiemariexxx" in response.url:
+            tagsearch = '//div[@class="blogTags"]/ul/li/a/text()'
+        elif 'minkaxxx' in response.url or 'sexykaren' in response.url:
             tagsearch = '//div[@class="videodetails"]/p/a/text()'
         elif 'shinybound' in response.url:
             tagsearch = '//div[@class="tags"]/ul/li/a/text()'
@@ -359,7 +372,7 @@ class AndomarkSpider(BaseSceneScraper):
         search = search.group(1)
         if "houseofyre" in response.url and "_vids" in search:
             search = search.replace("_vids", "")
-        return search
+        return search.lower()
 
     def get_performers(self, response):
         performersearch = self.get_selector_map('performers')
@@ -377,6 +390,8 @@ class AndomarkSpider(BaseSceneScraper):
             performersearch = '//div[@class="models"]/ul/li/a/text()'
         if 'meanawolf' in response.url:
             performersearch = '//span[contains(text(),"FEATURING:")]/following-sibling::a[contains(@href,"/models/")]/text()'
+        if "sofiemariexxx" in response.url:
+            performersearch = '//p[@class="link_light"]/a/text()'
 
         performers = response.xpath(performersearch).getall()
         return list(map(lambda x: x.strip(), performers))
@@ -384,6 +399,11 @@ class AndomarkSpider(BaseSceneScraper):
     def get_description(self, response):
         if 'meanawolf' in response.url:
             description = response.xpath('//div[@class="trailerContent"]/p/text()').getall()
+            if description:
+                description = " ".join(description)
+                return description
+        elif "sofiemariexxx" in response.url:
+            description = response.xpath('//div[contains(@class, "vidImgContent")]/p//text()').getall()
             if description:
                 description = " ".join(description)
                 return description
@@ -414,4 +434,11 @@ class AndomarkSpider(BaseSceneScraper):
             if duration:
                 duration = duration.get().strip()
                 return self.duration_to_seconds(duration)
+        if "sofiemariexxx" in response.url:
+            duration = response.xpath('//i[contains(@class, "fa-video")]/following-sibling::text()[contains(., "min")]')
+            if duration:
+                duration = duration.get().strip()
+                duration = re.search(r'(\d+)\s*min', duration)
+                if duration:
+                    return str(int(duration.group(1)) * 60)
         return None

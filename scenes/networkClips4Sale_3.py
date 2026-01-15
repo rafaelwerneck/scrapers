@@ -122,8 +122,6 @@ class SiteClips4Sale_3Spider(BaseSceneScraper):
                 yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page'], meta['store'], meta['storename']), callback=self.parse, meta=meta)
 
     def get_next_page_url(self, base, page, store, storename):
-        # ~ url = f"https://www.clips4sale.com/studio/{store}/{storename}/Cat0-AllCategories/Page{str(page)}/C4SSort-added_at/Limit24/?onlyClips=true&_data=routes%2Fstudio.$id_.$studioSlug.$"
-        # ~ url = f"https://www.clips4sale.com/en/studio/v/Cat0-AllCategories/Page{str(page)}/C4SSort-added_at/Limit24/?onlyClips=true&_data=routes%2F($lang).studio.$id_.$studioSlug.$"
         url = f"https://www.clips4sale.com/en/studio/{store}/{storename}/Cat0-AllCategories/Page{str(page)}/C4SSort-added_at/Limit24?onlyClips=true&storeSimilarClips=false&_data=routes%2F%28%24lang%29.studio.%24id_.%24studioSlug.%24"
         return url
 
@@ -206,68 +204,68 @@ class SiteClips4Sale_3Spider(BaseSceneScraper):
             return meta['network']
         return tldextract.extract(response.url).domain
 
-def get_performers(self, response):
-    url = response.url.lower()
+    def get_performers(self, response):
+        url = response.url.lower()
 
-    patterns = {
-        "addie-juniper": "Addie Juniper",
-        "alexa-creed": "Alexa Creed",
-        "alysa-nylon": "Alysa Nylon",
-        "ama-rios-playground": "Ama Rio",
-        "andrea-rosu-s": "Andrea Rosu",
-        "anikafall": "Anika Fall",
-        "annabelle-rogers": "Annabelle Rogers",
-        "asiana-starr-bondage": "Asiana Starr",
-        "astrodomina": "AstroDomina",
-        "bella-bates": "Bella Bates",
-        "bettie-bondage": "Bettie Bondage",
-        "chronicles-of-mlle-fanchette": "Mlle Fanchette",
-        "crystal-knight": "Crystal Knight",
-        "dahlia-fallon": "Dahlia Fallon",
-        "daisys-desires": "Daisy Haze",
-        "darling-kiyomi": "Darling Kiyomi",
-        "divine-goddess-amber": "Divine Goddess Amber",
-        "evansfeet": "Lis Evans",
-        "goddess-alessa": "Goddess Alessa",
-        "goddess-lavey": "Harley LaVey",
-        "goddess-maisha": "Goddess Maisha",
-        "helena-price": "Helena Price",
-        "jenna-hoskins-bondage": "Jenna Hoskins",
-        "lady-angelika": "Lady Angelika",
-        "lilith-last-witch": "Lilith Last Witch",
-        "little-puck-perversions": "Little Puck",
-        "lovehershoes": "Lis Evans",
-        "manda-marx": "Mandy Marx",
-        "marisol-price": "Marisol Price",
-        "mean-wolf": "Meana Wolf",
-        "milf-jan-seduces": "Jan Burton",
-        "milaamorabondage": "Mila Amora",
-        "miss-ruby-greys-clips": "Miss Ruby Grey",
-        "mistress-courtneys-fetish-lair": "Mistress Courtney",
-        "mistress-euryale": "Elis Euryale",
-        "mistress-jessica-starling": "Jessica Starling",
-        "mistress-nikita-femdom": "Mistress Nikita",
-        "natalie-wonder": "Natalie Wonder",
-        "princess-camryn": "Princess Camryn",
-        "princess-sasha-foxxx": "Sasha Foxxx",
-        "sara-saint": "Sara Saint",
-        "scarlettbelle-s-fetish-clips": "Scarlette Belle",
-        "slave247story": "SlaveQ",
-        "stella-liberty": "Stella Liberty",
-        "superior-lana-blade": "Lana Blade",
-        "sylvie-labrae": "Sylvie Labrae",
-        "tamystarly-cbt": "Tamy Starly",
-        "tammie-madison": "Tammie Madison",
-        "tatti-roana": "Tatti Roana",
-        "tgirloneguy": "Kendall Penny",
-        "yes-ms-talia": "Talia Tate",
-        "young-goddess-kim": "Young Goddess Kim",
-        "yvette-xtreme": "Yvette Costeau",
-    }
+        patterns = {
+            "addie-juniper": "Addie Juniper",
+            "alexa-creed": "Alexa Creed",
+            "alysa-nylon": "Alysa Nylon",
+            "ama-rios-playground": "Ama Rio",
+            "andrea-rosu-s": "Andrea Rosu",
+            "anikafall": "Anika Fall",
+            "annabelle-rogers": "Annabelle Rogers",
+            "asiana-starr-bondage": "Asiana Starr",
+            "astrodomina": "AstroDomina",
+            "bella-bates": "Bella Bates",
+            "bettie-bondage": "Bettie Bondage",
+            "chronicles-of-mlle-fanchette": "Mlle Fanchette",
+            "crystal-knight": "Crystal Knight",
+            "dahlia-fallon": "Dahlia Fallon",
+            "daisys-desires": "Daisy Haze",
+            "darling-kiyomi": "Darling Kiyomi",
+            "divine-goddess-amber": "Divine Goddess Amber",
+            "evansfeet": "Lis Evans",
+            "goddess-alessa": "Goddess Alessa",
+            "goddess-lavey": "Harley LaVey",
+            "goddess-maisha": "Goddess Maisha",
+            "helena-price": "Helena Price",
+            "jenna-hoskins-bondage": "Jenna Hoskins",
+            "lady-angelika": "Lady Angelika",
+            "lilith-last-witch": "Lilith Last Witch",
+            "little-puck-perversions": "Little Puck",
+            "lovehershoes": "Lis Evans",
+            "manda-marx": "Mandy Marx",
+            "marisol-price": "Marisol Price",
+            "mean-wolf": "Meana Wolf",
+            "milf-jan-seduces": "Jan Burton",
+            "milaamorabondage": "Mila Amora",
+            "miss-ruby-greys-clips": "Miss Ruby Grey",
+            "mistress-courtneys-fetish-lair": "Mistress Courtney",
+            "mistress-euryale": "Elis Euryale",
+            "mistress-jessica-starling": "Jessica Starling",
+            "mistress-nikita-femdom": "Mistress Nikita",
+            "natalie-wonder": "Natalie Wonder",
+            "princess-camryn": "Princess Camryn",
+            "princess-sasha-foxxx": "Sasha Foxxx",
+            "sara-saint": "Sara Saint",
+            "scarlettbelle-s-fetish-clips": "Scarlette Belle",
+            "slave247story": "SlaveQ",
+            "stella-liberty": "Stella Liberty",
+            "superior-lana-blade": "Lana Blade",
+            "sylvie-labrae": "Sylvie Labrae",
+            "tamystarly-cbt": "Tamy Starly",
+            "tammie-madison": "Tammie Madison",
+            "tatti-roana": "Tatti Roana",
+            "tgirloneguy": "Kendall Penny",
+            "yes-ms-talia": "Talia Tate",
+            "young-goddess-kim": "Young Goddess Kim",
+            "yvette-xtreme": "Yvette Costeau",
+        }
 
-    # Return the first matching performer
-    for key, performer in patterns.items():
-        if key in url:
-            return [performer]
+        # Return the first matching performer
+        for key, performer in patterns.items():
+            if key in url:
+                return [performer]
 
-    return []
+        return []

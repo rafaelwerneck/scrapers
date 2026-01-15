@@ -109,6 +109,8 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
         ['https://jessydubairaw.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Jessy Dubai Raw', 'Jessy Dubai'],
         ['https://pastelgoddess.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Pastel Goddess', 'Pastel Goddess'],
         ['https://suzyq.modelcentro.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'SuzyQ', 'SuzyQ'],
+        ['https://clubcuck.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Club Cuck', 'Club Cuck'],
+        ['https://www.frdiapergirls.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'French Diaper Girls', ''],
     ]
 
     selector_map = {
@@ -258,6 +260,15 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
             if "backalleytoonz" in response.url:
                 item['tags'].append("Animation")
 
+            if "frdiapergirls" in response.url:
+                item['tags'].append("Diapers")
+
+            if "clubcuck" in response.url:
+                item['tags'].append("Cuckold")
+                item['tags'].append("Interracial")
+                if "Club Cuck" in item['performers']:
+                    item['performers'].remove("Club Cuck")
+
             if "hansthehornygrandpa" in response.url:
                 item['tags'].append("Older / Younger")
 
@@ -325,6 +336,8 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
         if "Nina Rivera" in item['tags']:
             item['tags'].remove("Nina Rivera")
             item['performers'].append("Nina Rivera")
+        if "French Diaper Girls" in item['performers']:
+            item['performers'].remove("French Diaper Girls")            
         if "Nadia White" in item['tags']:
             item['tags'].remove("Nadia White")
             item['performers'].append("Nadia White")
@@ -377,6 +390,7 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
             'Ezadasinn',
             'Frejadottir',
             'Freja_Dottir',
+            'French Diaper Girls',
             'Freya',
             'Goddess Ezada',
             'Goddess Maya',

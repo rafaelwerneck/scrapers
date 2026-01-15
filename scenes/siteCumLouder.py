@@ -26,6 +26,8 @@ class SiteCumLouderSpider(BaseSceneScraper):
         'title': '//h1/text()',
         'description': '//strong[contains(text(),"Description")]/following-sibling::text()',
         'date': '//strong[contains(text(),"Added")]/following-sibling::text()',
+        'duration': '//div[@class="duracion"]/text()[contains(., ":")]',
+        're_duration': r'((?:\d{1,2}\:)?\d{2}\:\d{2})',
         'image': '//link[@rel="preload" and @as="image" and contains(@href,".jpg")]/@href',
         'image_blob': '//link[@rel="preload" and @as="image" and contains(@href,".jpg")]/@href',
         'performers': '//a[@class="pornstar-link"]/text()',

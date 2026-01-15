@@ -23,7 +23,8 @@ class OktogonMediaSpider(BaseSceneScraper):
     start_urls = [
         'https://www.shelovesblack.com',
         'https://www.loveherboobs.com',
-        'https://www.loveherfeet.com'
+        'https://www.loveherfeet.com',
+        'https://www.loveherfilms.com',
     ]
 
     paginations = [
@@ -58,6 +59,7 @@ class OktogonMediaSpider(BaseSceneScraper):
                     yield scrapy.Request(url=self.get_next_page_url(url, self.page, pagination), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def parse(self, response, **kwargs):
+        meta = response.meta
         if response.status == 200:
             scenes = self.get_scenes(response)
             count = 0
@@ -65,8 +67,15 @@ class OktogonMediaSpider(BaseSceneScraper):
                 count += 1
                 yield scene
 
+        if 'page' in response.meta and response.meta['page'] < self.limit_pages:
+            meta['page'] = meta['page'] + 1
+            print('NEXT PAGE: ' + str(meta['page']))
+            yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page'], meta['pagination']), callback=self.parse, meta=meta)
+
     def get_next_page_url(self, url, page, pagination):
-        return self.format_url(url, pagination % page)
+        url = self.format_url(url, pagination % page)
+        print(url)
+        return url
 
     def get_scenes(self, response):
         scenes = response.xpath('//script[contains(text(), "mutations") and not(contains(text(), "upcomingContent"))]/text()')
@@ -109,42 +118,61 @@ class OktogonMediaSpider(BaseSceneScraper):
                         xsite = "677d3f422e587cf94d1a9e5c"
                     if "loveherfeet" in response.url:
                         xsite = "677d3f422e587cf94d1a9e5a"
+                    if "loveherfilms" in response.url:
+                        xsite = "677d3f422e587cf94d1a9e5d"
+                    
+                    process_scene = True
+                    if "loveherfilms" in response.url:
+                        if "trailer" in scene and scene['trailer']:
+                            if "baseName" in scene['trailer'] and scene['trailer']['baseName']:
+                                trailer_base = scene['trailer']['baseName']
+                                trailer_prefix = re.search(r'^([a-z]+)_', trailer_base.lower())
+                                if trailer_prefix:
+                                    trailer_prefix = trailer_prefix.group(1)
+                                    if trailer_prefix in ['slb', 'lhf', 'lhb']:
+                                        process_scene = False
+                                else:
+                                    pass
 
-                    req_headers = {'x-site-id': xsite}
-                    req = requests.get(scene_url, headers=req_headers)
-                    if req and req.ok:
-                        scene_secondary = req.content
-                        if scene_secondary:
-                            scene_secondary = json.loads(scene_secondary)
-                            if "description" in scene_secondary and scene_secondary['description']:
-                                item['description'] = self.cleanup_description(scene_secondary['description'])
+                    if process_scene:
+                        req_headers = {'x-site-id': xsite}
+                        req = requests.get(scene_url, headers=req_headers)
+                        if req and req.ok:
+                            scene_secondary = req.content
+                            if scene_secondary:
+                                scene_secondary = json.loads(scene_secondary)
+                                if "description" in scene_secondary and scene_secondary['description']:
+                                    item['description'] = self.cleanup_description(scene_secondary['description'])
 
-                    if "models" in scene and scene['models']:
-                        for model in scene['models']:
-                            item['performers'].append(model['modelName'])
+                        if "models" in scene and scene['models']:
+                            for model in scene['models']:
+                                item['performers'].append(model['modelName'])
 
-                    if "categories" in scene and scene['categories']:
-                        for tag in scene['categories']:
-                            item['tags'].append(tag['title'])
+                        if "categories" in scene and scene['categories']:
+                            for tag in scene['categories']:
+                                item['tags'].append(tag['title'])
+                            if "behind-the-scenes" in item['id'].lower():
+                                item['tags'].append("Behind The Scenes")
+                                item['tags'].append("BTS")
 
-                    if "trailer" in scene and scene['trailer']:
-                        if "sources" in scene['trailer'] and len(scene['trailer']['sources']):
-                            trailer = scene['trailer']['sources'][0]['path']
-                            if trailer:
-                                item['trailer'] = trailer
+                        if "trailer" in scene and scene['trailer']:
+                            if "sources" in scene['trailer'] and len(scene['trailer']['sources']):
+                                trailer = scene['trailer']['sources'][0]['path']
+                                if trailer:
+                                    item['trailer'] = trailer
 
-                    if "thumb" in scene and scene['thumb']:
-                        image = scene['thumb']['previewImage']
-                        if image:
-                            if "-1x" in image:
-                                image = image.replace("-1x", "-4x")
-                            item['image'] = image
-                            item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                        if "thumb" in scene and scene['thumb']:
+                            image = scene['thumb']['previewImage']
+                            if image:
+                                if "-1x" in image:
+                                    image = image.replace("-1x", "-4x")
+                                item['image'] = image
+                                item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
-                    item['site'] = self.get_site(response)
-                    item['parent'] = self.get_site(response)
-                    item['network'] = self.get_site(response)
+                        item['site'] = self.get_site(response)
+                        item['parent'] = self.get_site(response)
+                        item['network'] = self.get_site(response)
 
-                    item['url'] = f"https://www.{item['site']}.com/tour/trailers/{item['id']}.html"
+                        item['url'] = f"https://www.{item['site']}.com/tour/trailers/{item['id']}.html"
 
-                    yield item
+                        yield item

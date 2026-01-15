@@ -2,6 +2,7 @@ from datetime import date, timedelta
 import tldextract
 import requests
 import scrapy
+import string
 import re
 from tpdb.BaseSceneScraper import BaseSceneScraper
 from tpdb.items import SceneItem
@@ -28,13 +29,20 @@ class InterracialPassSpider(BaseSceneScraper):
         'https://www.backroomcastingcouch.com',
         'https://bbcsurprise.com',
         'https://exploitedcollegegirls.com',
-        # 'https://www.ikissgirls.com'
+        ### 'https://www.ikissgirls.com'
     ]
 
     custom_settings = {
-        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
         "HTTPERROR_ALLOWED_CODES": [500],
-        "RETRY_ENABLED": False
+        "RETRY_ENABLED": True,
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62',
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': 1,
+        'AUTOTHROTTLE_MAX_DELAY': 10,
+        'CONCURRENT_REQUESTS': 1,
+        'RANDOMIZE_DOWNLOAD_DELAY': True,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
+        'CONCURRENT_REQUESTS_PER_IP': 1,        
     }
 
     cookies = [{
@@ -66,10 +74,12 @@ class InterracialPassSpider(BaseSceneScraper):
         scenes = response.xpath('//div[contains(@class, "item-video")]')
         for scene in scenes:
             link = scene.css('a::attr(href)').get()
-            image = scene.xpath('.//img/@src0_1x')
+            if "bbcsurprise" in response.url or "backroomcastingcouch" in response.url:
+                image = scene.xpath('.//video/@poster')
+            else:
+                image = scene.xpath('.//img[contains(@class, "update_thumb")]/@src0_1x')
             if image:
-                meta['image'] = self.format_link(response, image.get())
-                meta['image_blob'] = self.get_image_blob_from_link(meta['image'])
+                meta['orig_image'] = self.format_link(response, image.get())
             if link:
                 yield scrapy.Request(url=self.format_link(response, link), callback=self.parse_scene, meta=meta)
 
@@ -92,13 +102,21 @@ class InterracialPassSpider(BaseSceneScraper):
         image = self.process_xpath(response, self.get_selector_map('image'))
         if image:
             image = self.get_from_regex(image.get(), 're_image')
-
-            if image:
-                image = self.format_link(response, image)
-                return image.replace(" ", "%20")
-        else:
-            if 'image' in meta:
-                return self.format_link(response, meta['image'])
+        
+        if not image:
+            if 'orig_image' in meta:
+                image = meta['orig_image']
+        
+        if image:
+            if "exploitedcollegegirls" not in response.url:
+                if "-1x" in image:
+                    image = image.replace("-1x", "-4x")
+                if "-2x" in image:
+                    image = image.replace("-2x", "-4x")
+            image = self.format_link(response, image)
+            image = image.replace(" ", "%20")
+            return image
+        
         return ''
 
     def get_site(self, response):
@@ -136,29 +154,46 @@ class InterracialPassSpider(BaseSceneScraper):
         if image and self.cookies:
             cookies = {cookie['name']: cookie['value'] for cookie in self.cookies}
             req = requests.get(image, cookies=cookies, verify=False)
-
             if req and req.ok:
                 return req.content
         return None
 
     def get_performers_data(self, response):
+        list_id = 1
         performers = response.xpath('//section[@id="model-bio"]//div[@class="card"]')
+        if not performers:
+            performers = response.xpath('//div[contains(@class, "models-list-thumbs")]/ul/li')
+            list_id = 2
+
         performers_data = []
         if len(performers):
             for performer in performers:
                 perf = {}
-                perf['name'] = performer.xpath('.//h3/text()').get()
+                perf_id = performer.xpath('.//img/@id').get()
+                perf_id = re.search(r'-(\d+)', perf_id).group(1)
+
+                if list_id == 1:
+                    perf_name = performer.xpath('.//h3/text()').get().strip()
+                if list_id == 2:
+                    perf_name = performer.xpath('.//span/text()').get().strip()
+
+                if perf_name and " " not in perf_name.strip():
+                    perf_name = f"{perf_name} {perf_id}"
+
+                perf['name'] = string.capwords(perf_name)
+
                 perf['extra'] = {}
                 perf['extra']['gender'] = "Female"
-                perf['network'] = "ExploitedX"
-                perf['site'] = "ExploitedX"
+                perf['site'] = self.get_site(response)
                 image = performer.xpath('.//img/@src0_3x')
                 if image:
                     image = image.get()
                     if "content" in image:
                         image = self.format_link(response, image)
                         perf['image'] = image
-                        perf['image_blob'] = self.get_image_blob_from_link(image)
+                        # perf['image_blob'] = self.get_image_blob_from_link(image)
+                        if "?" in perf['image']:
+                            perf['image'] = re.search(r'(.*?)\?', perf['image']).group(1)
 
                 height = performer.xpath('.//strong[contains(text(), "Height:")]/following-sibling::text()')
                 if height:
@@ -173,6 +208,28 @@ class InterracialPassSpider(BaseSceneScraper):
 
                 performers_data.append(perf)
         return performers_data
+    
+    def get_performers(self, response):
+        performers = []
+        list_id = 1
+        perf_list = response.xpath('//section[@id="model-bio"]//div[@class="card"]')
+        if not perf_list:
+            perf_list = response.xpath('//div[contains(@class, "models-list-thumbs")]/ul/li')
+            list_id = 2
+
+        if perf_list:
+            for perf in perf_list:
+                perf_id = perf.xpath('.//img/@id').get()
+                perf_id = re.search(r'-(\d+)', perf_id).group(1)
+                if list_id == 1:
+                    perf_name = perf.xpath('.//h3/text()').get().strip()
+                if list_id == 2:
+                    perf_name = perf.xpath('.//span/text()').get().strip()
+                if perf_name and " " not in perf_name.strip():
+                    perf_name = f"{perf_name} {perf_id}"
+                performers.append(perf_name)
+            return performers
+        return []
 
     def convert_measurements(self, measurements):
         measurements = re.search(r'(\d+\w+).*?(\d+).*?(\d+)', measurements)
@@ -182,8 +239,33 @@ class InterracialPassSpider(BaseSceneScraper):
         return None
 
     def convert_height(self, height):
-        feet, inches = map(int, height.replace(" ", "").strip().replace('"', '').split("'"))
-        cm = (feet * 30.48) + (inches * 2.54)
-        if cm:
-            return str(int(cm)) + "cm"
-        return None
+        if not height:
+            return None
+
+        height = height.strip()
+
+        pattern = re.compile(
+            r"""
+            ^\s*
+            (?P<feet>\d+)
+            (?:\s*'\s*
+                (?P<inches>\d+)
+            )?
+            \s*"?\s*$
+            """,
+            re.VERBOSE
+        )
+
+        match = pattern.match(height)
+        if not match:
+            return None
+
+        feet = int(match.group("feet"))
+        inches = int(match.group("inches")) if match.group("inches") else 0
+
+        if feet > 8 or inches >= 12:
+            return None
+
+        cm = feet * 30.48 + inches * 2.54
+        return f"{int(cm)}cm" if cm > 0 else None
+

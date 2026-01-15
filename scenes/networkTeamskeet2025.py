@@ -19,6 +19,8 @@ class NetworkTeamskeet2025Spider(BaseSceneScraper):
         '/freeusebundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
         '/familybundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
         '/sau_network/_search?sort=publishedDate:desc&q=(type:video%20AND%20isUpcoming:false)&size=30&from=<page>',
+        '/swap_bundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        '/pervbundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
     ]
 
     selector_map = {
@@ -110,6 +112,9 @@ class NetworkTeamskeet2025Spider(BaseSceneScraper):
                     if "sau_network" in meta['pagination']:
                         item['url'] = f"https://www.sayuncle.com/movies/{scene['_source']['id']}"
                         item['parent'] = "Say Uncle"                        
+                    if "swap_bundle" in meta['pagination']:
+                        item['url'] = f"https://www.swappz.com/movies/{scene['_source']['id']}"
+                        item['parent'] = "Teamskeet"    
                     else:
                         item['url'] = f"https://www.teamskeet.com/movies/{scene['_source']['id']}"
                         item['parent'] = "Teamskeet"

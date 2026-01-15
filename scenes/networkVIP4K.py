@@ -16,7 +16,7 @@ class NetworkVIP4KSpider(BaseSceneScraper):
         'description': '//div[@class="player-description__text"]/text()',
         'date': '//div[@class="player-description__additional"]/ul/li[@class="player-additional__item"][2]/span/text()',
         'date_formats': ['%Y-%m-%d'],
-        'image': '//picture[@class="player-item__inner"]//img/@data-src',
+        'image': '//picture[@class="player-item__inner"]//img/@data-src|//div[@id="player-rmp"]/@data-poster',
         'performers': '//div[@class="player-description__line"]/a/div[@class="model__name"]/text()',
         'tags': '//div[@class="player-description__tags"]/div/a/text()',
         'trailer': '',

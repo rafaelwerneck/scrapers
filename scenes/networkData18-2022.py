@@ -15,7 +15,7 @@ false = False
 class Data18Spider(BaseSceneScraper):
     name = 'Data182022'
 
-    cookies = [{"domain":".data18.com","expirationDate":1764284091.443671,"hostOnly":false,"httpOnly":true,"name":"data_user_captcha","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"1"},{"domain":".data18.com","expirationDate":1770850491.532554,"hostOnly":false,"httpOnly":true,"name":"data_user","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"UNK-en-1"},{"domain":".data18.com","expirationDate":1770850491.532577,"hostOnly":false,"httpOnly":true,"name":"data_user_functions","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_navigation","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"1"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_nav_custom","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"t%3D3%26b%3D1%26html%3Dagw-entertainment%26FILTER%26spage%3D3%26"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"last_media","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"scene-1173472"}]
+    cookies = [{"domain":".data18.com","expirationDate":1770850491.532554,"hostOnly":false,"httpOnly":true,"name":"data_user","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"UNK-en-1"},{"domain":".data18.com","expirationDate":1770850491.532577,"hostOnly":false,"httpOnly":true,"name":"data_user_functions","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_navigation","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"1"},{"domain":".data18.com","expirationDate":1767564353.740662,"hostOnly":false,"httpOnly":true,"name":"data_user_captcha","path":"/","sameSite":"unspecified","secure":true,"session":false,"storeId":"0","value":"1"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"data_user_nav_custom","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"t%3D3%26b%3D1%26html%3Dagw-entertainment"},{"domain":".data18.com","hostOnly":false,"httpOnly":true,"name":"last_media","path":"/","sameSite":"unspecified","secure":true,"session":true,"storeId":"0","value":"scene-1172732"}]
 
     start_urls = [
 
@@ -30,7 +30,7 @@ class Data18Spider(BaseSceneScraper):
         'description': '//b[contains(text(), "Story")]/..//text()',
         'date': '//b[contains(text(), "Release date")]/following-sibling::a/b/text()',
         'date_formats': ['%B %d, %Y'],
-        'image': '//div[@class="framevideolink"]/img/@src',
+        'image': '//img[@id="playpriimage"]/@src',
         'performers': '//a[contains(@href, "/name/") and contains(@class, "bold gen")]/text()',
         'tags': '//b[contains(text(), "Categories")]/following-sibling::a[contains(@href, "tags")]/text()',
         'external_id': r'/(\d+)$',
@@ -38,13 +38,14 @@ class Data18Spider(BaseSceneScraper):
     }
 
     custom_scraper_settings = {
-        'TWISTED_REACTOR': 'twisted.internet.asyncioreactor.AsyncioSelectorReactor',
+        # 'TWISTED_REACTOR': 'twisted.internet.asyncioreactor.AsyncioSelectorReactor',
         'AUTOTHROTTLE_ENABLED': True,
         'USE_PROXY': True,
         'AUTOTHROTTLE_START_DELAY': 1,
         'AUTOTHROTTLE_MAX_DELAY': 60,
         'CONCURRENT_REQUESTS': 1,
         'DOWNLOAD_DELAY': 2,
+        # 'HANDLE_HTTPSTATUS_LIST': [404],
         'DOWNLOADER_MIDDLEWARES': {
             # 'tpdb.helpers.scrapy_flare.FlareMiddleware': 542,
             'tpdb.middlewares.TpdbSceneDownloaderMiddleware': 543,
@@ -54,10 +55,11 @@ class Data18Spider(BaseSceneScraper):
             'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
             'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
         },
-        'DOWNLOAD_HANDLERS': {
-            "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-            "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-        }
+        # 'DOWNLOAD_HANDLERS': {
+        #     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+        #     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+        # },
+        'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62',
     }
 
     def start_requests(self):
@@ -69,7 +71,7 @@ class Data18Spider(BaseSceneScraper):
             meta['site'] = link[2]
             meta['parent'] = link[3]
             meta['network'] = link[4]
-            meta['playwright'] = True
+            # meta['playwright'] = True
             yield scrapy.Request(url=self.get_next_page_url(link[0], self.page, link[1]),
                                  callback=self.parse,
                                  meta=meta,
@@ -102,7 +104,8 @@ class Data18Spider(BaseSceneScraper):
         scenes = response.xpath('//div[contains(@style, "margin-top")]/div/a[contains(@href, "scenes")]/@href').getall()
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
-                yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
+                url = self.format_link(response, scene)
+                yield scrapy.Request(url, callback=self.parse_scene, meta=meta)
 
     def get_title(self, response):
         title = super().get_title(response)
@@ -113,3 +116,22 @@ class Data18Spider(BaseSceneScraper):
         description = super().get_description(response)
         description = description.replace("Story - ", "")
         return description
+
+    def get_image(self, response):
+        image = super().get_image(response)
+        if not image or image in response.url:
+            return ""
+        return image
+    
+    def get_date(self, response):
+        date = super().get_date(response)
+        if not date:
+            scenedate = response.xpath('//b[contains(text(), "Release date")]/following-sibling::text()')
+            if scenedate:
+                scenedate = scenedate.get().strip()
+                scenedate = re.search(r'(\w+, \d{4})', scenedate)
+                if scenedate:
+                    scenedate = scenedate.group(1)
+                    scenedate = scenedate.replace(", ", " 1, ")
+                    date = dateparser.parse(scenedate.strip()).strftime('%Y-%m-%d')
+        return date

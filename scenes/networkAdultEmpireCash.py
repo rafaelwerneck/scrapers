@@ -249,8 +249,10 @@ class AdultEmpireCashScraper(BaseSceneScraper):
 
         if "18lust" in base:
             pagination = "/watch-newest-18-lust-clips-and-scenes.html?page=%s&hybridview=member"
-        if "wcpclub" in base or "thirdworld" in base:
+        if "thirdworld" in base:
             pagination = "/watch-newest-clips-and-scenes.html?page=%s&hybridview=member"
+        if "wcpclub" in base:
+            pagination = "/west-coast-productions-exclusive-scenes.html?page=%s&hybridview=member"
         if "conorcoxxx" in base:
             # ~ pagination = "/conor-coxxx-clips.html?page=%s&hybridview=member"
             pagination = "/watch-newest-clips-and-scenes.html?page=%s&hybridview=member"

@@ -17,7 +17,7 @@ class SieTeenyTabooSpider(BaseSceneScraper):
     ]
 
     # ~ cookies = [{"name": "warn", "value": "true"}]
-    cookies = [{"domain":"teenytaboo.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"0htiftg2inhvda6js3gkt6b93o"},{"domain":"teenytaboo.com","expirationDate":1767716489,"hostOnly":true,"httpOnly":false,"name":"warn","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"true"},{"domain":"teenytaboo.com","hostOnly":true,"httpOnly":true,"name":"e1n3md44JfuLO8Ar","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"AQAAMqGLg3EZO6N13I0lsy8Ju7yWjuPZ8J6z7s9tL63FyqnzqDVpAAAAAADgAQDpqbkVY2H11WMHqvEPfWx6fQEA7-3JFxl0hs0Q_rhKiVdymA_jC5_pVUTe3EKnIK7fqCxqw8-9gtWhsmcmM526HVjwz0N99t3muDltocMVP9sSE7T_ANBKUKhukBb6DDWWF3cIASBG94Bywba-gP0i_uxyMrp5kau8sEOmD77qdHHvDoz6O-6FCrswPL9FE80GbPpHuiPL1JQCkNPrpzlTmnIRcB8T4ueYgBOeLHx6BRXrfpbwe_W1p1B8U1dDuOu3Xx8o_337jd_aASXszI5i4QosbmIkjUQvt6_tsU4VvI2J9y3KDoAn1Mh7rKDUcJ3o72Pgw6wM5K3UORUg5HYaRwKjUvX_IE98T4-XMuyHvjyn_Ea9GLp2Gb3Z-uJtpZTEKZPZvp0C1aTdIB2eKfIopkmTT8aSMV-5xnvCP9zXIRS7L_YtNdG_zPSkWbN_7Yv8nTAytZIkMIPb12-aRAIZLKc896zugKuF1r10QMsyqOhcfB-YPHRpmmcfl3byqutdT7h20p7Jhq_lSB"}]
+    # cookies = [{"domain":"www.teenytaboo.com","expirationDate":1769450908,"hostOnly":true,"httpOnly":false,"name":"warn","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"true"},{"domain":"www.teenytaboo.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"ia4krmqdolmj0vo06sqk81p9vb"},{"domain":"www.teenytaboo.com","hostOnly":true,"httpOnly":true,"name":"e1n3md44JfuLO8Ar","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"AQAAU4KAj8Zk0Y5Zp8mdmjCctYx-YcjPuFCGFc2XD5u6-JcWflppAAAAAAC-AQBi47N5_suCz76xT0RDrkPKmgAA8Im8A05b1B4HB0r4FetCLQwOH1Z0XYDym8ruXQivlw_XKw9b6OWNU9RH64gVTDkRkh03CJtE0-HLr_WUKJdu13kgZ-UP-u2sxHzc6pr0-9dnYNvoeH-Up0ROFLl8Nu-L6gll0p30hu_TsI7mD00T6uILxfSeZjBzhFLlbry10vclXpqAgyKPjyrZq-IOT4Cmgp63Y1KAREA-hiDS2FbPNSCMJq1OnrGTxlsYpKFOlItxAXtk3NSgBSRd6L8FAqv3LGrNoQ_o8c1ZwAsXw8rkE15Ughf5ZTjRXrxYOEEcxu7BN68W9goUTyEwoA6nsF9MHhiTp3_94MusgZnB_U7Pc1iOmFYRmPFmyrqLWtMZjn9J5rSTHFbQsKWYw8seqSVFRms05W0N3rtXDTztwJWbHkcPPrufsOWVL-k11ofz3HpIKDQQMjSIwsM4GSkiADcM4VlaX7dgaUVb5dQPU5Fg"}]
 
     selector_map = {
         'title': '//h1[contains(@class, "customhcolor")]/text()',
@@ -68,14 +68,14 @@ class SieTeenyTabooSpider(BaseSceneScraper):
         meta['playwright'] = True
 
         for link in self.start_urls:
-            yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta)
+            yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta, cookies=self.cookies)
 
     def get_scenes(self, response):
         scenes = response.xpath('//div[contains(@class,"videoimg_wrapper")]/a/@href').getall()
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
                 url=self.format_link(response, scene)
-                yield scrapy.Request(url, callback=self.parse_scene)
+                yield scrapy.Request(url, callback=self.parse_scene, dont_filter=True, meta=response.meta)
 
     def get_title(self, response):
         title = super().get_title(response)
@@ -84,6 +84,9 @@ class SieTeenyTabooSpider(BaseSceneScraper):
     def get_tags(self, response):
         tags = response.xpath('//h4[contains(@class, "customhcolor")]/text()')
         if tags:
-            tags = tags.get().split(",")
-            return list(map(lambda x: string.capwords(x.strip()), tags))
+            return [
+                string.capwords(tag.strip())
+                for tag in tags.get().split(",")
+                if tag.strip()
+            ]
         return []

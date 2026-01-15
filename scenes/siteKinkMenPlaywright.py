@@ -37,19 +37,17 @@ class NetworkKinkMenSpider(BaseSceneScraper):
     # ~ }
 
     selector_map = {
-        'title': '//h1/text()',
-        'description': '//span[contains(text(), "Description")]/following-sibling::span[1]/p/text()',
-        'date': '//script[contains(text(), "KinkyTracking.all")]/text()',
-        're_date': r'(\d{4}-\d{2}-\d{2})',
-        'image': '//div[contains(@class, "kvjs-container")]/@data-setup',
-        're_image': r'thumbnailUrl.*?(http.*?)[\'\"]',
-        'performers': '//h1/following-sibling::span[1]/a/text()',
-        'tags': '//p[contains(text(), "Categories")]/following-sibling::span[1]/a/text()',
-        'director': '//p[contains(text(), "Director")]/following-sibling::p[1]/span/a/text()',
-        'duration': '//span[contains(@class, "clock")]/text()',
+        'title': '//title/text()',
+        'description': '//span[contains(text(), "Description:")]/following-sibling::span[1]//text()',
+        'date': '//div[contains(@class,"shoot-detail-legend")]/span[@class="text-muted" and contains(text(), ",")]/text()',
+        'image': '//meta[@name="twitter:image"]/@content|//video/@poster|//a[contains(@class, "ratio-poster")]/img/@src',
+        'duration': '//span[@class="clock"]/text()',
+        'performers': '//p[@class="starring"]/span/a/text()|//span[contains(@class, "text-primary fs-5")]/a[contains(@href, "/model/")]/text()',
+        # ~ 'tags': '//a[@class="tag"]/text()|//h4[contains(text(), "Categories")]/following-sibling::span[1]/a/text()',
+        'tags': '//div[contains(@class, "shoot-detail-description")]//a[contains(@href, "/tag/")]/text()',
         'external_id': r'/shoot/(\d+)',
-        'trailer': '//div[contains(@class, "kvjs-container")]/@data-setup',
-        're_trailer': r'thumbnailUrl.*?[\'\"]url[\'\"].*?(http.*?)[\'\"]',
+        'trailer': '//meta[@name="twitter:player"]/@content|//div[contains(@class,"kvjs-container")]/@data-setup',
+        're_trailer': r'trailer.*?quality.*?(http.*?)[\'\"]',
         'pagination': '/shoots/latest?page=%s'
     }
 
@@ -177,6 +175,8 @@ class NetworkKinkMenSpider(BaseSceneScraper):
             item['tags'] = response.meta['tags']
         else:
             item['tags'] = self.get_tags(response)
+
+        item['tags'] = sorted(tag for tag in item['tags'] if tag)
 
         if 'markers' in response.meta:
             item['markers'] = response.meta['markers']

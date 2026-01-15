@@ -75,6 +75,11 @@ class MovieExcaliburFilmsSpider(BaseSceneScraper):
             image = f"{image.group(1)}-b{image.group(2)}"
             return image
         return ""
+    
+    def get_performers(self, response):
+        performers = super().get_performers(response)
+        print(performers)
+        return performers
 
     def get_duration(self, response):
         duration = response.xpath('//h1/following-sibling::table[1]//font[contains(text(), "Run Time:")]/following-sibling::font[1]/text()')

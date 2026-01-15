@@ -23,7 +23,7 @@ class SiteIWantClipsSpecificSpider(BaseSceneScraper):
     }
 
     def get_next_page_url(self, base, page):
-        return f"https://iwantclips.com/store/697092/Marceline-Leigh?page={page}"
+        return f"https://iwantclips.com/store/1207092/Alissa-Ryan?page={page}"
 
     def start_requests(self):
         page = int(self.page) - 1

@@ -18,6 +18,7 @@ class NetworkKinkSpider(BaseSceneScraper):
         # ~ '/search?type=shoots&sort=published&thirdParty=true&page=%s',
         # ~ '/shoots?channelIds=behindkink&thirdParty=false&sort=published&page=%s',
         # ~ '/shoots?channelIds=boundgangbangs&thirdParty=false&sort=published&page=%s',
+        # '/shoots?channelIds=filthyfemdom&thirdParty=true&sort=published&page=%s',
     ]
 
     headers = {
@@ -181,7 +182,7 @@ class NetworkKinkSpider(BaseSceneScraper):
         item['image'] = self.get_image(response)
         if item['image']:
             if (not force_update or (force_update and "image" in force_fields)) and (not local_run or (local_run and show_blob)):
-                item['image_blob'] = self.get_image_blob(item['image'])
+                item['image_blob'] = self.get_image_blob_from_link(item['image'])
             if "&amp" in item['image']:
                 item['image'] = re.search(r'(.*?)\&amp', item['image']).group(1)
             if "&s" in item['image']:

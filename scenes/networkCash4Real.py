@@ -84,6 +84,6 @@ class NetworkCash4RealSpider(BaseSceneScraper):
     def get_image_blob_from_link(self, image):
         if image:
             req = Http.get(image, headers=self.headers, cookies=self.cookies, verify=False)
-            if req and req.ok:
+            if req and req.status_code == 200:
                 return base64.b64encode(req.content).decode('utf-8')
         return None

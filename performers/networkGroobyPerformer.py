@@ -1,3 +1,4 @@
+import re
 from tpdb.BasePerformerScraper import BasePerformerScraper
 from tpdb.items import PerformerItem
 
@@ -45,20 +46,28 @@ class NetworkGroobyPerformerSpider(BasePerformerScraper):
         return self.format_url(base, pagination % page)
 
     def get_performers(self, response):
-        performers = response.xpath('//div[@class="model"]|//div[@class="model "]')
+        performers = response.xpath('//div[@class="model" or @class="model "]')
         for performer in performers:
             item = PerformerItem()
 
             name = performer.xpath('./h4/a/text()').get()
             item['name'] = self.cleanup_title(name)
-            image =  performer.xpath('.//img/@src|.//img/@src0_2x')
-            item['image'] = self.format_link(response, image.get())
-            item['image_blob'] = self.get_image_blob_from_link(item['image'])
+            image =  performer.xpath('.//img/@src0_3x')
+            if not image:
+                image =  performer.xpath('.//img/@src0_2x')
+            if not image:
+                image = performer.xpath('.//img/@src')
+            if image:
+                item['image'] = self.format_link(response, image.get())
+                item['image_blob'] = self.get_image_blob_from_link(item['image'])
+            else:
+                item['image'] = ''
+                item['image_blob'] = ''
             item['bio'] = ''
             if "futa" in response.url:
                 item['gender'] = ''
             else:
-                item['gender'] = 'Trans'
+                item['gender'] = 'Transgender Female'
             item['astrology'] = ''
             item['birthday'] = ''
             item['birthplace'] = ''
@@ -75,5 +84,8 @@ class NetworkGroobyPerformerSpider(BasePerformerScraper):
             item['weight'] = ''
             item['network'] = 'Grooby'
             item['url'] = self.format_link(response, performer.xpath('./h4/a/@href').get())
-
+            perf_url_segment = re.search(r'.*/(.*?)\.htm', item['url'])
+            perf_id = re.search(r'(\d+)', perf_url_segment.group(1))
+            if perf_id:
+                item['name'] = f"{item['name']} {perf_id.group(1)}"
             yield item

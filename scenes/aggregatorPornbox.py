@@ -54,7 +54,9 @@ class PornboxSingleSiteSpider(BaseSceneScraper):
         # ~ {'studio': 1547, 'site': 'Novinhosdaimperium'},
         # ~ {'studio': 11257, 'site': 'Gaelbrandao'},
         # ~ {'studio': 2826, 'site': 'Daisymelanin00'},
-        {'studio': 996, 'site': 'TedOficial'},
+        # {'studio': 996, 'site': 'TedOficial'},
+        # {'studio': 460, 'site': 'RichardMannsWorld'},
+        {'studio': 1184, 'site': 'Jayblak'},
     ]
 
     content_json_url = 'https://pornbox.com/contents/%s'

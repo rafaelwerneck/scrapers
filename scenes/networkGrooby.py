@@ -241,3 +241,32 @@ class NetworkGroobySpider(BaseSceneScraper):
         if trailer:
             return trailer
         return None
+
+    def get_performers(self, response):
+        performers = []
+        perflist = response.xpath('//div[@class="trailerpage_info" or @class="trailer_videoinfo"]//a[contains(@href, "/models/")]')
+        if perflist:
+            for perf in perflist:
+                performer = perf.xpath('.//text()').get()
+                perf_url = perf.xpath('.//@href').get()
+                perf_url = re.search(r'.*/(.*?)\.htm', perf_url)
+                if perf_url:
+                    perf_url = perf_url.group(1)
+                    perf_id = re.search(r'(\d+)', perf_url)
+                    if perf_id:
+                        perf_id = perf_id.group(1)
+                        performer = f"{performer} {perf_id}"
+                performers.append(string.capwords(self.cleanup_text(performer.strip())))
+        return performers
+    
+    def get_performers_data(self, response):
+        performers = self.get_performers(response)
+        performers_data = []
+        for performer in performers:
+            performer_data = {}
+            performer_data['name'] = performer.strip()
+            performer_data['site'] = "Grooby"
+            performer_data['extra'] = {}
+            performer_data['extra']['gender'] = "Transgender Female"
+            performers_data.append(performer_data)
+        return performers_data

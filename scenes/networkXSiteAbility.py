@@ -11,50 +11,50 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
     cookies = [{"name": "ageVerified", "value": "true"}]
 
     start_urls = [
-        # ~ ['https://rachel-steele.com', '/x-new/new-preview-list.php?page=%s&user=rachel-steele', 'Rachel Steele'],
-        # ~ ['https://4tomiko.com', '/x-new/new-preview-list.php?page=%s&user=4tomiko.com', '4Tomiko'],
-        # ~ ['https://sandrasilvers.com', '/x-new/new-preview-list.php?page=%s&user=', 'Sandra Silvers'],
-        # ['https://officeperils.com', '/x-new/new-preview-list.php?page=%s&user=officeperils.com', 'Office Perils'],
+        ['https://rachel-steele.com', '/x-new/new-preview-list.php?page=%s&user=rachel-steele', 'Rachel Steele'],
+        ['https://4tomiko.com', '/x-new/new-preview-list.php?page=%s&user=4tomiko.com', '4Tomiko'],
+        ['https://sandrasilvers.com', '/x-new/new-preview-list.php?page=%s&user=', 'Sandra Silvers'],
+        ['https://officeperils.com', '/x-new/new-preview-list.php?page=%s&user=officeperils.com', 'Office Perils'],
         ['https://ericarossbound.com', '/x-new/new-preview-grid.php?page=%s&user=ericarossbound.com', 'Erica Ross Bound'],
-        # ~ ['https://gndbondage.com', '/x-new/new-preview-list.php?page=%s&user=gndbondage.com', 'Girls Next Door Bondage'],
-        # ~ ['https://sereneisley.com', '/x-new/new-preview-list.php?page=%s&user=sereneisley.com', 'Serene Isley'],
-        # ~ ['https://www.nyxonsbondagefiles.com', '/x-new/new-preview-list.php?page=%s&user=nyxonsbondagefiles', 'Nyxons Bondage Files'],
-        # ~ ['https://xsiteability.com', '/x-new/new-preview-list.php?page=%s&user=bedroombondage', 'Loreleis Bedroom Bondage'],
-        # ~ ['https://milfgigi.com', '/x-new/new-preview-list.php?page=%s&user=milfgigi.com', 'MILF Gigi'],
-        # ~ ['https://brendasbound.com', '/x-new/new-preview-list.php?page=%s&user=brendasbound.com', 'Brendas Bound'],
-        # ~ ['https://misswhitneymorgan.com', '/x-new/new-preview-list.php?page=%s&user=misswhitneymorgan.com', 'Miss Whitney Morgan'],
-        # ~ ['https://leagueofamazingwomen.com', '/x-new/new-preview-list.php?page=%s&user=leagueofamazingwomen.com', 'League of Amazing Women'],
-        # ~ ['https://maidensinmayhem.com', '/x-new/new-preview-list.php?page=%s&user=maidensinmayhem.com', 'Maidens in Mayhem'],
-        # ~ ['https://lewrubens.com', '/x-new/new-preview-list.php?page=%s&user=lewrubens.com', 'Lew Rubens'],
-        # ~ ['https://jimhunterslair.com', '/x-new/new-preview-list.php?page=%s&user=jimhunterslair.com', 'Jim Hunters Lair'],
-        # ~ ['https://laurenkiley.com', '/x-new/new-preview-list.php?page=%s&user=laurenkiley.com', 'Lauren Kiley'],
-        # ~ ['https://ivanboulder.com', '/x-new/new-preview-list.php?page=%s&user=ivanboulder.com', 'Ivan Boulder'],
-        # ~ ['https://cinchedandsecured.com', '/x-new/new-preview-list.php?page=%s&user=cinchedandsecured.com', 'Cinched and Secured'],
-        # ~ ['https://tiedinheels.com', '/x-new/new-preview-list.php?page=%s&user=tiedinheels.com', 'Tied in Heels'],
-        # ~ ['https://faythonfire.com', '/x-new/new-preview-list.php?page=%s&user=faythonfire.com', 'Fayth on Fire'],
-        # ~ ['https://sydneyscreams4u.com', '/x-new/new-preview-list.php?page=%s&user=sydneyscreams4u.com', 'Sydney Screams 4U'],
-        # ~ ['https://ogres-world.com', '/x-new/new-preview-list.php?page=%s&user=ogres-world.com', 'Vivienne Velvet'],
-        # ~ ['https://jackiebound.com', '/x-new/new-preview-list.php?page=%s&user=jackiebound.com', 'Jackie Bound'],
-        # ~ ['https://christinasapphire.com', '/x-new/new-preview-list.php?page=%s&user=christinasapphire.com', 'Christina Sapphire'],
-        # ~ ['https://captivechrissymarie.com', '/x-new/new-preview-list.php?page=%s&user=captivechrissymarie.com', 'Captive Chrissy Marie'],
-        # ~ ['https://xsiteability.com', '/x-new/new-preview-list.php?page=%s&user=kaeciejames', 'Kaecie James'],
-        # ~ ['https://desperatepleasures.com', '/x-new/new-preview-list.php?page=%s&user=desperatepleasures.com', 'Desperate Pleasures'],
-        # ~ ['https://ajmarion.com', '/x-new/new-preview-list.php?page=%s&user=ajmarion.com', 'AJ Marion'],
-        # ~ ['https://leggybondage.com', '/x-new/new-preview-list.php?page=%s&user=leggybondage.com', 'Leggy Bondage'],
-        # ~ ['https://bbwbound.com', '/x-new/new-preview-list.php?page=%s&user=bbwbound.com', 'BBW Bound'],
-        # ~ ['https://www.oldschoolbondage.com', '/x-new/new-preview-list.php?page=%s&user=www.oldschoolbondage.com', 'Old School Bondage'],
-        # ~ ['https://hosednhelpless.com', '/x-new/new-preview-list.php?page=%s&user=hosednhelpless.com', 'Hosed and Helpless'],
-        # ~ ['https://dpstonefetish.com', '/x-new/new-preview-list.php?page=%s&user=dpstonefetish.com', 'DP Stone Fetish'],
-        # ~ ['https://www.caroline-pierce.com', '/x-new/new-preview-list.php?page=%s&user=www.caroline-pierce.com', 'Caroline Pierce'],
-        # ~ ['https://collegecaptures.com', '/x-new/new-preview-list.php?page=%s&user=collegecaptures.com', 'College Captures'],
-        # ~ ['https://lynnwinters.com', '/x-new/new-preview-list.php?page=%s&user=lynnwinters.com', 'Lynn Winters'],
-        # ~ ['https://thelunadawn.com', '/x-new/new-preview-list.php?page=%s&user=thelunadawn.com', 'Luna Dawn'],
-        # ~ ['https://bondagedownsouth.com', '/x-new/new-preview-list.php?page=%s&user=bondagedownsouth.com', 'Bondage Down South'],
-        # ~ ['https://lisaharlotte.com', '/x-new/new-preview-list.php?page=%s&user=lisaharlotte.com', 'Lisa Harlotte'],
-        # ~ ['https://wrappedinbondage.com', '/x-new/new-preview-list.php?page=%s&user=wrappedinbondage.com', 'Wrapped in Bondage'],
-        # ~ ['https://ticklerotic.com', '/x-new/new-preview-list.php?page=%s&user=ticklerotic.com', 'Ticklerotic'],
-        # ~ ['https://bondagecrossdresser.com', '/x-new/new-preview-list.php?page=%s&user=bondagecrossdresser.com', 'Bondage Crossdresser'],
-        # ~ ['https://stellalibertyvideos.com', '/x-new/new-preview-list.php?page=%s&user=stellalibertyvideos.com', 'Stella Liberty'],
+        ['https://gndbondage.com', '/x-new/new-preview-list.php?page=%s&user=gndbondage.com', 'Girls Next Door Bondage'],
+        ['https://sereneisley.com', '/x-new/new-preview-list.php?page=%s&user=sereneisley.com', 'Serene Isley'],
+        ['https://www.nyxonsbondagefiles.com', '/x-new/new-preview-list.php?page=%s&user=nyxonsbondagefiles', 'Nyxons Bondage Files'],
+        ['https://xsiteability.com', '/x-new/new-preview-list.php?page=%s&user=bedroombondage', 'Loreleis Bedroom Bondage'],
+        ['https://milfgigi.com', '/x-new/new-preview-list.php?page=%s&user=milfgigi.com', 'MILF Gigi'],
+        ['https://brendasbound.com', '/x-new/new-preview-list.php?page=%s&user=brendasbound.com', 'Brendas Bound'],
+        ['https://misswhitneymorgan.com', '/x-new/new-preview-list.php?page=%s&user=misswhitneymorgan.com', 'Miss Whitney Morgan'],
+        ['https://leagueofamazingwomen.com', '/x-new/new-preview-list.php?page=%s&user=leagueofamazingwomen.com', 'League of Amazing Women'],
+        ['https://maidensinmayhem.com', '/x-new/new-preview-list.php?page=%s&user=maidensinmayhem.com', 'Maidens in Mayhem'],
+        ['https://lewrubens.com', '/x-new/new-preview-list.php?page=%s&user=lewrubens.com', 'Lew Rubens'],
+        ['https://jimhunterslair.com', '/x-new/new-preview-list.php?page=%s&user=jimhunterslair.com', 'Jim Hunters Lair'],
+        ['https://laurenkiley.com', '/x-new/new-preview-list.php?page=%s&user=laurenkiley.com', 'Lauren Kiley'],
+        ['https://ivanboulder.com', '/x-new/new-preview-list.php?page=%s&user=ivanboulder.com', 'Ivan Boulder'],
+        ['https://cinchedandsecured.com', '/x-new/new-preview-list.php?page=%s&user=cinchedandsecured.com', 'Cinched and Secured'],
+        ['https://tiedinheels.com', '/x-new/new-preview-list.php?page=%s&user=tiedinheels.com', 'Tied in Heels'],
+        ['https://faythonfire.com', '/x-new/new-preview-list.php?page=%s&user=faythonfire.com', 'Fayth on Fire'],
+        ['https://sydneyscreams4u.com', '/x-new/new-preview-list.php?page=%s&user=sydneyscreams4u.com', 'Sydney Screams 4U'],
+        ['https://ogres-world.com', '/x-new/new-preview-list.php?page=%s&user=ogres-world.com', 'Vivienne Velvet'],
+        ['https://jackiebound.com', '/x-new/new-preview-list.php?page=%s&user=jackiebound.com', 'Jackie Bound'],
+        ['https://christinasapphire.com', '/x-new/new-preview-list.php?page=%s&user=christinasapphire.com', 'Christina Sapphire'],
+        ['https://captivechrissymarie.com', '/x-new/new-preview-list.php?page=%s&user=captivechrissymarie.com', 'Captive Chrissy Marie'],
+        ['https://xsiteability.com', '/x-new/new-preview-list.php?page=%s&user=kaeciejames', 'Kaecie James'],
+        ['https://desperatepleasures.com', '/x-new/new-preview-list.php?page=%s&user=desperatepleasures.com', 'Desperate Pleasures'],
+        ['https://ajmarion.com', '/x-new/new-preview-list.php?page=%s&user=ajmarion.com', 'AJ Marion'],
+        ['https://leggybondage.com', '/x-new/new-preview-list.php?page=%s&user=leggybondage.com', 'Leggy Bondage'],
+        ['https://bbwbound.com', '/x-new/new-preview-list.php?page=%s&user=bbwbound.com', 'BBW Bound'],
+        ['https://www.oldschoolbondage.com', '/x-new/new-preview-list.php?page=%s&user=www.oldschoolbondage.com', 'Old School Bondage'],
+        ['https://hosednhelpless.com', '/x-new/new-preview-list.php?page=%s&user=hosednhelpless.com', 'Hosed and Helpless'],
+        ['https://dpstonefetish.com', '/x-new/new-preview-list.php?page=%s&user=dpstonefetish.com', 'DP Stone Fetish'],
+        ['https://www.caroline-pierce.com', '/x-new/new-preview-list.php?page=%s&user=www.caroline-pierce.com', 'Caroline Pierce'],
+        ['https://collegecaptures.com', '/x-new/new-preview-list.php?page=%s&user=collegecaptures.com', 'College Captures'],
+        ['https://lynnwinters.com', '/x-new/new-preview-list.php?page=%s&user=lynnwinters.com', 'Lynn Winters'],
+        ['https://thelunadawn.com', '/x-new/new-preview-list.php?page=%s&user=thelunadawn.com', 'Luna Dawn'],
+        ['https://bondagedownsouth.com', '/x-new/new-preview-list.php?page=%s&user=bondagedownsouth.com', 'Bondage Down South'],
+        ['https://lisaharlotte.com', '/x-new/new-preview-list.php?page=%s&user=lisaharlotte.com', 'Lisa Harlotte'],
+        ['https://wrappedinbondage.com', '/x-new/new-preview-list.php?page=%s&user=wrappedinbondage.com', 'Wrapped in Bondage'],
+        ['https://ticklerotic.com', '/x-new/new-preview-list.php?page=%s&user=ticklerotic.com', 'Ticklerotic'],
+        ['https://bondagecrossdresser.com', '/x-new/new-preview-list.php?page=%s&user=bondagecrossdresser.com', 'Bondage Crossdresser'],
+        ['https://stellalibertyvideos.com', '/x-new/new-preview-list.php?page=%s&user=stellalibertyvideos.com', 'Stella Liberty'],
     ]
 
     selector_map = {
@@ -139,7 +139,13 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
                 item['image'] = None
                 item['id'] = None
 
-            item['image_blob'] = self.get_image_blob_from_link(item['image'])
+            if item['id'] in response.url:
+                item['id'] = re.search(r'setid=(\d+)', item['url']).group(1)
+                if item['image'][-1] == "/":
+                    item['image'] = ""
+
+            if item['image']:
+                item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
             if meta['site'] == "Brendas Bound":
                 description = scene.xpath('.//span[contains(@style,"font-size: medium;")]/em/text()')

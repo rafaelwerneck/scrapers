@@ -74,7 +74,41 @@ class NetworkManyVidsV2_14Spider(BaseSceneScraper):
         ['Manyvids: Luna Lovelace', True, '1004796137'],
         ['Manyvids: Finny Fox', True, '1002809912'],
         ['Manyvids: itsloMFC', True, '1004392633'],
-        # ['Manyvids: ', True, ''],
+        ['Manyvids: Purosanguelucas', True, '1008810280'],
+        ['Manyvids: Bigbootyandbeast10', False, '1005196355'],
+        ['Manyvids: Jason Sweets', True, '1003620057'],
+        ['Manyvids: Realpollypocket', True, '1004466870'],
+        ['Manyvids: DCTrousersnakeXXX', True, '1007921628'],
+        ['Manyvids: SLOPPY TEENS', False, '1001672444'],
+        ['Manyvids: JuliaGoddess', True, '1004111161'],
+        ['Manyvids: Daddys Sluts', False, '1000706151'],
+        ['Manyvids: Stacy Pipedream', True, '1010240085'],
+        ['Manyvids: Sloppy Teens', False, '1001672444'],
+        ['Manyvids: Tony Rubino', True, '1001000668'],
+        ['Manyvids: Fiona Mommy', True, '1008644744'],
+        ['Manyvids: Divinebabe', True, '1005206763'],
+        ['Manyvids: Rissa Rae', True, '1004234102'],
+        ['Manyvids: Zoweybunny', True, '1009373839'],
+        ['Manyvids: Glitterqueen1999', True, '1004246725'],
+        ['Manyvids: Naughty Jemm', True, '1008504515'],
+        ['Manyvids: Loreena Fox', True, '1008025324'],
+        ['Manyvids: Ivy Wild', True, '1003824516'],
+        ['Manyvids: Harley Taboo', True, '1006671930'],
+        ['Manyvids: Kylee Nash', True, '131433'],
+        ['Manyvids: CALAMITYSHERE', True, '1006561636'],
+        ['Manyvids: Vince Karter', True, '1000948867'],
+        ['Manyvids: PerfectStrokeMD', False, '1009761021'],
+        ['Manyvids: Alex Adams Media', False, '1000176068'],
+        ['Manyvids: Jennathestarr', False, '1005508934'],
+        ['Manyvids: Melztube', True, '1007038073'],
+        ['Manyvids: Chastity Charli', True, '1007978676'],
+        ['Manyvids: Lexi Lela', True, '1004755812'],
+        ['Manyvids: Skye Blue', True, '1000165264'],
+        ['Manyvids: Trans Focus', True, '696072'],
+        ['Manyvids: Kaethebrat', True, '1004999403'],
+        ['Manyvids: GiGiLysettee', True, '1010538705'],
+        ['Manyvids: Max Cartel', True, '1005746289'],
+        ['Manyvids: Savannah Bond', True, '1002594101'],
         # ['Manyvids: ', True, ''],
         # ['Manyvids: ', True, ''],
         # ['Manyvids: ', True, ''],
@@ -173,6 +207,8 @@ class NetworkManyVidsV2_14Spider(BaseSceneScraper):
                 return ['Brandi Babes']
             if "Gogofukmexxx" in meta['site']:
                 return ['Gogo Fukme']
+            if "Jennathestarr" in meta['site']:
+                return ['Jenna Starr']
             if "FreyaJade" in meta['site']:
                 return ['Freya Jade']
             if "420SexTime" in meta['site']:
@@ -191,6 +227,8 @@ class NetworkManyVidsV2_14Spider(BaseSceneScraper):
                 return ['Omanko Vivi']
             if "RhiannonRyder1995" in meta['site']:
                 return ['Rhiannon Ryder']
+            if "Bigbootyandbeast10" in meta['site']:
+                return ['Hotwife Peaches', 'Big Danny']
             if "Kiittenymph" in meta['site']:
                 return ['Lex Kiittenymph']
             if "Misscjmiles" in meta['site']:

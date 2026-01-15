@@ -11,72 +11,71 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 
 class SiteMFVideoXXXSpider(BaseSceneScraper):
     name = 'MFVideoXXX'
+    site = 'MF Video'
+    network = 'MF Video'
+    parent = 'MF Video'
 
     start_urls = [
         'https://www.mfvideoxxx.com',
     ]
 
     selector_map = {
+        'title': '//h1/text()',
+        'description': '//div[@class="entry-content"]/p[not(script)]//text()',
+        'image': '//video/@poster',
+        'performers': '//h6[contains(text(), "Models")]/a/text()',
+        'tags': '',
         'external_id': r'',
-        'pagination': '/index.php/wp-json/wp/v2/posts?page=%s&per_page=20',
+        'pagination': '/new-videos/page/%s',
         'type': 'Scene',
     }
 
-    def start_requests(self):
-        tagdata = []
-        for i in range(1, 10):
-            req = requests.get(f'https://mfvideoxxx.com/index.php/wp-json/wp/v2/tags?per_page=100&page={str(i)}')
-            if req and len(req.text) > 5:
-                tagtemp = []
-                tagtemp = json.loads(req.text)
-                tagdata = tagdata + tagtemp
-            else:
-                break
-
-        for link in self.start_urls:
-            yield scrapy.Request(url=self.get_next_page_url(link, self.page),
-                                 callback=self.parse,
-                                 meta={'page': self.page, 'tagdata': tagdata},
-                                 headers=self.headers,
-                                 cookies=self.cookies)
-
     def get_scenes(self, response):
         meta = response.meta
-        jsondata = json.loads(response.text)
-        for scene in jsondata:
-            item = self.init_scene()
+        scenes = response.xpath('//article')
+        for scene in scenes:
+            scenedate = scene.xpath('.//time[contains(@class, "published")]/@datetime').get()
+            if scenedate:
+                meta['date'] = self.parse_date(scenedate).strftime('%Y-%m-%d')
+            
+            sceneitem = scene.xpath('./@id').get()
+            if sceneitem:
+                meta['id'] = re.search(r'post-(\d+)', sceneitem).group(1)
 
-            desc_block = scene['content']['rendered']
-            desc_block = html.unescape(desc_block)
-            desc_block = desc_block.replace("\\", "")
+            scene = scene.xpath('./div[1]/a/@href').get()
 
-            item['trailer'] = ""
+            if meta['id'] and self.check_item(meta, self.days):
+                yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
 
-            item['id'] = str(scene['id'])
-            item['date'] = re.search(r'(\d{4}-\d{2}-\d{2})', scene['date']).group(1)
-            item['title'] = unidecode.unidecode(html.unescape(re.sub('<[^<]+?>', '', scene['title']['rendered'])).strip())
-            item['title'] = re.sub(r'[^a-zA-Z0-9 \-&]', '', item['title'].replace("FRESH & NEW!", "").replace("NEW!", "")).strip()
-            item['title'] = self.cleanup_title(item['title'])
+    def get_duration(self, response):
+        duration = response.xpath('//div[@class="column2"]//b[contains(text(), "inutes")]/text()')
+        if duration:
+            duration = re.search(r'(\d+)', duration.get())
+            if duration:
+                return str(int(duration.group(1)) * 60)
+        return ""
 
-            item['description'] = unidecode.unidecode(html.unescape(re.sub('<[^<]+?>', '', scene['excerpt']['rendered'])).strip())
-            if "Please purchase" in item['description'] or "To purchase" in item['description']:
-                item['description'] = ''
-            for tag_id in scene['tags']:
-                for tag in meta['tagdata']:
-                    if tag['id'] == tag_id:
-                        item['tags'].append(string.capwords(tag['name']))
-
-            item['site'] = 'MFVideoXXX'
-            item['parent'] = 'MFVideoXXX'
-            item['network'] = 'MFVideoXXX'
-            item['url'] = scene['link']
-
-            sel = Selector(text=scene['content']['rendered'])
-            image = sel.xpath('//img[contains(@src, "thumbnail")]/@src')
+    def get_image(self, response):
+        image = super().get_image(response)
+        if not image or image in response.url:
+            image = response.xpath('//meta[@property="og:image"]/@content')
             if image:
-                item['image'] = self.format_link(response, image.get())
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                return image.get()
+            else:
+                return ""
+        return image
 
-            meta['item'] = item.copy()
-            if 5 in scene['categories']:
-                yield self.check_item(item, self.days)
+    def get_performers_data(self, response):
+        performers = super().get_performers(response)
+        performers_data = []
+        for performer in performers:
+            performer = string.capwords(performer.strip())
+            performer_extra = {}
+            performer_extra['name'] = performer
+            performer_extra['site'] = "MF Video"
+            performer_extra['extra'] = {}
+            performer_extra['extra']['gender'] = "Female"
+            performers_data.append(performer_extra)
+
+        return performers_data
+    

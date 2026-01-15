@@ -60,7 +60,7 @@ class NetworkItsPOVSpider(BaseSceneScraper):
             meta = {}
             meta['page'] = self.page
             meta['pagination'] = pagination
-            meta['check_date'] = "2023-10-03"
+            meta['check_date'] = "2023-10-01"
             url = self.get_next_page_url(response.url, meta['page'], meta['pagination'])
             yield scrapy.Request(url, method='POST', callback=self.get_scenes, meta=meta, headers=self.headers, cookies=self.cookies)
 

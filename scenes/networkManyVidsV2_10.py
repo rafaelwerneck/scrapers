@@ -71,7 +71,7 @@ class NetworkManyVidsV2_10Spider(BaseSceneScraper):
         ['Manyvids: Olivia Young', True, '149290'],
         ['Manyvids: OmankoVivi', False, '217682'],
         ['Manyvids: Ondrea Lee', True, '1000452244'],
-        ['Manyvids: OnlyMikeWilliams', True, '1006548979'],
+        ['Manyvids: OnlyMikeWilliams', True, '1006548979', 'Vertical'],
         ['Manyvids: OnlyOneRhonda', True, '1002756755'],
         ['Manyvids: Onlyping', True, '1006754211'],
         ['Manyvids: oopepperoo', True, '83782'],

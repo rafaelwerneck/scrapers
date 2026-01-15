@@ -33,7 +33,15 @@ class SiteClips4Sale_4Spider(BaseSceneScraper):
         ['Clips4Sale', 'Clips4Sale: Kink Haven', 'Clips4Sale: Kink Haven', '249321', 'kink-haven'],
         ['Clips4Sale', 'Clips4Sale: Miss Lin', 'Clips4Sale: Miss Lin', '385583', 'miss-lin'],
         ['Clips4Sale', 'Clips4Sale: Skull Candy Bri Bondage', 'Clips4Sale: Skull Candy Bri Bondage', '158575', 'Skull_Candy_Bri_Bondage'],
-        # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
+        ['Clips4Sale', 'Clips4Sale: WHCS Food Crush by Chinese Goddess', 'Clips4Sale: WHCS Food Crush by Chinese Goddess', '114006', 'whcs-food-crush-by-chinese-goddess'],
+        ['Clips4Sale', 'Clips4Sale: UKCuteGirl', 'Clips4Sale: UKCuteGirl', '126755', 'ukcutegirl'],
+        ['Clips4Sale', 'Clips4Sale: MissKsiaBB', 'Clips4Sale: MissKsiaBB', '235199', 'missksiabb'],
+        ['Clips4Sale', 'Clips4Sale: Dame Olgas Fetish Clips', 'Clips4Sale: Dame Olgas Fetish Clips', '98797', 'dame-olgas-fetish-clips'],
+        ['Clips4Sale', 'Clips4Sale: Diamondly Bound', 'Clips4Sale: Diamondly Bound', '136777', 'diamondly-bound'],
+        ['Clips4Sale', 'Clips4Sale: Cali Logans Bondage Boutique', 'Clips4Sale: Cali Logans Bondage Boutique', '93317', 'cali-logans-bondage-boutique'],
+        ['Clips4Sale', 'Clips4Sale: Bondage Agency', 'Clips4Sale: Bondage Agency', '171829', 'bondageagency'],
+        ['Clips4Sale', 'Clips4Sale: Mistress Damazonia', 'Clips4Sale: Mistress Damazonia', '143325', 'mistress-damazonia'],
+        ['Clips4Sale', 'Clips4Sale: Parannanza', 'Clips4Sale: Parannanza', '182611', 'parannanza'],
         # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
         # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
         # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
@@ -82,7 +90,6 @@ class SiteClips4Sale_4Spider(BaseSceneScraper):
         return url
 
     def get_scenes(self, response):
-        print(response.url)
         jsondata = response.json()
         jsondata = jsondata['clips']
         for scene in jsondata:
@@ -161,68 +168,70 @@ class SiteClips4Sale_4Spider(BaseSceneScraper):
             return meta['network']
         return tldextract.extract(response.url).domain
 
-def get_performers(self, response):
-    url = response.url.lower()
-    print(url)
-    patterns = {
-        "addie-juniper": "Addie Juniper",
-        "alexa-creed": "Alexa Creed",
-        "alysa-nylon": "Alysa Nylon",
-        "ama-rios-playground": "Ama Rio",
-        "andrea-rosu-s": "Andrea Rosu",
-        "anikafall": "Anika Fall",
-        "annabelle-rogers": "Annabelle Rogers",
-        "asiana-starr-bondage": "Asiana Starr",
-        "astrodomina": "AstroDomina",
-        "bella-bates": "Bella Bates",
-        "bettie-bondage": "Bettie Bondage",
-        "chronicles-of-mlle-fanchette": "Mlle Fanchette",
-        "crystal-knight": "Crystal Knight",
-        "dahlia-fallon": "Dahlia Fallon",
-        "daisys-desires": "Daisy Haze",
-        "darling-kiyomi": "Darling Kiyomi",
-        "divine-goddess-amber": "Divine Goddess Amber",
-        "evansfeet": "Lis Evans",
-        "goddess-alessa": "Goddess Alessa",
-        "goddess-lavey": "Harley LaVey",
-        "goddess-maisha": "Goddess Maisha",
-        "helena-price": "Helena Price",
-        "jenna-hoskins-bondage": "Jenna Hoskins",
-        "lady-angelika": "Lady Angelika",
-        "lilith-last-witch": "Lilith Last Witch",
-        "little-puck-perversions": "Little Puck",
-        "lovehershoes": "Lis Evans",
-        "manda-marx": "Mandy Marx",
-        "marisol-price": "Marisol Price",
-        "mean-wolf": "Meana Wolf",
-        "milf-jan-seduces": "Jan Burton",
-        "milaamorabondage": "Mila Amora",
-        "miss-ruby-greys-clips": "Miss Ruby Grey",
-        "mistress-courtneys-fetish-lair": "Mistress Courtney",
-        "mistress-euryale": "Elis Euryale",
-        "mistress-jessica-starling": "Jessica Starling",
-        "mistress-nikita-femdom": "Mistress Nikita",
-        "natalie-wonder": "Natalie Wonder",
-        "princess-camryn": "Princess Camryn",
-        "princess-sasha-foxxx": "Sasha Foxxx",
-        "sara-saint": "Sara Saint",
-        "scarlettbelle-s-fetish-clips": "Scarlette Belle",
-        "slave247story": "SlaveQ",
-        "stella-liberty": "Stella Liberty",
-        "superior-lana-blade": "Lana Blade",
-        "sylvie-labrae": "Sylvie Labrae",
-        "tamystarly-cbt": "Tamy Starly",
-        "tammie-madison": "Tammie Madison",
-        "tatti-roana": "Tatti Roana",
-        "tgirloneguy": "Kendall Penny",
-        "yes-ms-talia": "Talia Tate",
-        "young-goddess-kim": "Young Goddess Kim",
-        "yvette-xtreme": "Yvette Costeau",
-    }
+    def get_performers(self, response):
+        url = response.url.lower()
+        patterns = {
+            "addie-juniper": "Addie Juniper",
+            "alexa-creed": "Alexa Creed",
+            "alysa-nylon": "Alysa Nylon",
+            "ama-rios-playground": "Ama Rio",
+            "andrea-rosu-s": "Andrea Rosu",
+            "anikafall": "Anika Fall",
+            "annabelle-rogers": "Annabelle Rogers",
+            "asiana-starr-bondage": "Asiana Starr",
+            "astrodomina": "AstroDomina",
+            "bella-bates": "Bella Bates",
+            "bettie-bondage": "Bettie Bondage",
+            "chronicles-of-mlle-fanchette": "Mlle Fanchette",
+            "crystal-knight": "Crystal Knight",
+            "dahlia-fallon": "Dahlia Fallon",
+            "daisys-desires": "Daisy Haze",
+            "dame-olgas-fetish-clips": "Dame Olga",
+            "darling-kiyomi": "Darling Kiyomi",
+            "divine-goddess-amber": "Divine Goddess Amber",
+            "evansfeet": "Lis Evans",
+            "goddess-alessa": "Goddess Alessa",
+            "goddess-lavey": "Harley LaVey",
+            "goddess-maisha": "Goddess Maisha",
+            "helena-price": "Helena Price",
+            "jenna-hoskins-bondage": "Jenna Hoskins",
+            "lady-angelika": "Lady Angelika",
+            "lilith-last-witch": "Lilith Last Witch",
+            "little-puck-perversions": "Little Puck",
+            "lovehershoes": "Lis Evans",
+            "manda-marx": "Mandy Marx",
+            "marisol-price": "Marisol Price",
+            "mean-wolf": "Meana Wolf",
+            "milf-jan-seduces": "Jan Burton",
+            "milaamorabondage": "Mila Amora",
+            "miss-ruby-greys-clips": "Miss Ruby Grey",
+            "missksiabb": "MissKsiaBB",
+            "mistress-courtneys-fetish-lair": "Mistress Courtney",
+            "mistress-euryale": "Elis Euryale",
+            "mistress-jessica-starling": "Jessica Starling",
+            "mistress-nikita-femdom": "Mistress Nikita",
+            "natalie-wonder": "Natalie Wonder",
+            "parannanza": "Parannanza",
+            "princess-camryn": "Princess Camryn",
+            "princess-sasha-foxxx": "Sasha Foxxx",
+            "sara-saint": "Sara Saint",
+            "scarlettbelle-s-fetish-clips": "Scarlette Belle",
+            "slave247story": "SlaveQ",
+            "stella-liberty": "Stella Liberty",
+            "superior-lana-blade": "Lana Blade",
+            "sylvie-labrae": "Sylvie Labrae",
+            "tamystarly-cbt": "Tamy Starly",
+            "tammie-madison": "Tammie Madison",
+            "tatti-roana": "Tatti Roana",
+            "tgirloneguy": "Kendall Penny",
+            "yes-ms-talia": "Talia Tate",
+            "young-goddess-kim": "Young Goddess Kim",
+            "yvette-xtreme": "Yvette Costeau",
+        }
 
-    # Return the first matching performer
-    for key, performer in patterns.items():
-        if key in url:
-            return [performer]
+        # Return the first matching performer
+        for key, performer in patterns.items():
+            if key in url:
+                return [performer]
 
-    return []
+        return []

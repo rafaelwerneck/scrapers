@@ -127,7 +127,7 @@ class SitePornboxSpider(BaseSceneScraper):
         item['network'] = item['site']
         item['parent'] = item['site']
 
-        matches = ['bangbros', 'jeffsmodels', 'private', 'exposedlatinas', 'antoniosuleiman', 'bradmontana', 'richardmannsworld', 'only3xnetwork', 'privateblack', 'pornforce', 'immorallive', 'girlfriendsfilms', 'anal4k', 'majorhotwife',
+        matches = ['bangbros', 'darkkotv', 'jeffsmodels', 'private', 'exposedlatinas', 'antoniosuleiman', 'bradmontana', 'richardmannsworld', 'only3xnetwork', 'privateblack', 'pornforce', 'immorallive', 'girlfriendsfilms', 'anal4k', 'majorhotwife',
                    'hentaied', 'vipissy', 'justanal', 'hussiepass', 'filthykings', 'puffynetwork', 'fit18', 'cuckhunter', 'bruceandmorgan', 'privateclassics', 'seehimfuck', 'filthyfamily', 'ukpornparty', 'jayspov', 'joibabes',
                    'only3xgirls', 'parasited', 'hazeher', 'collegerules', 'abuseme', 'only3xvr', 'justpov', 'girlsgonewild', 'plumperpassstudio', 'only3xlost', 'onlygolddigger', 'wetandpuffy', 'mypervyfamily', 'mykebrazil', 'mylifeinmiami',
                    'claudiamarie', 'rawwhitemeat', 'industryinvaders', 'cockyboys', 'touchmywife', 'blackbullchallenge', 'topwebmodels', 'realsexpass', 'riggsfilms', 'pervfect', 'mollyredwolf', 'bluepillmen', 'blacksonmoms', 'peter\'skingdom',
