@@ -109,7 +109,7 @@ class NetworkManyVidsV2_14Spider(BaseSceneScraper):
         ['Manyvids: GiGiLysettee', True, '1010538705'],
         ['Manyvids: Max Cartel', True, '1005746289'],
         ['Manyvids: Savannah Bond', True, '1002594101'],
-        # ['Manyvids: ', True, ''],
+        ['Manyvids: Melissa Masters', True, '1001581011'],
         # ['Manyvids: ', True, ''],
         # ['Manyvids: ', True, ''],
         # ['Manyvids: ', True, ''],
