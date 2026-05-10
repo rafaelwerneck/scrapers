@@ -26,7 +26,7 @@ class SitePantyJobsSpider(BaseSceneScraper):
         'pagination': '/updates/'
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "https://www.pantyjobs.com/updates/"
         yield scrapy.Request(link, callback=self.get_scenes,
                              meta={'page': self.page},

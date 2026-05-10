@@ -14,7 +14,7 @@ class SiteZFilmzPerformerSpider(BasePerformerScraper):
         'pagination': '/_next/data/<buildID>/models.json?page=%s',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://z-filmz-originals.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

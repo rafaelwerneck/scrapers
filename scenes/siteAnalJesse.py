@@ -16,7 +16,7 @@ class SiteAnalJesseSpider(BaseSceneScraper):
         'pagination': '/_next/data/<buildID>/tags/main.json?slug=main&page=%s&per_page=12'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://analjesse.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

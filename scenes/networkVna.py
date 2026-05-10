@@ -9,41 +9,41 @@ class VnaNetworkSpider(BaseSceneScraper):
     network = 'vna'
 
     start_urls = [
-        'https://www.allanalallthetime.com',    #Rip
-        'https://angelinacastrolive.com',       #Rip
-        'https://www.blownbyrone.com',              #Rip
-        'https://carmenvalentina.com',          #Rip
-        'https://charleechaselive.com',         #Rip
-        'https://foxxedup.com',                 #Rip
+        'https://www.allanalallthetime.com',    
+        'https://angelinacastrolive.com',       
+        'https://www.blownbyrone.com',              
+        'https://carmenvalentina.com',          
+        'https://charleechaselive.com',         
+        'https://foxxedup.com',                 
         'https://fuckedfeet.com',
-        'https://gabbyquinteros.com',           #Rip
-        'https://girlgirlmania.com',            #Rip
-        'https://itscleolive.com',              #Rip
-        'https://jelenajensen.com',             #Rip
-        'https://juliaannlive.com',             #Rip
-        'https://kaylapaigelive.com',           #Rip
-        'https://kendrajames.com',              #Rip
-        'https://kimberleelive.com',            #Rip
-        'https://kink305.com',                  #Rip
-        'https://maggiegreenlive.com',          #Rip
+        'https://gabbyquinteros.com',           
+        'https://girlgirlmania.com',            
+        'https://itscleolive.com',              
+        'https://jelenajensen.com',             
+        'https://juliaannlive.com',             
+        'https://kaylapaigelive.com',           
+        ## 'https://kendrajames.com',              # Site Change
+        'https://kimberleelive.com',            
+        'https://kink305.com',                  
+        'https://maggiegreenlive.com',          
         'https://maxinex.com',
-        'https://nataliastarr.com',             #Rip
-        'https://ninakayy.com',                 #Rip
-        'https://pennypaxlive.com',             #Rip
-        'https://povmania.com',                 #Rip
-        'https://pumaswedexxx.com',             #Rip
-        'https://romemajor.com',                #Rip
-        'https://rubberdoll.net',               #Rip
-        'https://www.samanthagrace.net',            #Rip
-        'https://sarajay.com',                  #Rip
-        'https://sexmywife.com',                #Rip
-        'https://shandafay.com',                #Rip
-        'https://siripornstar.com',             #Rip
-        'https://sophiedeelive.com',            #Rip
-        'https://sunnylanelive.com',            #Rip
-        'https://tashareign.com',               #Rip
-        'https://vnavickie.com',              #Rip
-        'https://vickyathome.com',              #Rip
+        'https://nataliastarr.com',             
+        'https://ninakayy.com',                 
+        'https://pennypaxlive.com',             
+        'https://povmania.com',                 
+        ## 'https://pumaswedexxx.com',             # No longer XXX
+        'https://romemajor.com',                
+        'https://rubberdoll.net',               
+        'https://www.samanthagrace.net',            
+        'https://sarajay.com',                  
+        'https://sexmywife.com',                
+        'https://shandafay.com',                
+        'https://siripornstar.com',             
+        'https://sophiedeelive.com',            
+        'https://sunnylanelive.com',            
+        'https://tashareign.com',               
+        ## 'https://vnavickie.com',              
+        'https://vickyathome.com',              
         'https://womenbyjuliaann.com',
         'https://wydesyde.com',
 
@@ -52,8 +52,8 @@ class VnaNetworkSpider(BaseSceneScraper):
         # 'https://alexlegend.com',               #New Site, standalone scraper
         # ~ https://bobbiedenlive.com
         # ~ https://deauxmalive.com
-        # ~ https://nataliastarr.com            #Rip
-        # ~ https://nikkibenz.com               #Rip
+        # ~ https://nataliastarr.com            
+        # ~ https://nikkibenz.com               
         # ~ https://rachelstormsxxx.com
 
     ]
@@ -110,19 +110,21 @@ class VnaNetworkSpider(BaseSceneScraper):
         taglink = self.process_xpath(
             response, self.get_selector_map('tags')).get()
         tags = []
-        for tag in taglink.strip().split(','):
-            if tag.strip():
-                tags.append(tag.strip().title())
-        return tags
+        if taglink:
+            for tag in taglink.strip().split(','):
+                if tag.strip():
+                    tags.append(tag.strip().title())
+            return tags
 
     def get_performers(self, response):
         performerlink = self.process_xpath(
             response, self.get_selector_map('performers')).get()
 
         performers = []
-        for performer in performerlink.replace('&nbsp', '').split(','):
-            if performer.strip():
-                performers.append(performer.strip())
+        if performerlink:
+            for performer in performerlink.replace('&nbsp', '').split(','):
+                if performer.strip():
+                    performers.append(performer.strip())
 
         if 'shandafay' in response.url:
             performers.append('Shanda Fay')

@@ -19,7 +19,7 @@ class SiteLoveWettingPerformerSpider(BasePerformerScraper):
         'https://www.lovewetting.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.lovewetting.com/wetting-czech-models.html"
         yield scrapy.Request(url, callback=self.get_performers, meta={'page': self.page}, headers=self.headers, cookies=self.cookies)
 

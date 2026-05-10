@@ -42,7 +42,7 @@ class PerformerSpider(BasePerformerScraper):
     name = 'AdultPrimePerformer'
     network = 'Adult Prime'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         link = 'https://adultprime.com'

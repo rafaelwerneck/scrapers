@@ -24,7 +24,7 @@ class SiteParasitedSpider(BaseSceneScraper):
         'duration': '//div[@class="duration"]/text()',
         'trailer': '//video[@id="singlepreview"]/@src',
         'external_id': r'com/(.*)/',
-        'pagination': '/all-videos/%s',
+        'pagination': '/all-videos/page/%s/',
         'type': 'Scene',
     }
 

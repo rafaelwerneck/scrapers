@@ -22,7 +22,7 @@ class SiteOrgasmGamesSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         headers={'Content-Type': 'application/json'}
 
         data = {

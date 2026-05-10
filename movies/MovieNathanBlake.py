@@ -25,7 +25,7 @@ class MovieNathanBlakeSpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         "LOG_LEVEL": 'INFO',
         "EXTENSIONS": {'scrapy.extensions.logstats.LogStats': None},
     }
@@ -42,7 +42,7 @@ class MovieNathanBlakeSpider(BaseSceneScraper):
         'pagination': '/get_dvds/%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

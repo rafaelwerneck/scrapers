@@ -38,7 +38,7 @@ class siteFellatioJapanPerformerSpider(BasePerformerScraper):
     ]
 
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.fellatiojapan.com/en/girls"
         yield scrapy.Request(url,
                              callback=self.get_performers,

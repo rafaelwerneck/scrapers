@@ -63,14 +63,14 @@ class siteUnrealPornSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '//div[contains(@class, "badge")]/span[contains(@class, "text-uppercase")]/../following-sibling::span[1]/text()',
+        'title': '//div[contains(@class, "badge")]/span[contains(@class, "text-uppercase")]/../following-sibling::span[1]/text()|//h1/span[not(contains(@class, "hidden"))]/text()',
         'date': '//script[contains(text(), "thumbnailUrl")]/text()',
         're_date': r'[\'\"]uploadDate[\'\"]\: [\'\"](.*?)[\'\"]',
         'description': '//div[contains(@class, "detail-description")]/p/text()',
         'image': '//meta[@property="og:image"]/@content',
         'duration': '//script[contains(text(), "thumbnailUrl")]/text()',
         're_duration': r'[\'\"]duration[\'\"]\: [\'\"](.*?)[\'\"]',
-        'tags': '//div[contains(@class,"show-more-ultimate")]/ul/li/a/span/text()',
+        'tags': '//div[contains(@class,"show-more-ultimate")]/ul/li/a/span/text()|//div[contains(@class,"tags-listing")]/ul/li/a/span/text()',
         'performers': '//span[contains(text(), "Featuring")]/following-sibling::a/text()',
 
         'external_id': '.*/(.*?)/',

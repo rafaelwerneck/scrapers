@@ -32,8 +32,6 @@ class SiteBangSpider(BaseSceneScraper):
 
     def get_next_page_url(self, base, page):
         pagination = f"https://www.bang.com/videos?by=date.desc&from=bang%21%20originals&page={page}"
-        # ~ pagination = f"https://www.bang.com/videos?by=date.desc&in=BANG%21%20Real%20Teens&page={page}"
-        # ~ pagination = f"https://www.bang.com/videos?in=BANG!%20Surprise&page={page}"
         return pagination
 
     def get_scenes(self, response):
@@ -65,7 +63,11 @@ class SiteBangSpider(BaseSceneScraper):
                 item['performers'].append(person['name'])
 
             item['tags'] = self.get_tags(response)
-            item['site'] = re.sub('[^a-zA-Z0-9-]', '', response.xpath('//p[contains(text(), "In the series")]/a/text()').get())
+            site = response.xpath('//p[contains(text(), "In the series")]/a/text()')
+            if not site:
+                site = response.xpath('//p[contains(text(), "Studio:")]/a/text()')
+            site = site.get().strip()
+            item['site'] = re.sub('[^a-zA-Z0-9-]', '', site)
             trailer = response.xpath('//video[@data-modal-target="videoImage"]/source[contains(@type, "mp4")]/@src')
             if not trailer:
                 trailer = response.xpath('//video[@data-modal-target="videoImage"]/source[contains(@type, "webm")]/@src')

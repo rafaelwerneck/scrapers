@@ -14,7 +14,7 @@ class SiteInsertedPerformerSpider(BasePerformerScraper):
         'external_id': r''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://inserted.com/tour/models"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

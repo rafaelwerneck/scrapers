@@ -23,7 +23,7 @@ class SiteTrailerTrashBoysSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         link = "https://www.trailertrashboys.com"

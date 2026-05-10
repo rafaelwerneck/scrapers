@@ -28,7 +28,7 @@ class SiteAfterSchooljpSpider(BaseSceneScraper):
         'pagination': '/videos.en.html?order=-recent&page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.afterschool.jp/en/samples"
         yield scrapy.Request(url, callback=self.get_scenes,
                              meta={'page': self.page},

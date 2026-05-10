@@ -24,7 +24,7 @@ class MoviesTMDBSpider(BaseSceneScraper):
         'pagination': f'/3/discover/movie?api_key={api_key}&language=en-US&sort_by=primary_release_date.desc&certification_country=US&certification.gte=NC-17&include_adult=true&include_video=false&page=%s&with_watch_monetization_types=flatrate'
     }
 
-    def start_requests(self):
+    async def start(self):
         print("Hello! Starting TMDB Movie Scraper")
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print(f'My public IP address is: {ip}')

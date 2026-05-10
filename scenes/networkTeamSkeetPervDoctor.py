@@ -66,8 +66,7 @@ class TeamSkeetNetworkSpider(BaseSceneScraper):
         'external_id': '\\/(.+)\\.json'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         for linkName, siteInfo in link_to_info.items():
             if 'v2' in siteInfo:
                 is_v2 = siteInfo['v2']

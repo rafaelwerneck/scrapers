@@ -15,15 +15,14 @@ class SiteXDominantSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '//div[@class="video-full__name"]/text()',
-        'description': '',
+        'title': '//h1[@class="video-full__name"]/text()',
+        'description': '//div[@class="video-full__desc_content"]//text()',
         'date': '//div[contains(@class,"flaticon-calendar")]/text()',
         'date_formats': ['%B %d, %Y'],
         'image': '//div[@class="video-full"]//video/@poster',
         'performers': '//div[@class="video-full__models"]/a/text()',
         'tags': '',
         'duration': '//div[contains(@class,"flaticon-clock")]/text()',
-        'trailer': '//div[@class="video-full"]//video/source/@src',
         'external_id': r'/video/(\d+)/',
         'pagination': '/videos?page=%s',
         'type': 'Scene',

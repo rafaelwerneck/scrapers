@@ -56,7 +56,7 @@ class NetworkPornMegaLoadPlaywrightSpider(BaseSceneScraper):
         # 'DOWNLOAD_DELAY': 60,
         # 'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'SPIDERMON_ENABLED': False,
         'DOWNLOAD_FAIL_ON_DATALOSS': True,
         'RETRY_ENABLED': True,
@@ -66,18 +66,11 @@ class NetworkPornMegaLoadPlaywrightSpider(BaseSceneScraper):
         'DOWNLOAD_HANDLERS': {
             "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
             "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-        },
-        'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-            'scrapy.downloadermiddlewares.retry.RetryMiddleware': 500,
-            'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 300,
-            'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 301,
-            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 100,
         }
     }
 
     selector_map = {
-        'title': '//main/div/section/div[@class="row"]/div/h1/text()|//section[@id="videos_page-page"]/div[contains(@class,"ali-center")]//h2/text()',
+        'title': '//main/div/section/div[@class="row"]/div/h1/text()|//section[@id="videos_page-page"]/div[contains(@class,"ali-center")]//h2/text()|//div[@itemprop="articleBody"]/h2/text()',
         'description': '//div[contains(@class, "p-desc")]//text()',
         'date': '//div[contains(@class,"p-info")]//span[contains(text(), "Date:")]/following-sibling::span/text()',
         'date_format': ['%B %d, %Y'],
@@ -91,7 +84,7 @@ class NetworkPornMegaLoadPlaywrightSpider(BaseSceneScraper):
         'pagination': '/hd-porn-scenes/?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True

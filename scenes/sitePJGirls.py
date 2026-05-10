@@ -32,7 +32,7 @@ class SitePJGirlsSpider(BaseSceneScraper):
         'pagination': '/en/videos/?order=date&page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         start_page = "https://www.pjgirls.com/en/videos/?order=date"
         start_page = requests.get(start_page)
         if start_page:

@@ -60,7 +60,7 @@ class ProjectOneServicePerformerSpider(BasePerformerScraper):
         'external_id': 'scene\\/(\\d+)'
     }
 
-    def start_requests(self):
+    async def start(self):
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse, headers=self.headers, cookies=self.cookies, meta={'url': url})
 

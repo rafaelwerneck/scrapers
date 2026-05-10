@@ -16,7 +16,7 @@ class SiteMrLuckyVIPByPerformerSpider(BaseSceneScraper):
         'external_id': r'',
         'pagination': '',
     }
-    def start_requests(self):
+    async def start(self):
         meta = {}
         yield scrapy.Request('https://www.mrluckyvip.com/models/models_d.html', callback=self.get_models, meta=meta)
 

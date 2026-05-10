@@ -32,7 +32,7 @@ class Spider(BaseSceneScraper):
         'pagination': '/action/category-contents/201-%s?sort=date'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             meta = {}
             meta['site'] = link[2]

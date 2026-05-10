@@ -34,7 +34,7 @@ class SiteAngelaWhiteScenesSpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'DOWNLOADER_MIDDLEWARES': {},
         # ~ 'DOWNLOAD_DELAY': 30,
         'DOWNLOAD_MAXSIZE': 0,
@@ -46,7 +46,7 @@ class SiteAngelaWhiteScenesSpider(BaseSceneScraper):
         "HTTPERROR_ALLOWED_CODES": [404],
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = 1
         link = 'https://angelawhitestore.com/94055/studio/agw-entertainment-porn-movies.html'

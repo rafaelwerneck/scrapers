@@ -26,7 +26,7 @@ class SiteJavDatabaseSpider(BaseSceneScraper):
         'type': 'JAV',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         if self.limit_pages == 1:

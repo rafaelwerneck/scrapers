@@ -68,7 +68,7 @@ class SiteMedienVanHolldandSpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'RETRY_ENABLED': True,
         'HANDLE_HTTPSTATUS_LIST': [307,404,403],
     }
@@ -93,7 +93,7 @@ class SiteMedienVanHolldandSpider(BaseSceneScraper):
         url = 'https://apiv2.sysero.nl/api/mvh/resources/nl?query=(content%3Avideos%2Ctypes%3A(0%3Avideo)%2Csort%3A(published_at%3ADESC)%2Cfilters%3A(status%3Apublished)%2Cpagination%3A(page%3A{}%2Cper_page%3A20)%2Cinclude%3A((resources%3A(filters%3A((types%3A(0%3Acategory)%2Cstatus%3Apublished))%2Cimages%3A(filters%3A((types%3A(0%3Athumb)))))%2Cimages%3A(filters%3A((types%3A(0%3Acover%2C1%3Ahome_cover%2C2%3Athumb%2C3%3Acover_thumb))))%2Cclips%3A()%2Cvideos%3A()%2Ccategories%3A())))'
         return self.format_url(base, url.format(page))
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         link = 'https://meidenvanholland.nl/sexfilms'

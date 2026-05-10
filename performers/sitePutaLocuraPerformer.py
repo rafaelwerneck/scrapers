@@ -16,7 +16,7 @@ class SitePutaLocuraPerformerSpider(BasePerformerScraper):
         'https://www.putalocura.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

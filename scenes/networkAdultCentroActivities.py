@@ -31,7 +31,7 @@ class NetworkAdultCentroEventsSpider(BaseSceneScraper):
         'pagination': '/home_page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.sites:
             yield scrapy.Request(link[0] + '/activity', callback=self.start_requests_2, meta={'link': link[0], 'transit': link[1], 'site': link[2], 'performer': link[3]})
 

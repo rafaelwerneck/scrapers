@@ -1,4 +1,5 @@
 import re
+import xml.etree.ElementTree as ET
 import string
 import scrapy
 from scrapy.utils.project import get_project_settings
@@ -22,7 +23,7 @@ class NetworkAVRevenuePerformerSpiderPerformers(BasePerformerScraper):
         'pagination': '/en/videos?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         settings = get_project_settings()
 
         meta = {}
@@ -51,17 +52,29 @@ class NetworkAVRevenuePerformerSpiderPerformers(BasePerformerScraper):
             item = PerformerItem()
             item['network'] = 'AV Revenue'
             item['name'] = string.capwords(self.get_field(performer, './name/text()'))
-            url = performer.xpath('.//text()').getall()
-            url = " ".join(url)
-            url = url.replace("\n", "").replace("  ", " ")
-            url = re.search(r'(http.*?model.*?)\s', url).group(1).strip()
-            item['url'] = url
+            urltext = performer.xpath('.//text()').getall()
+            urltext = " ".join(urltext)
+            urltext = urltext.replace("\r", "").replace("\n", "").replace("\t", "").replace("  ", " ")
+            urlcheck = re.search(r'(http.*?model.*?)\s', urltext)
+            if urlcheck:
+                urlcheck = urlcheck.group(1).strip()
+                item['url'] = urlcheck
+            else:
+                url = self.get_model_link(urltext)
+                if url:
+                    item['url'] = url
+                else:
+                    item['url'] = response.url
+            urls = re.findall(r'(http.*?/)\s+', item['url'])
+            if urls and len(urls) > 1:
+                item['url'] = urls[0].strip()
 
             item['image'] = self.get_field(performer, './image/text()')
             if item['image']:
                 item['image_blob'] = self.get_image_blob_from_link(item['image'])
             else:
                 item['image_blob'] = None
+            item['image_blob'] = None
             item['bio'] = ''
             item['gender'] = 'Female'
             item['birthday'] = self.get_field(performer, './personal/birthdate/text()')
@@ -101,3 +114,7 @@ class NetworkAVRevenuePerformerSpiderPerformers(BasePerformerScraper):
         if fields:
             return fields.getall()
         return None
+
+    def get_model_link(self, text):
+        m = re.search(r'https?://\S+/(?:actor|model)/\S+/?', text)
+        return m.group(0) if m else None

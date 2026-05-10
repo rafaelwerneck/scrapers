@@ -25,7 +25,7 @@ class SiteArtOfBlowjobSpider(BaseSceneScraper):
         'pagination': '/display/updatelist/'
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.theartofblowjob.com/display/updatelist/"
         yield scrapy.Request(url, callback=self.get_scenes, meta={'page': self.page}, headers=self.headers, cookies=self.cookies)
 

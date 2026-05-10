@@ -38,7 +38,7 @@ class siteJapanHDVPerformerSpider(BasePerformerScraper):
     ]
 
 
-    def start_requests(self):
+    async def start(self):
         url = "https://japanhdv.com/models/"
         for link in self.start_urls:
             yield scrapy.Request(url,

@@ -24,7 +24,7 @@ class SiteHeyzoPerformerSpider(BasePerformerScraper):
 
     max_pages = 1
 
-    def start_requests(self):
+    async def start(self):
         url = "https://en.heyzo.com/actor_all.html"
         yield scrapy.Request(url, callback=self.get_performers)
 

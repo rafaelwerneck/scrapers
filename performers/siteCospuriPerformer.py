@@ -23,7 +23,7 @@ class SiteCospuriPerformerSpider(BasePerformerScraper):
         'https://www.cospuri.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.cospuri.com/models/"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

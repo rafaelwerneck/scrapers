@@ -40,7 +40,7 @@ class ATKKingdomSpider(BaseSceneScraper):
         'pagination': '/tour/movies/%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         page = self.page
         for link in self.start_urls:
             if page > 1:

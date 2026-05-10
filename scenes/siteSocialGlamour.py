@@ -32,7 +32,7 @@ class SiteSocialGlamourSpider(BaseSceneScraper):
         'pagination': '/categories/tease_%s_d.html'
     }
 
-    def start_requests(self):
+    async def start(self):
         for pagination in self.pagination:
             for link in self.start_urls:
                 yield scrapy.Request(url=self.get_next_page_url(link, self.page, pagination),

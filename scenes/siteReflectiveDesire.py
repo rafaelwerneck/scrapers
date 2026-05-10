@@ -26,7 +26,7 @@ class ReflectiveDesireSpider(BaseSceneScraper):
         'AUTOTHROTTLE_MAX_DELAY': 60,
         'CONCURRENT_REQUESTS': 1,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'DOWNLOAD_DELAY': 5,
         'PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT': 60000,  # 60s
         'DOWNLOADER_MIDDLEWARES': {
@@ -44,7 +44,7 @@ class ReflectiveDesireSpider(BaseSceneScraper):
         }
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True

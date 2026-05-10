@@ -14,13 +14,17 @@ class NetworkTeamskeet2025Spider(BaseSceneScraper):
     start_url = 'https://tours-store.psmcdn.net'
 
     paginations = [
-        '/mylf_bundle/_search?q=(type:video%20AND%20isXSeries:false%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
-        '/ts_network/_search?q=(type:video%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
-        '/freeusebundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
         '/familybundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        '/freeusebundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        ## '/mylf_bundle/_search?q=(type:video%20AND%20isXSeries:false%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
+        ## '/mylf_bundle2/_search?q=(type:video%20AND%20isXSeries:false%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
+        '/network_mylf/_search?q=(type:video%20AND%20isXSeries:false%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
+        '/pervbundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        '/reptyle_bundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
         '/sau_network/_search?sort=publishedDate:desc&q=(type:video%20AND%20isUpcoming:false)&size=30&from=<page>',
         '/swap_bundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
-        '/pervbundle/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        '/test_fos/_search?sort=publishedDate:desc&q=(type:video%20AND%20isXSeries:false%20)&size=30&from=<page>',
+        '/ts_network/_search?q=(type:video%20AND%20isUpcoming:false)&sort=publishedDate:desc&size=30&from=<page>',
     ]
 
     selector_map = {
@@ -28,7 +32,7 @@ class NetworkTeamskeet2025Spider(BaseSceneScraper):
         'pagination': '/ts_network/_search?q=(type:video)&sort=publishedDate:desc&size=30&from=<page>',
         'type': 'Scene',
     }
-    def start_requests(self):
+    async def start(self):
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

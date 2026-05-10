@@ -1,6 +1,5 @@
 import re
 from tpdb.BaseSceneScraper import BaseSceneScraper
-from tpdb.items import SceneItem
 
 
 class SiteTSRawSpider(BaseSceneScraper):
@@ -16,13 +15,6 @@ class SiteTSRawSpider(BaseSceneScraper):
     headers = {'X-NATS-cms-area-id': 'cc6bd0ac-a417-47d1-9868-7855b25986e5'}
 
     selector_map = {
-        'title': '',
-        'description': '',
-        'date': '',
-        'image': '',
-        'performers': '',
-        'tags': '',
-        'trailer': '',
         'external_id': r'',
         'pagination': '/index.php?section=1681&start=%s'
     }
@@ -37,46 +29,47 @@ class SiteTSRawSpider(BaseSceneScraper):
         jsondata = response.json()
         scenes = jsondata['sets']
         for scene in scenes:
-            item = SceneItem()
+            item = self.init_scene()
 
             item['title'] = self.cleanup_title(scene['name'])
             item['description'] = scene['description']
             item['date'] = scene['added_nice']
+            if self.check_item(item, self.days):
 
-            item['performers'] = []
-            if "data_types" in scene and scene['data_types']:
-                for entry in scene['data_types']:
-                    if entry['data_type'] == "Models":
-                        if "data_values" in entry and entry['data_values']:
-                            for model in entry['data_values']:
-                                item['performers'].append(model['name'])
+                item['performers'] = []
+                if "data_types" in scene and scene['data_types']:
+                    for entry in scene['data_types']:
+                        if entry['data_type'] == "Models":
+                            if "data_values" in entry and entry['data_values']:
+                                for model in entry['data_values']:
+                                    item['performers'].append(model['name'])
 
-            item['tags'] = []
-            if "data_types" in scene and scene['data_types']:
-                if "data_values" in scene['data_types'][0] and scene['data_types'][0]['data_values']:
-                    for tag in scene['data_types'][0]['data_values']:
-                        item['tags'].append(tag['name'])
+                item['tags'] = []
+                if "data_types" in scene and scene['data_types']:
+                    if "data_values" in scene['data_types'][0] and scene['data_types'][0]['data_values']:
+                        for tag in scene['data_types'][0]['data_values']:
+                            item['tags'].append(tag['name'])
 
-            if "preview_formatted" in scene and scene['preview_formatted']:
-                if "thumb" in scene['preview_formatted'] and scene['preview_formatted']['thumb']:
-                    resolution = 0
-                    for thumb in scene['preview_formatted']['thumb']:
-                        height = re.search(r'-(\d)', thumb)
-                        if height:
-                            height = int(height.group(1))
-                            if height > resolution:
-                                resolution = height
-                                imageinfo = scene['preview_formatted']['thumb'][thumb][0]
-                                item['image'] = f"https://c762d323d1.mjedge.net{imageinfo['fileuri']}?{imageinfo['signature']}"
-            if item['image']:
-                item['image_blob'] = self.get_image_blob_from_link(item['image'])
+                if "preview_formatted" in scene and scene['preview_formatted']:
+                    if "thumb" in scene['preview_formatted'] and scene['preview_formatted']['thumb']:
+                        resolution = 0
+                        for thumb in scene['preview_formatted']['thumb']:
+                            height = re.search(r'-(\d)', thumb)
+                            if height:
+                                height = int(height.group(1))
+                                if height > resolution:
+                                    resolution = height
+                                    imageinfo = scene['preview_formatted']['thumb'][thumb][0]
+                                    item['image'] = f"https://c762d323d1.mjedge.net{imageinfo['fileuri']}?{imageinfo['signature']}"
+                if item['image']:
+                    item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
-            item['id'] = "tsraw-" + scene['slug']
-            item['trailer'] = ""
-            item['url'] = f"https://www.tsraw.com/index.php?section=1681&start={str(int(meta['page']) * 48)}"
-            item['network'] = "TSRaw"
-            item['parent'] = "TSRaw"
-            item['site'] = "TSRaw"
+                item['id'] = scene['cms_set_id']
+                item['duration'] = scene['lengths']['total']
+                item['trailer'] = ""
+                item['url'] = f"https://www.tsraw.com/index.php?section=1681&start={str(int(meta['page']) * 48)}"
+                item['network'] = "TSRaw"
+                item['parent'] = "TSRaw"
+                item['site'] = "TSRaw"
 
-            if item['date'] > "2024-10-22":
                 yield self.check_item(item, self.days)

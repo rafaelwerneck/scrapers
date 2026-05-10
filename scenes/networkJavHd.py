@@ -36,7 +36,7 @@ class NetworkJavHDSpider(BaseSceneScraper):
         'pagination': '/en/japanese-porn-videos/justadded/all/%s?content=all'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url=self.get_next_page_url(link, self.page),
                                  callback=self.parse,

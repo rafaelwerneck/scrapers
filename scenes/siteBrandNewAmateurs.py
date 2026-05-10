@@ -16,9 +16,9 @@ class SiteBrandNewAmateursSpider(BaseSceneScraper):
     selector_map = {
         'title': '//meta[@property="og:title"]/@content',
         'description': '//div[contains(@class,"videoDetails")]/p/text()',
-        'date': '',
+        'date': '//div[contains(@class,"videoInfo")]//span[contains(text(), "Added:")]/following-sibling::text()',
         'image': '//meta[@property="og:image"]/@content',
-        'performers': '',
+        'performers': '//li[contains(@class, "update_models")]/a/text()',
         'tags': '//div[contains(@class,"featuring")]/ul/li/a[contains(@href,"/categories/")]/text()',
         'external_id': r'.*/(.*?).html',
         'trailer': '//script[contains(text(),"video_content")]/text()',
@@ -35,3 +35,14 @@ class SiteBrandNewAmateursSpider(BaseSceneScraper):
     def get_id(self, response):
         externid = super().get_id(response)
         return externid.lower()
+
+    def get_duration(self, response):
+        duration = response.xpath('//div[contains(@class,"videoInfo")]//text()[contains(., "of video")]')
+        if duration:
+            duration = duration.get()
+            duration = duration.replace("&nbsp;", "")
+            duration = re.sub(r'[^a-z0-9]+', '', duration.lower())
+            duration = re.search(r'(\d+)min', duration)
+            if duration:
+                return str(int(duration.group(1)) * 60)
+        return None

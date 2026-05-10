@@ -31,8 +31,7 @@ class SiteGraiasSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
-
+    async def start(self):
         url = "https://www.graias.com/"
         yield scrapy.Request(url, callback=self.start_requests2, headers=self.headers, cookies=self.cookies)
 

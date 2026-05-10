@@ -36,7 +36,7 @@ class SiteNewMFXSpider(BaseSceneScraper):
         'pagination': '/latest-videos?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "https://newmfx.com/"
         yield FormRequest(url=link, callback=self.start_requests_login, cookies=self.cookies)
 

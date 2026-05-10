@@ -14,7 +14,7 @@ class SiteHouseOfGordPerformerSpider(BasePerformerScraper):
     name = 'HouseOfGordPerformer'
     network = 'House Of Gord'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         url = "https://www.houseofgord.com/models"

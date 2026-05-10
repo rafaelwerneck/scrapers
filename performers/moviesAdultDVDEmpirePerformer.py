@@ -34,7 +34,7 @@ class MoviesAdultDVDEmpirePerformerSpider(BasePerformerScraper):
         'external_id': r''
     }
 
-    def start_requests(self):
+    async def start(self):
         base = self.start_url
         for pagination in self.paginations:
             yield scrapy.Request(url=self.get_next_page_url(base, pagination, self.page),

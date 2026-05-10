@@ -127,7 +127,7 @@ class AdultTimeAPISecondarySpider(BaseSceneScraper):
         'pagination': '/en/videos?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         page = self.page
         for link in self.start_urls:
             yield scrapy.Request(url=self.get_next_page_url(link, page), callback=self.parse_token, meta={'page': page, 'url': link})

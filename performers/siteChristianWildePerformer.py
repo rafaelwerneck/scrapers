@@ -21,7 +21,7 @@ class SiteChristianWildePerformerSpider(BasePerformerScraper):
         '/models/models_%s.html?g=nb',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

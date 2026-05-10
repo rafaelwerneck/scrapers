@@ -20,7 +20,7 @@ class SitePlayboyPlusSpider(BaseSceneScraper):
         'pagination': '/?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         # ~ page = int(self.page) - 1
         page = int(self.page)
         start_url = f"https://www.playboyplus.com/en/updates/page/{str(page)}"

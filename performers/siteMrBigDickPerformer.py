@@ -17,7 +17,7 @@ class SiteMrBigfatdickPerformerSpider(BasePerformerScraper):
         'pagination': 'https://backend.mrbigfatdick.com/api/public/models'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(self.url, callback=self.get_performers,
                              meta={'page': self.page},
                              headers=self.headers,

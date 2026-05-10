@@ -26,8 +26,7 @@ class SiteNetGirlSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
-
+    async def start(self):
         url = "https://www.netgirl.com"
         yield scrapy.Request(url, callback=self.get_scenes)
 

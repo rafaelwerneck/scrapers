@@ -4,7 +4,7 @@ from tpdb.BasePerformerScraper import BasePerformerScraper
 from slugify import slugify
 
 
-class NetworkPureEthnicPerformerSpider(BasePerformerScraper):
+class NetworkNastyDaddyPerformerSpider(BasePerformerScraper):
     selector_map = {
         'pagination': '/tour/models/models_%s_d.html',
         'external_id': r'model/(.*)/'

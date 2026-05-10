@@ -26,12 +26,12 @@ class NetworkWowNetworkSpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'RETRY_HTTP_CODES': [500, 502, 503, 504, 522, 524, 408, 429, 403, 302],
     }
 
     start_urls = [
-        'https://www.wowpornblog.com/',
+        ## 'https://www.wowpornblog.com/',
         'https://www.wowgirlsblog.com/',
         'https://www.ultrafilms.xxx/',
         'https://www.18onlygirlsblog.com/',

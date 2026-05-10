@@ -20,7 +20,7 @@ class SiteBigLatinAnalSpider(BaseSceneScraper):
         'pagination': '',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
 
         ip = get('https://api.ipify.org').content.decode('utf8')

@@ -91,7 +91,7 @@ class TeamSkeetNetworkPlaywrightSpider(BaseSceneScraper):
         'external_id': '\\/(.+)\\.json'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

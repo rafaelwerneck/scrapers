@@ -1,88 +1,79 @@
+import re
+
 import scrapy
+import json
 from tpdb.BaseSceneScraper import BaseSceneScraper
 from scrapy.utils.project import get_project_settings
+true = True
+false = False
 
 
 class FittingRoomSpider(BaseSceneScraper):
     name = 'FittingRoom'
-    network = 'Fitting Room'
-    parent = 'Fitting Room'
-    site = 'Fitting Room'
 
-    start_url = 'https://www.fitting-room.com/'
+    start_urls = ['https://www.fitting-room.com/']
 
-    paginations = [
-        '/extras/%s/',
-        '/videos/%s/',
+    cookies = [{
+            "domain": ".fitting-room.com",
+            "name": "splash_ok",
+            "path": "/",
+            "sameSite": "unspecified",
+            "secure": false,
+            "session": false,
+            "storeId": "0",
+            "value": "1"
+        }, {
+            "domain": ".fitting-room.com",
+            "hostOnly": false,
+            "httpOnly": true,
+            "name": "fr_age_ok",
+            "path": "/",
+            "sameSite": "lax",
+            "secure": false,
+            "session": false,
+            "storeId": "0",
+            "value": "1"
+        }
     ]
 
     selector_map = {
-        'title': '//meta[@property="og:title"]/@content',
-        'description': "",
-        'performers': '//div[@class="info-model"]/p[@class="name"]/text()',
-        'date': '',
-        'image': '//meta[@property="og:image"]/@content',
+        'performers': '//div[@class="item"]/a[contains(@href, "model")]/text()',
         'tags': '//meta[@property="article:tag"]/@content',
         'external_id': r'videos\/(\d+)\/?',
-        'trailer': '//script[contains(text(),"video_url")]/text()',
-        're_trailer': r'video_url:\ .*?(https:\/\/www\.fitting.*?\.mp4)',
-        'pagination': '/extras/%s/'
+        'pagination': '/videos_list.php?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=%s'
+
     }
 
-    def start_requests(self):
-        settings = get_project_settings()
-
-        meta = {}
-        meta['page'] = self.page
-        if 'USE_PROXY' in settings.attributes.keys():
-            use_proxy = settings.get('USE_PROXY')
-        else:
-            use_proxy = None
-
-        if use_proxy:
-            print(f"Using Settings Defined Proxy: True ({settings.get('PROXY_ADDRESS')})")
-        else:
-            try:
-                if self.proxy_address:
-                    meta['proxy'] = self.proxy_address
-                    print(f"Using Scraper Defined Proxy: True ({meta['proxy']})")
-            except Exception:
-                print("Using Proxy: False")
-
-        for pagination in self.paginations:
-            link = self.start_url
-            meta['pagination'] = pagination
-            yield scrapy.Request(url=self.get_next_page_url(link, self.page, meta['pagination']),
-                                 callback=self.parse,
-                                 meta=meta,
-                                 headers=self.headers,
-                                 cookies=self.cookies)
-
-    def parse(self, response):
-        scenes = self.get_scenes(response)
-        count = 0
-        for scene in scenes:
-            count += 1
-            yield scene
-
-        if count:
-            if 'page' in response.meta and response.meta['page'] < self.limit_pages:
-                meta = response.meta
-                meta['page'] = meta['page'] + 1
-                print('NEXT PAGE: ' + str(meta['page']))
-                yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page'], meta['pagination']),
-                                     callback=self.parse,
-                                     meta=meta,
-                                     headers=self.headers,
-                                     cookies=self.cookies)
-
-    def get_next_page_url(self, base, page, pagination):
-        return self.format_url(base, pagination % page)
-
     def get_scenes(self, response):
-        scenes = response.xpath('//div[contains(@class,"thumb videos")]/a')
+        meta = response.meta
+        scenes = response.xpath('//div[contains(@class, "item premium")]')
         for scene in scenes:
-            date = scene.xpath('./div[@class="main-info"]/div/p/text()').get()
-            date = self.parse_date(date.strip()).isoformat()
-            sceneurl = scene.xpath('./@href').get()
-            yield scrapy.Request(url=self.format_link(response, sceneurl), callback=self.parse_scene, meta={'date': date})
+            sceneurl = scene.xpath('./a/@href').get()
+            yield scrapy.Request(url=self.format_link(response, sceneurl), callback=self.parse_scene, meta=meta)
+
+    def parse_scene(self, response):
+        meta = response.meta
+        item = self.init_scene()
+        scene_json = response.xpath('//script[contains(@type, "json")]/text()').get()
+        scenedata = json.loads(scene_json)
+
+        item['title'] = re.sub(r'\d{4}_\d+', '', scenedata['name']).strip()
+        item['description'] = scenedata['description']
+        item['date'] = re.search(r'(\d{4}-\d{2}-\d{2})', scenedata['uploadDate']).group(1)
+
+        item['image'] = scenedata['thumbnailUrl']
+        if item['image']:
+            item['image_blob'] = self.get_image_blob_from_link(item['image'])
+        else:
+            item['image_blob'] = ''
+
+        item['id'] = re.search(r'video/(\d+)/', response.url).group(1)
+        item['duration'] = self.duration_to_seconds(scenedata['duration'])
+        item['url'] = response.url
+        item['network'] = 'Fitting Room'
+        item['site'] = 'Fitting Room'
+        item['parent'] = 'Fitting Room'
+
+        item['performers'] = self.get_performers(response)
+
+        yield self.check_item(item, self.days)

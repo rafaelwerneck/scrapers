@@ -50,6 +50,8 @@ class SiteTexasBukkakeSpider(BaseSceneScraper):
                     item['description'] = ""
 
                 item['image'] = scene['artwork']['large']
+                if "https:" not in item['image'] and "http:" not in item['image']:
+                    item['image'] = "https://s02.uni73d.net" + item['image']
                 item['image_blob'] = self.get_image_blob_from_link(item['image'])
                 item['trailer'] = scene['preview']['url']
                 item['id'] = scene['id']

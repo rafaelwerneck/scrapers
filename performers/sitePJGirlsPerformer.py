@@ -24,7 +24,7 @@ class SitePJGirlsPerformerSpider(BasePerformerScraper):
         'https://www.pjgirls.com/en/models/',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.pjgirls.com/en/models/"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

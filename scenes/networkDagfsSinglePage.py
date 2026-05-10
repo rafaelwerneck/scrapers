@@ -13,7 +13,7 @@ class NetworkDaGFsSpider(BaseSceneScraper):
         # ~ ['https://www.steplesbians.com', 'Step Lesbians'],
     ]
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url=link[0],
                                  callback=self.get_scenes,

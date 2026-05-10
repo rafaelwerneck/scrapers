@@ -26,8 +26,7 @@ class SiteNetVideoGirlsSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
-
+    async def start(self):
         url = "https://netvideogirls.com/page-data/home/page-data.json"
         yield scrapy.Request(url, callback=self.get_scenes)
 

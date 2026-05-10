@@ -15,7 +15,7 @@ class SiteHungarianHoneysSpider(BaseSceneScraper):
         'https://www.hungarianhoneys.com',
     ]
 
-    # ~ cookies =
+    cookies ={"name": "warn", "value": "true"}
 
     selector_map = {
         'title': '//article/section/div/div/div[@class="title-block"]/h2[@class="section-title"]/text()',
@@ -33,7 +33,7 @@ class SiteHungarianHoneysSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         print(self.cookies)

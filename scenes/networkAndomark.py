@@ -89,7 +89,7 @@ class AndomarkSpider(BaseSceneScraper):
         'https://bondagelegend.com',
         'https://bradsterling.elxcomplete.com',
         'https://britstudio.xxx',
-        'https://brittanysbubbles.com',
+        ## 'https://brittanysbubbles.com',  Site gone
         'https://charlieforde.com',
         'https://chocolatepov.com',
         'https://furrychicks.elxcomplete.com',
@@ -112,7 +112,7 @@ class AndomarkSpider(BaseSceneScraper):
         'https://willtilexxx.com',
         'https://www.houseofyre.com',
         'https://meanawolf.com',
-        'https://meanawolfvintage.com',
+        ## 'https://meanawolfvintage.com', Site Gone
         'https://www.minkaxxx.com',
         # 'https://www.thejerkoffmembers.com', Moved to own scraper
         'https://xxxcellentadventures.com',
@@ -195,7 +195,7 @@ class AndomarkSpider(BaseSceneScraper):
                 yield scrapy.Request(url=scene, callback=self.parse_scene,
                                      cookies=self.cookies)
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         # ~ meta['dont_redirect'] = True

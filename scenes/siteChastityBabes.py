@@ -21,8 +21,7 @@ class ChastityBabesFullImportSpider(BaseSceneScraper):
         'pagination': '/scenes?type=new&page=%s'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         yield scrapy.Request(url='https://www.chastitybabes.com/babes',
                              callback=self.parse_model_page,
                              meta={'page': self.page},

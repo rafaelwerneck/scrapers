@@ -19,9 +19,54 @@ class NetworkAyloSpider(BaseSceneScraper):
     name = 'NetworkAylo'
 
     start_urls = [
+        'https://www.adultmobile.com',
+        'https://www.brazzers.com',
+        'https://www.bangbros.com',
+        'https://www.babes.com',
+        'https://www.biempire.com',
+        'https://www.bromo.com',
+        'https://www.dancingbear.com',
+        'https://www.deviante.com',
+        'https://www.czechhunter.com/',
         'https://www.digitalplayground.com',
-        # 'https://www.brazzers.com',
-        # 'https://www.bangbros.com',
+        'https://www.dilfed.com',
+        'https://www.doghousedigital.com',
+        'https://www.gilfed.com', # API responses from this site are borked
+        'https://www.erito.com',
+        'https://www.fakehub.com',
+        'https://www.familysinners.com',
+        'https://www.guyselector.com',
+        'https://www.iconmale.com',
+        'https://www.letsdoeit.com',
+        'https://www.men.com',
+        'https://www.metrohd.com',
+        'https://www.milehighmedia.com',
+        'https://www.milfed.com',
+        'https://www.mofos.com',
+        'https://www.mypervyfamily.com',
+        'https://www.nextdoorhobby.com',
+        'https://www.noirmale.com',
+        'https://www.propertysex.com',
+        'https://www.realitydudesnetwork.com',
+        'https://www.realitykings.com',
+        'https://www.realityjunkies.com',
+        'https://www.seancody.com',
+        'https://www.sexselector.com',
+        'https://www.sexyhub.com',
+        'https://www.squirted.com',
+        'https://www.sweetheartvideo.com',
+        'https://www.sweetsinner.com',
+        'https://www.thegayoffice.com',
+        'https://www.touchmywife.com',
+        'https://www.transangelsnetwork.com',
+        'https://www.transharder.com',  # Seems to be the same as TransAngels, but some additional
+        'https://www.transsensual.com',  # Seems to be the same as TransAngels, but some additional
+        'https://www.trueamateurs.com',
+        'https://www.tube8vip.com',
+        'https://www.twistys.com',
+        'https://virtualporn.com',
+        'https://www.voyr.com',
+        'https://www.whynotbi.com',
     ]
 
     selector_map = {
@@ -79,9 +124,9 @@ class NetworkAyloSpider(BaseSceneScraper):
             ['bangbros', '2023-07-01'],
         ]
 
-    def start_requests(self):
-        if self.limit_pages == 1:
-            self.limit_pages = 25
+    async def start(self):
+        # if self.limit_pages == 1:
+        #     self.limit_pages = 5
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse, meta={'url': url})
 
@@ -121,11 +166,11 @@ class NetworkAyloSpider(BaseSceneScraper):
             'limit': response.meta['limit']
         }
 
-        # print('NEXT PAGE: ' + str(meta['page']))
+        print('NEXT PAGE: ' + str(meta['page']))
 
         link = 'https://site-api.project1service.com/v2/releases?' + \
             urlencode(query)
-        return scrapy.Request(url=link, callback=self.get_scenes, headers=response.meta['headers'], meta=meta)
+        return scrapy.Request(url=link, callback=self.get_scenes, headers=response.meta['headers'], meta=meta, dont_filter=True)
 
     def check_restrictions(self, scene, item):
         parse_scene = True

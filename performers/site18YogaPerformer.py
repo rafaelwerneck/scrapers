@@ -22,7 +22,7 @@ class Site18YogaPerformerSpider(BasePerformerScraper):
         'https://18yoga.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         link = "https://18yoga.com/girls"
         yield scrapy.Request(link, callback=self.get_performers, cookies=self.cookies, headers=self.headers)
 

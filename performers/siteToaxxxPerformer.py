@@ -36,7 +36,7 @@ class SiteToaxxxPerformerSpider(BasePerformerScraper):
     def get_gender(self, response):
         return 'Female'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

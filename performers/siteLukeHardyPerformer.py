@@ -28,7 +28,7 @@ class SiteLukeHardyPerformerSpider(BasePerformerScraper):
         '',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
 
         for c in string.ascii_uppercase:

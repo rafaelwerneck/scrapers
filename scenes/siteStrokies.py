@@ -65,7 +65,7 @@ class SiteStrokiesSpider(BaseSceneScraper):
         'pagination': '/page%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://www.strokies.com", callback=self.start_requests2, headers=self.headers, meta={"playwright": True})
 
     def start_requests2(self, response):

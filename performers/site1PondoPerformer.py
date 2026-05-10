@@ -21,7 +21,7 @@ class Site1PondoPerformerSpider(BasePerformerScraper):
     def get_gender(self, response):
         return 'Female'
 
-    def start_requests(self):
+    async def start(self):
         urls = {
             "https://en.1pondo.tv/dyn/phpauto/actresses_en.json",
             "https://www.10musume.com/dyn/phpauto/actresses_en.json"

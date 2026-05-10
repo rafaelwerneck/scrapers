@@ -26,8 +26,7 @@ class SiteLegsJapanSpider(BaseSceneScraper):
         'pagination': '/en/samples?page=%s'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         url = "https://www.uralesbian.com/getdata.php?l=0&c=10"
         yield scrapy.Request(url, callback=self.get_scenes,
                              meta={'page': 1},

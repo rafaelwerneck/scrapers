@@ -15,8 +15,7 @@ class SiteFit18PerformerSpider(BasePerformerScraper):
         "argonath-api-key": "77cd9282-9d81-4ba8-8868-ca9125c76991",
     }
 
-    def start_requests(self):
-
+    async def start(self):
         scenequery = {
             "operationName": "ListTalent",
             "variables": {

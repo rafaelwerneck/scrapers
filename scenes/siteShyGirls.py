@@ -32,7 +32,8 @@ class SiteShyGirlsSpider(BaseSceneScraper):
         meta = response.meta
         scenes = response.xpath('//li[contains(@class,"sales-flash-overlay")]/a[contains(@href, "product")]/@href').getall()
         for scene in scenes:
-            yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
+            if "?product-page" not in scene:
+                yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
 
     def get_id(self, response):
         sceneid = response.xpath('//article/@id').get()

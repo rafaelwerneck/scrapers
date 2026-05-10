@@ -14,7 +14,7 @@ class SiteAllOver30JSONSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         start_url = 'https://new.allover30.com/GetRecent'
         yield scrapy.Request(start_url, callback=self.get_scenes, headers=self.headers, cookies=self.cookies)
 

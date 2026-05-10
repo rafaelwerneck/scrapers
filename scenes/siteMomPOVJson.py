@@ -31,7 +31,7 @@ class Spider(BaseSceneScraper):
         'pagination': '/tour/page/%s/'
     }
 
-    def start_requests(self):
+    async def start(self):
         f = open('test.json')
         csv_f = csv.reader(f)
 

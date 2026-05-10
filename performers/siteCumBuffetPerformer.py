@@ -21,7 +21,7 @@ class SiteCumBuffetPerformerSpider(BasePerformerScraper):
         'external_id': 'girls/(.+)/?$'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url="https://www.cumbuffet.com/girls",
                                  callback=self.get_performers,

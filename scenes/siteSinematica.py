@@ -9,6 +9,8 @@ class SinematicaSpider(BaseSceneScraper):
     network = 'Sinematica'
     parent = 'Sinematica'
 
+    cookies = [{"name":"ageConfirmed","value":"true"},{"name":"defaults","value":"{}"}]
+    
     start_urls = [
         'https://www.sinematica.com/'
     ]

@@ -40,7 +40,7 @@ class PerformerSpider(BasePerformerScraper):
         '/tour/models/%s/latest/?gender=male',
     ]
 
-    def start_requests(self):
+    async def start(self):
         settings = get_project_settings()
 
         meta = {}

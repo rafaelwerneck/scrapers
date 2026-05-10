@@ -22,97 +22,98 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
                        }
 
     sites = [
+        ## ['https://andreagarcia.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Andrea Garcia', 'Andrea Garcia'],
+        ## ['https://cleagaultier-official.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Clea Gaultier', 'Clea Gaultier'],
+        ## ['https://dripdropprod.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'DripDrop', ''],
+        ## ['https://facialkings.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Facial Kings', ''],
+        ## ['https://iadorejessicacho.live', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'I Adore Jessica Cho', 'Jessica Cho'],
+        ## ['https://idreamofjo.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'I Dream of Jo', 'Monica Sweet'],
+        ## ['https://katie71.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Katie71', 'Katie71'],
+        ## ['https://ponygirl-riding.com', '&transitParameters[v1]=OBoiu4zYsP&transitParameters[v2]=OhUOlmasXD', 'Ponygirl Riding', ''],
+        ## ['https://pvgirls.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Porn Valley Girls', ''],
+        ## ['https://trinitystclair.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Trinity St Clair', 'Trinity St Clair'],  # Site non-responsive (2022-08-01)
+        ## ['https://www.crystaldenison.com', '&transitParameters[v1]=OBoiu4zYsP', 'Crystal Denison', 'Crystal Denison'],
+        ## ['https://www.esperanzaplus.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Esperanza Plus', 'Esperanza Gomez'],
+        ## ['https://www.gingerfans.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Ginger Fans', 'Ginger St Cyr'],
+        ## ['https://www.honeygoldxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Honey Gold', 'Honey Gold'],  # Site non-responsive (2022-08-01)
+        ## ['https://www.jazziequexxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Jazzie Que XXX', 'Jacquelyn Jaxx'],
+        ## ['https://www.ladyfoxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Lady Foxxx', 'Lisa Fox'],
+        ## ['https://www.naughtyayla.com', '&transitParameters[v1]=OBoiu4zYsP', 'Naughty Ayla', 'Naughty Ayla'],
+        ## ['https://www.nudechrissy.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Nude Chrissy', ''],
+        ## ['https://www.patriciagoddess.com', '&transitParameters[v1]=uaKV7hnDcF', 'Patricia Goddess', 'Patricia Goddess'],
+        ## ['https://www.sabrinasabrokvideos.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Sabrina Sabrok', 'Sabrina Sabrok'],
+        ## ~ # ['https://bruceandmorgan.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Bruce and Morgan', ''],  Closed site, historical only
+        ##['https://ninnworx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Ninn Worx', ''],
+        ['https://aikoprincess.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Aiko Princess', ''],
         ['https://allofaveryjane.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'All of Avery Jane', 'Avery Jane'],
-        ['https://www.amberspanks.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Amber Spanks', 'Amber Dawn'],
-        ['https://andreagarcia.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Andrea Garcia', 'Andrea Garcia'],
+        ['https://antonioclemens.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Antonio Clemens', ''],
+        ['https://arabellesplayground.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Arabelles Playground', ''],
         ['https://aussiefellatioqueens.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Aussie Fellatio Queens', ''],
-        ['https://www.baileyrayne.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Bailey Rayne', 'Bailey Rayne'],
         ['https://aussiexxxhookups.com', '&transitParameters[v1]=OBoiu4zYsP', 'Aussie XXX Hookups', ''],
-        ['https://www.backalleytoonzonline.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Back Alley Toonz', ''],
         ['https://bhalasada.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Bhala Sada', ''],
         ['https://bigjohnnyxxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Big Johnny XXX', ''],
         ['https://brookelynnebriar.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Brookelynne Briar', 'Brookelynne Briar'],
-        # ~ # ['https://bruceandmorgan.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Bruce and Morgan', ''],  Closed site, historical only
         ['https://bunnyscout.tv', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Bunny Scout', ''],
-        ['https://cleagaultier-official.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Clea Gaultier', 'Clea Gaultier'],
+        ['https://clubcuck.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Club Cuck', 'Club Cuck'],
+        ['https://clubmaseratixxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Club Maserati XXX', ''],
         ['https://cospimps.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Cospimps', ''],
         ['https://daddyscowgirl.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Daddys Cowgirl', ''],
+        ['https://dakotamarr.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Dakota Marr', ''],
         ['https://danidaniels.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Dani Daniels', 'Dani Daniels'],
         ['https://dillionation.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Dillion Harper', 'Dillion Harper'],
-        ['https://www.esperanzaplus.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Esperanza Plus', 'Esperanza Gomez'],
+        ['https://exploitedtalent.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Exploited Talent', ''],
         ['https://facialcasting.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Facial Casting', ''],
-        ['https://facialkings.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Facial Kings', ''],
         ['https://fallinlovia.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Fall in Lovia', 'Eva Lovia'],
-        ['https://www.hollandswing.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Holland Swing', 'Nikki Holland'],
-        # ['https://www.honeygoldxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Honey Gold', 'Honey Gold'],  # Site non-responsive (2022-08-01)
+        ['https://ginagerson.xxx', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Gina Gerson', ''],
+        ['https://hansthehornygrandpa.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Hans The Horny Grandpa', ''],
+        ['https://hunglow.org', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Hung Low', 'Hung Lo'],
         ['https://isinxxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'I Sin XXX', ''],
+        ['https://jenysmith.net', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Jeny Smith', 'Jeny Smith'],
         ['https://jerkoffwithme.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Jerk Off With Me', ''],
-        ['https://katie71.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Katie71', 'Katie71'],
-        ['https://www.kelleycabbana.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Kelley Cabbana', 'Kelley Cabbana'],
+        ['https://jessydubairaw.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Jessy Dubai Raw', 'Jessy Dubai'],
         ['https://kinkyrubberworld.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Kinky Rubber World', 'Latex Lara'],
-        ['https://www.ladysublime.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Lady Sublime', 'Lady Sublime'],
-        ['https://www.matthiaschrist.com', '&transitParameters[v1]=OBoiu4zYsP', 'Matthias Christ', ''],
-        ['https://www.monstermalesprod.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Monster Males Productions', ''],
+        ['https://lilcandy.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Lil Candy', 'Lil Candy'],
+        ['https://lonelymeow.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'LonelyMeow', ''],
+        ['https://mma-xxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'MMA XXX', ''],
+        ['https://mugursworld.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Mugur Porn', ''],
         ['https://natashanice.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Natasha Nice', 'Natasha Nice'],
-        ['https://www.crystaldenison.com', '&transitParameters[v1]=OBoiu4zYsP', 'Crystal Denison', 'Crystal Denison'],
-        ['https://www.gingerfans.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Ginger Fans', 'Ginger St Cyr'],
-        ['https://iadorejessicacho.live', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'I Adore Jessica Cho', 'Jessica Cho'],
-        ['https://www.jazziequexxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Jazzie Que XXX', 'Jacquelyn Jaxx'],
-        ['https://www.ladyfoxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Lady Foxxx', 'Lisa Fox'],
-        ['https://www.lalaiveyxxx.com', '&transitParameters[v1]=OBoiu4zYsP', 'La La Ivey XXX', 'La La Ivey'],
-        ['https://www.naughtyayla.com', '&transitParameters[v1]=OBoiu4zYsP', 'Naughty Ayla', 'Naughty Ayla'],
-        ['https://www.patriciagoddess.com', '&transitParameters[v1]=uaKV7hnDcF', 'Patricia Goddess', 'Patricia Goddess'],
-        ['https://ninnworx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Ninn Worx', ''],
         ['https://nordiskaporrfilmer.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Svenska Porrfilmer', ''],
-        ['https://www.nudechrissy.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Nude Chrissy', ''],
+        ['https://oopsmodels.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Oops Models (Official)', ''],
+        ['https://pastelgoddess.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Pastel Goddess', 'Pastel Goddess'],
         ['https://peghim.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'PegHim', ''],
         ['https://porntugal.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Porntugal', ''],
-        ['https://www.primalbang.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Primal Bang', ''],
         ['https://psychohenessy.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Psycho Henessy', 'Henessy'],
         ['https://realagent.xxx', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Real Agent', ''],
-        ['https://www.sabrinasabrokvideos.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Sabrina Sabrok', 'Sabrina Sabrok'],
-        ['https://santalatina.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Santa Latina', ''],
-        ['https://sukmydick.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Suk My Dick', ''],
-        ['https://therealscarletred.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Scarlet Red', 'Scarlet Red'],
-        ['https://thiccvision.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Thiccvision', ''],
-        ['https://www.ticklehotness.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Tickle Hotness', ''],
-        # ['https://trinitystclair.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Trinity St Clair', 'Trinity St Clair'],  # Site non-responsive (2022-08-01)
-        ['https://www.viscontivip.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Visconti VIP', ''],
-        ['https://www.mylifeinmiami.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'My Life In Miami', ''],
-        ['https://www.throatwars.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Throat Wars', ''],
-        ['https://www.niksindian.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Niks Indian', ''],
-        ['https://www.getyourkneesdirty.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Get Your Knees Dirty', ''],
-        ['https://arabellesplayground.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Arabelles Playground', ''],
-        ['https://antonioclemens.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Antonio Clemens', ''],
-        ['https://ponygirl-riding.com', '&transitParameters[v1]=OBoiu4zYsP&transitParameters[v2]=OhUOlmasXD', 'Ponygirl Riding', ''],
-        ['https://hansthehornygrandpa.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Hans The Horny Grandpa', ''],
-        ['https://vinaskyxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Vina Sky', ''],
-        ['https://lonelymeow.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'LonelyMeow', ''],
         ['https://rydenarmani.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Ryden Armani', ''],
-        ['https://lilcandy.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Lil Candy', 'Lil Candy'],
-        ['https://pvgirls.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Porn Valley Girls', ''],
-        ['https://idreamofjo.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'I Dream of Jo', 'Monica Sweet'],
-        ['https://jenysmith.net', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Jeny Smith', 'Jeny Smith'],
-        ['https://oopsmodels.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Oops Models (Official)', ''],
-        ['https://ginagerson.xxx', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Gina Gerson', ''],
-        ['https://mugursworld.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Mugur Porn', ''],
-        ['https://hunglow.org', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Hung Low', 'Hung Lo'],
-        ['https://exploitedtalent.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Exploited Talent', ''],
-        ['https://dripdropprod.net', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'DripDrop', ''],
-        ['https://thepervempire.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'The Perv Empire', ''],
         ['https://sallydangeloxxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Sally Dangelo XXX', ''],
+        ['https://santalatina.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Santa Latina', ''],
         ['https://slobjobz.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'SlobJobz', ''],
-        ['https://aikoprincess.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Aiko Princess', ''],
-        ['https://clubmaseratixxx.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Club Maserati XXX', ''],
-        ['https://transtakenraw.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Trans Taken', ''],
-        ['https://mma-xxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'MMA XXX', ''],
-        ['https://jessydubairaw.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Jessy Dubai Raw', 'Jessy Dubai'],
-        ['https://pastelgoddess.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Pastel Goddess', 'Pastel Goddess'],
+        ['https://sukmydick.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Suk My Dick', ''],
         ['https://suzyq.modelcentro.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'SuzyQ', 'SuzyQ'],
-        ['https://clubcuck.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Club Cuck', 'Club Cuck'],
+        ['https://thepervempire.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'The Perv Empire', ''],
+        ## ['https://therealscarletred.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Scarlet Red', 'Scarlet Red'],
+        ['https://thiccvision.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Thiccvision', ''],
+        ['https://transtakenraw.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Trans Taken', ''],
+        ['https://vinaskyxxx.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Vina Sky', ''],
+        ['https://www.amberspanks.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Amber Spanks', 'Amber Dawn'],
+        ['https://www.backalleytoonzonline.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Back Alley Toonz', ''],
+        ['https://www.baileyrayne.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Bailey Rayne', 'Bailey Rayne'],
         ['https://www.frdiapergirls.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'French Diaper Girls', ''],
-    ]
-
+        ['https://www.getyourkneesdirty.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Get Your Knees Dirty', ''],
+        ['https://www.hollandswing.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Holland Swing', 'Nikki Holland'],
+        ['https://www.kelleycabbana.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Kelley Cabbana', 'Kelley Cabbana'],
+        ['https://www.ladysublime.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Lady Sublime', 'Lady Sublime'],
+        ['https://www.lalaiveyxxx.com', '&transitParameters[v1]=OBoiu4zYsP', 'La La Ivey XXX', 'La La Ivey'],
+        ['https://www.matthiaschrist.com', '&transitParameters[v1]=OBoiu4zYsP', 'Matthias Christ', ''],
+        ['https://www.monstermalesprod.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Monster Males Productions', ''],
+        ['https://www.mylifeinmiami.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'My Life In Miami', ''],
+        ['https://www.niksindian.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Niks Indian', ''],
+        ['https://www.primalbang.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Primal Bang', ''],
+        ['https://www.throatwars.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Throat Wars', ''],
+        ['https://www.ticklehotness.com', '&transitParameters[v1]=OhUOlmasXD&transitParameters[v2]=OhUOlmasXD', 'Tickle Hotness', ''],
+        ['https://www.viscontivip.com', '&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD', 'Visconti VIP', ''],
+        ]
+    
     selector_map = {
         'title': '',
         'description': '',
@@ -125,8 +126,9 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
         'pagination': '/home_page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.sites:
+            print(f'Fetching scenes from {link[2]}')
             yield scrapy.Request(link[0] + '/videos/', callback=self.start_requests_2, meta={'link': link[0], 'transit': link[1], 'site': link[2], 'performer': link[3]})
 
     def start_requests_2(self, response):
@@ -236,6 +238,9 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
             if "arabelle" in response.url:
                 meta['performer'] = "Arabelle Raphael"
 
+            if "dakotamarr" in response.url:
+                meta['performer'] = "Dakota Marr"
+
             if "vinasky" in response.url:
                 meta['performer'] = "Vina Sky"
 
@@ -331,6 +336,8 @@ class NetworkAdultCentroSpider(BaseSceneScraper):
         if "Lisa Rivera" in item['tags']:
             item['tags'].remove("Lisa Rivera")
             item['performers'].append("Lisa Rivera")
+        if "Dakota Marr" in item['tags']:
+            item['tags'].remove("Dakota Marr")
         if "idreamofjo" in response.url and "Jo" in item['performers']:
             item['performers'].remove("Jo")
         if "Nina Rivera" in item['tags']:

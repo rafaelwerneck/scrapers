@@ -26,7 +26,7 @@ class SiteCumBuffetSpider(BaseSceneScraper):
         'pagination': '/categories/movies_%s_d.html#'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(url="https://www.cumbuffet.com/samples",
                              callback=self.get_scenes,
                              meta={'page': self.page},

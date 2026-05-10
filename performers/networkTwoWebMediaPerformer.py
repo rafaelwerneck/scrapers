@@ -23,7 +23,7 @@ class NetworkTwoWebMediaPerformerSpider(BasePerformerScraper):
         'pagination': '/_next/data/<buildID>/models.json?page=%s&order_by=publish_date&sort_by=desc&site=wankitnow.com',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://wankitnow.com/', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

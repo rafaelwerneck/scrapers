@@ -35,7 +35,7 @@ class siteLegsJapanPerformerSpider(BasePerformerScraper):
     ]
 
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.legsjapan.com/en/girls"
         for link in self.start_urls:
             yield scrapy.Request(url,

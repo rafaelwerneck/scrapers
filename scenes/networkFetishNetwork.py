@@ -82,7 +82,7 @@ class FetishNetworkSpider(BaseSceneScraper):
         'pagination': '/t2/show.php?a=2040_%s&uvar=typein.4.10.10.0.0.0.0.0'
     }
 
-    def start_requests(self):
+    async def start(self):
         if not hasattr(self, 'start_urls'):
             raise AttributeError('start_urls missing')
 

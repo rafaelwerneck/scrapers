@@ -30,19 +30,22 @@ class SiteTransSexJapanSpider(BaseSceneScraper):
     def get_model_scenes(self, response):
         scenes = response.xpath('//div[contains(@class, "content-video")]')
         for scene in scenes:
-            item = SceneItem()
+            item = self.init_scene()
             image = scene.xpath('./../@style').get()
             item['image'] = re.search(r'\((http.*)\)', image).group(1)
             item['image_blob'] = self.get_image_blob_from_link(item['image'])
             item['id'] = re.search(r'tour/(.*?)/', item['image']).group(1)
             item['title'] = self.cleanup_title(scene.xpath('./div[contains(@class, "title")]/strong/text()').get())
-            item['date'] = self.parse_date(scene.xpath('./div[contains(@class, "date")]/strong/text()').get(), date_formats=['%d %B. %Y']).strftime('%Y-%m-%d')
+            scenedate = scene.xpath('./div[contains(@class, "date")]/strong/text()')
+            if scenedate:
+                item['date'] = self.parse_date(scenedate.get(), date_formats=['%d %B. %Y']).strftime('%Y-%m-%d')
             item['performers'] = [self.cleanup_title(scene.xpath('//div[@class="model-name"]/text()').get())]
             duration = scene.xpath('./div[contains(@class, "title")]/strong/following-sibling::span/text()')
             if duration:
                 duration = duration.get()
                 duration = re.search(r'(\d+)', duration).group(1)
                 item['duration'] = str(int(duration) * 60)
+            item['performers_data'] = self.get_performers_data(item['performers'])
             item['site'] = "TranSexJapan"
             item['network'] = "TranSexJapan"
             item['parent'] = "TranSexJapan"
@@ -52,3 +55,14 @@ class SiteTransSexJapanSpider(BaseSceneScraper):
             item['trailer'] = ''
             item['url'] = f"https://www.transexjapan.com/scene/{item['id']}"
             yield self.check_item(item, self.days)
+
+    def get_performers_data(self, performers):
+        performers_data = []
+        for performer in performers:
+            performer_data = {}
+            performer_data['name'] = performer.strip()
+            performer_data['site'] = "TranSexJapan"
+            performer_data['extra'] = {}
+            performer_data['extra']['gender'] = "Transgender Female"
+            performers_data.append(performer_data)
+        return performers_data

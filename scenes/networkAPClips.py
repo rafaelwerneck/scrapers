@@ -31,7 +31,7 @@ class NetworkAPClipsSpider(BaseSceneScraper):
         pagination = pagination.replace("<PAGE>", str(page))
         return self.format_url(base, pagination)
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

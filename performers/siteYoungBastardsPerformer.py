@@ -29,7 +29,7 @@ class SiteYoungBastardsPerformerSpider(BasePerformerScraper):
             item = PerformerItem()
 
             item['name'] = self.cleanup_title(performer.xpath('.//div[@class="nm-name"]/text()').get())
-            item['image'] = performer.xpath('./a/img/@src').get()
+            item['image'] = self.format_link(response, performer.xpath('./a/img/@src').get())
             item['image_blob'] = self.get_image_blob_from_link(item['image'])
             item['bio'] = ''
             item['gender'] = 'Male'

@@ -51,7 +51,7 @@ class ATKKingdomPlaywrightSpider(BaseSceneScraper):
         }
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True

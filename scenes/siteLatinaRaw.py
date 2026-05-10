@@ -33,7 +33,7 @@ class SiteLatinaRawSpider(BaseSceneScraper):
         page = str((int(page) - 1) * 24)
         return self.get_selector_map('pagination') % page
 
-    def start_requests(self):
+    async def start(self):
         # meta = {}
         # meta['page'] = 1
         # headers = {

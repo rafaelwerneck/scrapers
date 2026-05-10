@@ -49,7 +49,7 @@ class JavSEXTBPerformerSpider(BasePerformerScraper):
         'https://sextb.net',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True

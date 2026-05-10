@@ -17,7 +17,7 @@ class SitePowershotzSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://powershotz.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

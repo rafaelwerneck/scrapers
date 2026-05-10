@@ -241,13 +241,13 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'https://www.spankbanggold.com',
         'https://www.tabooheat.com',
         'https://www.thebrats.com',
-        'https://www.touchmywife.com',
+        ## 'https://www.touchmywife.com', Moved to Aylo
         'https://www.transfixed.com',
         'https://www.transsexualangel.com',
         'https://www.transsexualroadtrip.com',
         'https://www.truelesbian.com',
         'https://www.tsfactor.com',
-        'https://tour1.vivid.com',
+        'https://www.vivid.com',
         'https://www.wicked.com',
         'https://www.xempire.com',
         'https://www.zerotolerancefilms.com',
@@ -278,7 +278,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'USER_AGENT':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62',
         'CONCURRENT_REQUESTS': 4,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 4,
-        'CONCURRENT_REQUESTS_PER_IP': 4,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 4,
         "MEDIA_ALLOW_REDIRECTS": True,
     }
 
@@ -287,7 +287,7 @@ class AdultTimeAPISpider(BaseSceneScraper):
         'pagination': '/en/videos?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         if not hasattr(self, 'start_urls'):
             raise AttributeError('start_urls missing')
 

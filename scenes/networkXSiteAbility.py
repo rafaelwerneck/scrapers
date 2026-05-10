@@ -51,8 +51,8 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
         ['https://thelunadawn.com', '/x-new/new-preview-list.php?page=%s&user=thelunadawn.com', 'Luna Dawn'],
         ['https://bondagedownsouth.com', '/x-new/new-preview-list.php?page=%s&user=bondagedownsouth.com', 'Bondage Down South'],
         ['https://lisaharlotte.com', '/x-new/new-preview-list.php?page=%s&user=lisaharlotte.com', 'Lisa Harlotte'],
-        ['https://wrappedinbondage.com', '/x-new/new-preview-list.php?page=%s&user=wrappedinbondage.com', 'Wrapped in Bondage'],
-        ['https://ticklerotic.com', '/x-new/new-preview-list.php?page=%s&user=ticklerotic.com', 'Ticklerotic'],
+        ## ['https://wrappedinbondage.com', '/x-new/new-preview-list.php?page=%s&user=wrappedinbondage.com', 'Wrapped in Bondage'],
+        ## ['https://ticklerotic.com', '/x-new/new-preview-list.php?page=%s&user=ticklerotic.com', 'Ticklerotic'],
         ['https://bondagecrossdresser.com', '/x-new/new-preview-list.php?page=%s&user=bondagecrossdresser.com', 'Bondage Crossdresser'],
         ['https://stellalibertyvideos.com', '/x-new/new-preview-list.php?page=%s&user=stellalibertyvideos.com', 'Stella Liberty'],
     ]
@@ -69,7 +69,7 @@ class NetworkXSiteAbilitySpider(BaseSceneScraper):
         'pagination': '/categories/movies_%s_d.html#'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             meta = {}
             meta['page'] = self.page

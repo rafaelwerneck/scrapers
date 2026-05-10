@@ -26,7 +26,7 @@ class SiteLadyboyGoldPerformerSpider(BasePerformerScraper):
     name = 'LadyboyGoldPerformer'
     network = 'Ladyboy Gold'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

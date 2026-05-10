@@ -36,7 +36,7 @@ class AdultTimeAPISpiderPerformers(BasePerformerScraper):
         'pagination': '/en/videos?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         if not hasattr(self, 'start_urls'):
             raise AttributeError('start_urls missing')
 

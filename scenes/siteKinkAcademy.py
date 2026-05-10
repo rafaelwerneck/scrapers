@@ -38,7 +38,7 @@ class SiteKinkAcademySpider(BaseSceneScraper):
     def get_next_page_url(self, base, page, pagination):
         return self.format_url(base, pagination % page)
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

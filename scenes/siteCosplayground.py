@@ -14,11 +14,11 @@ class SiteCosplaygroundSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '//div[@class="container"]//h2//text()',
+        'title': '//div[@class="container"]//h1//text()',
         'description': '//h3[contains(text(), "Description")]/following-sibling::div/p//text()',
         'date': '',
         'image': '//video/@data-poster',
-        'performers': '//span[contains(text(), "Models:")]/following-sibling::a/text()',
+        'performers': '//span[contains(text(), "Girls:")]/following-sibling::a/text()',
         'tags': '//h3[contains(text(), "Categories")]/following-sibling::a/text()',
         'trailer': '',
         'external_id': r'.*s(\d+)',

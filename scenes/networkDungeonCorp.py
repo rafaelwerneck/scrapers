@@ -5,135 +5,103 @@ import string
 import dateparser
 from tpdb.BaseSceneScraper import BaseSceneScraper
 from scrapy import Selector
+true = True
+false = False
 
 
 class networkDungeonCorpSpider(BaseSceneScraper):
     name = 'DungeonCorp'
     network = 'Dungeon Corp'
 
+    cookies = [{
+            "domain": ".dungeoncorp.com",
+            "hostOnly": false,
+            "httpOnly": true,
+            "name": "_age_confirmed_1",
+            "path": "/",
+            "sameSite": "unspecified",
+            "value": "a8166b5f7ec8fa7508efd3b276320d6f"
+        }
+    ]
 
     start_urls = [
-        'http://dungeoncorp.com',
+        'https://dungeoncorp.com',
     ]
 
     selector_map = {
-        'title': '//div[@class="heading"]/text()[1]',
-        're_title': '\"(.*)\"',
-        'description': '//div[@class="descriptext"]//text()|//span[contains(@class,"descript") and not(.//object) and not(contains(.//text(),"FREE VIDEO")) and not(contains(@class,"descriptext1"))]//text()|//p[contains(@class,"descript")]//text()|//td[contains(@class,"descrip")]//text()',
-        'date': '',
+        'title': '//title/text()',
+        'description': '//p[@class="lead text-center"]//text()',
         'image': '//img[contains(@src,"vidt1.jpg")]/@src|//img[contains(@src,"vidt.jpg")]/@src',
-        'performers': '',
-        'tags': '//td[contains(text(),"Categories")]/following-sibling::td/a/text()',
-        'external_id': 'id=(\d+)',
+        'external_id': '',
         'trailer': '',
         'pagination': '/?page=updates&p=%s'
     }
 
+    def get_next_page_url(self, base, page):
+        page = str(int(page) - 1)
+        return self.format_url(base, self.get_selector_map('pagination') % page)
+    
+
     def get_scenes(self, response):
         meta = response.meta
+        scenes = response.xpath('//a[contains(@href, "/updates/")]/parent::div[contains(@class, "col-md-4")]')
+        for scene in scenes:
+            scenedate = scene.xpath('.//i[contains(@class, "fa-clock")]/following-sibling::text()[1]').get()
+            if scenedate:
+                scenedate = dateparser.parse(scenedate.strip(), date_formats=['%m/%d/%Y']).strftime('%Y-%m-%d')
+            if scenedate:
+                meta['date'] = scenedate
+            
+            orig_image = scene.xpath('.//img/@src')
+            if orig_image:
+                meta['orig_image'] = self.format_link(response, orig_image.get())
 
-        javascript = response.text
-        counter = 0
-        pagelimit = 10
-        if self.limit_pages:
-            if self.limit_pages == "all":
-                pagelimit = 9999
+            performers = scene.xpath('.//a[contains(@href, "model=")]/text()')
+            if performers:
+                meta['performers'] = performers.getall()
             else:
-                pagelimit = int(self.limit_pages) * 10
-        for line in javascript.split("\r\n"):
-            if "<td>" in line.lower() and "javascript" not in line.lower() and "updates.html" not in line.lower() and "http://join." not in line.lower():
-                counter += 1
-                if counter <= pagelimit:
+                meta['performers'] = []
 
-                    line_text = re.search('write\(\"(.*)\"\)', line)
-                    if line_text:
-                        line_text = line_text.group(1)
-                        line_text = html.unescape(line_text)
-                        line_text = line_text.replace("\\","")
-                        line_sel = Selector(text=line_text)
+            site = scene.xpath('.//a[contains(@href, "site=")]/text()')
+            if site:
+                meta['site'] = site.get()
 
-                        scene = line_sel.xpath('//a/@href').get()
-                        meta['id'] = re.search('.*\/(.*?)\/.*?$', scene).group(1)
-                        meta['orig_image'] = line_sel.xpath('//img/@src').get().strip()
-                        meta['site'] = line_sel.xpath('//span[@class="sitename"]/text()').get().strip()
-                        date = line_sel.xpath('//span[@class="date"]/text()').get().strip()
-                        meta['date'] = dateparser.parse(date, date_formats=['%m.%d.%Y']).isoformat()
-                        performers = line_sel.xpath('//span[@class="modelname"]/text()').get()
-                        if "and" in performers.lower():
-                            performers = performers.split(" and ")
-                        else:
-                            performers = [performers]
-                        meta['performers'] = list(map(lambda x: x.replace("  "," ").strip(), performers))
+            sceneurl = scene.xpath('./a[contains(@href, "/updates/")]/@href').get()
 
-                        yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
-
-
-
-    def get_date(self, response):
-        return dateparser.parse('today').isoformat()
-
-    def get_title(self, response):
-        title = response.xpath('//span[@class="shoottitle"]//text()')
-        if not title:
-            title = response.xpath('//div[@class="heading"]/text()[1]')
-        if not title:
-            title = response.xpath('//td[@class="heading"]/text()[1]')
-        if not title:
-            title = response.xpath('//*[contains(text(),"Preview for")]/text()')
-        if not title:
-            title = response.xpath('//*[contains(text(),"Preivew for")]/text()')
-        if not title:
-            title = response.xpath('//*[contains(text(),"Preview") and contains(text(),"for")]/text()')
-
-        if title:
-            title = title.getall()
-            title = "".join(title)
-
-        if '"' in title:
-            titlestrip = re.search('\"(.*)\"', title)
-            if titlestrip:
-                title = titlestrip.group(1)
-                # ~ print(title)
-
-        if title:
-            return title.strip()
-        else:
-            return ''
+            if self.check_item(meta, self.days):
+                yield scrapy.Request(url=self.format_link(response, sceneurl), callback=self.parse_scene, meta=meta)
 
     def get_image(self, response):
+        meta = response.meta
         image = self.process_xpath(response, self.get_selector_map('image'))
         if image:
             image = image.get()
-            image = image.replace("..","")
-            if "vidt1.jpg" in image:
-                image = response.url.replace("index.html","vidt1.jpg").replace("index.php","vidt1.jpg")
-            if "vidt.jpg" in image:
-                image = response.url.replace("index.html","vidt.jpg").replace("index.php","vidt.jpg")
 
-            image = self.format_link(response, image)
-            return image.replace(" ", "%20")
-        else:
-            return response.meta['orig_image']
+        if not image or image in response.url:
+            image = meta['orig_image']
 
-    def get_performers(self, response):
-        return []
+        image = self.format_link(response, image)
+        return image.replace(" ", "%20")
 
     def get_tags(self, response):
         return ['Bondage', 'Submission']
 
-    def get_parent(self, response):
-        return response.meta['site']
-
-
-    def get_description(self, response):
-        if 'description' not in self.get_selector_map():
+    def get_id(self, response):
+        external_id = response.xpath('//span[@class="shootid"]/text()')
+        if external_id:
+            external_id = external_id.get()
+            external_id = re.sub(r'[^a-z0-9:_-]+', '', external_id.lower())
+            external_id = re.search(r'\:(.*)', external_id)
+            if external_id:
+                external_id = external_id.group(1)
+                return external_id.strip()
+        else:
             return ''
-
-        description = self.process_xpath(response, self.get_selector_map('description'))
-        if description:
-            description = description.getall()
-            description = "".join(description)
-            description = description.replace("\r","").replace("\n","").replace("\t","")
-            return html.unescape(description.strip())
-
-        return ''
+        
+    def get_duration(self, response):
+        duration = response.xpath('//i[contains(@class, "fa-video")]/following-sibling::span[contains(following-sibling::text(), "minutes")]//text()')
+        if duration:
+            duration = duration.get()
+            duration = re.search(r'(\d+)', duration)
+            if duration:
+                return str(int(duration.group(1)) * 60)

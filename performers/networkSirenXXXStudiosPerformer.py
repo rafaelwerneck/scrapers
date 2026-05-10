@@ -26,7 +26,7 @@ class networkSirenXXXStudiosPerformerSpider(BasePerformerScraper):
         'https://myfirsttimesluts.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             url = link + "/tour/models/models.html"
             yield scrapy.Request(url,

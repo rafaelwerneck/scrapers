@@ -38,7 +38,7 @@ class DorcelClubSpider(BaseSceneScraper):
         'gen_cookies': 'ta'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://www.dorcelclub.com/en/", callback=self.start_requests_2, headers=self.headers, cookies=self.cookies)
 
     def start_requests_2(self, response):

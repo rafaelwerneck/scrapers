@@ -25,7 +25,7 @@ class NetworkYezzclipsSpider(BaseSceneScraper):
         link = f"https://www.yezzclips.com/store_view.php?id={str(meta['siteid'])}&page={str(page)}"
         return link
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.yezzclips.com"
         yield scrapy.Request(url, callback=self.start_requests2, headers=self.headers, cookies=self.cookies)
 

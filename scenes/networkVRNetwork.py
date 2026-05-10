@@ -37,14 +37,14 @@ class SiteVRNetworkAPISpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         "LOG_LEVEL": 'INFO',
         "EXTENSIONS": {'scrapy.extensions.logstats.LogStats': None},
         "MEDIA_ALLOW_REDIRECTS": True,
         "HTTPERROR_ALLOWED_CODES": [404],
     }
 
-    def start_requests(self):
+    async def start(self):
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

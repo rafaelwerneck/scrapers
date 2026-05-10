@@ -56,12 +56,12 @@ class PornFidelitySpider(BaseSceneScraper):
             if site:
                 site = site.get()
                 site = site.lower().strip()
-                if site == "tf":
+                if "tf" in site:
                     meta['site'] = "TeenFidelity"
                     meta['parent'] = "PornFidelity"
-                if site == "pf":
+                if "pf" in site:
                     meta['site'] = "PornFidelity"
-                if site == "km":
+                if "km" in site:
                     meta['site'] = "KellyMadison"
                     meta['parent'] = "PornFidelity"
                 if not site:

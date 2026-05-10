@@ -29,7 +29,7 @@ class PerformerSpider(BasePerformerScraper):
         '/model/boys?page=%s',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

@@ -16,7 +16,7 @@ class SiteClips4Sale_3Spider(BaseSceneScraper):
         ['Clips4Sale', 'Clips4Sale: Yes Ms Talia', 'Clips4Sale: Yes Ms Talia', '133263', 'yes-ms-talia'],
         ['Clips4Sale', 'Clips4Sale: Young Goddess Kim', 'Clips4Sale: Young Goddess Kim', '107054', 'young-goddess-kim'],
         ['Clips4Sale', 'Clips4Sale: Yvette Xtreme', 'Clips4Sale: Yvette Xtreme', '112942', 'yvette-xtreme'],
-        ['Clips4Sale', 'Cock Ninja Studios', 'Cock Ninja Studios', '79893', 'cock-ninja-studios'],
+        ['Clips4Sale', 'Clips4Sale: Cock Ninja Studios', 'Clips4Sale: Cock Ninja Studios', '79893', 'cock-ninja-studios'],
         ['Clips4Sale', 'Cory Chase', 'Corys Super Heroine Adventures', '32589', 'cory-s-super-heroine-adventures'],
         ['Clips4Sale', 'Cruel Anettes Fetish Store', 'Cruel Anettes Fetish Store', '122893', 'cruel-anettes-fetish-store'],
         ['Clips4Sale', 'Cruel Mistresses', 'Cruel Mistresses', '39213', 'cruel-caning-and-whipping-'],
@@ -94,7 +94,7 @@ class SiteClips4Sale_3Spider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         link = self.url
         meta = {}
         for site in self.sites:

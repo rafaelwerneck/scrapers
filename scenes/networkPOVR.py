@@ -31,7 +31,7 @@ class NetworkPOVRSpider(BaseSceneScraper):
         'pagination': '/studios/povr-originals?o=d&p=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "https://povr.com"
         yield scrapy.Request(url=link, callback=self.change_preferences, cookies=self.cookies, headers=self.headers)
 

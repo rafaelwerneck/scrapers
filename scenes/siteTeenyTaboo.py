@@ -16,33 +16,43 @@ class SieTeenyTabooSpider(BaseSceneScraper):
         'https://www.teenytaboo.com',
     ]
 
-    # ~ cookies = [{"name": "warn", "value": "true"}]
-    # cookies = [{"domain":"www.teenytaboo.com","expirationDate":1769450908,"hostOnly":true,"httpOnly":false,"name":"warn","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"true"},{"domain":"www.teenytaboo.com","hostOnly":true,"httpOnly":false,"name":"PHPSESSID","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"ia4krmqdolmj0vo06sqk81p9vb"},{"domain":"www.teenytaboo.com","hostOnly":true,"httpOnly":true,"name":"e1n3md44JfuLO8Ar","path":"/","sameSite":"lax","secure":true,"session":true,"storeId":"0","value":"AQAAU4KAj8Zk0Y5Zp8mdmjCctYx-YcjPuFCGFc2XD5u6-JcWflppAAAAAAC-AQBi47N5_suCz76xT0RDrkPKmgAA8Im8A05b1B4HB0r4FetCLQwOH1Z0XYDym8ruXQivlw_XKw9b6OWNU9RH64gVTDkRkh03CJtE0-HLr_WUKJdu13kgZ-UP-u2sxHzc6pr0-9dnYNvoeH-Up0ROFLl8Nu-L6gll0p30hu_TsI7mD00T6uILxfSeZjBzhFLlbry10vclXpqAgyKPjyrZq-IOT4Cmgp63Y1KAREA-hiDS2FbPNSCMJq1OnrGTxlsYpKFOlItxAXtk3NSgBSRd6L8FAqv3LGrNoQ_o8c1ZwAsXw8rkE15Ughf5ZTjRXrxYOEEcxu7BN68W9goUTyEwoA6nsF9MHhiTp3_94MusgZnB_U7Pc1iOmFYRmPFmyrqLWtMZjn9J5rSTHFbQsKWYw8seqSVFRms05W0N3rtXDTztwJWbHkcPPrufsOWVL-k11ofz3HpIKDQQMjSIwsM4GSkiADcM4VlaX7dgaUVb5dQPU5Fg"}]
+    cookies = [{
+            "domain": "www.teenytaboo.com",
+            "hostOnly": true,
+            "httpOnly": false,
+            "name": "age_check",
+            "path": "/",
+            "sameSite": "unspecified",
+            "secure": false,
+            "session": false,
+            "storeId": "0",
+            "value": "true"
+        }
+    ]
+
 
     selector_map = {
-        'title': '//h1[contains(@class, "customhcolor")]/text()',
-        'description': '//h2[contains(@class, "customhcolor")]/p/text()',
-        'date': '//span[@class="date"]/text()',
-        'date_formats': ['%B %d %Y'],
-        'image': '//center/img/@src',
+        'title': '//h1[@class="video-title"]/text()',
+        'description': '//div[@class="video-info"]/following-sibling::div[contains(@style, "white")]/p//text()',
+        'date': '//div[@class="video-info"]//p[contains(text(), "Added")]/text()',
+        're_date': r'(\w{3,4}\s+?\d{1,2}, \d{4})',
+        'date_formats': ['%b %d, %Y'],
+        'image': '//div[@id="video-player-section"]//img/@src',
         'image_blob': True,
-        'performers': '//h3[contains(@class, "customhcolor")]/a/text()',
-        'tags': '',
+        'duration': '//div[@class="video-info"]//p[contains(text(), "Length")]/text()',
+        're_duration': r'((?:\d{1,2}\:)?\d{2}\:\d{2})',
+        'performers': '//div[@class="model-tags"]/a[contains(@href, "/model/")]/text()',
+        'tags': '//div[@class="model-tags"]/a[contains(@href, "/search/")]/text()',
         'trailer': '',
         'external_id': r'video/(.*?)/',
-        'pagination': '/page%s'
+        'pagination': '/page%s/'
     }
 
     custom_scraper_settings = {
         'TWISTED_REACTOR': 'twisted.internet.asyncioreactor.AsyncioSelectorReactor',
-        # ~ 'AUTOTHROTTLE_ENABLED': True,
-        # ~ 'AUTOTHROTTLE_START_DELAY': 1,
-        # ~ 'AUTOTHROTTLE_MAX_DELAY': 120,
         'CONCURRENT_REQUESTS': 1,
-        # 'DOWNLOAD_DELAY': 60,
-        # 'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        #'CONCURRENT_REQUESTS_PER_IP': 1,
         'SPIDERMON_ENABLED': False,
         'DOWNLOAD_FAIL_ON_DATALOSS': True,
         'RETRY_ENABLED': True,
@@ -53,16 +63,9 @@ class SieTeenyTabooSpider(BaseSceneScraper):
             "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
             "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
         },
-        'DOWNLOADER_MIDDLEWARES': {
-            'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-            'scrapy.downloadermiddlewares.retry.RetryMiddleware': 500,
-            'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 300,
-            'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 301,
-            'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 100,
-        }
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True
@@ -71,22 +74,8 @@ class SieTeenyTabooSpider(BaseSceneScraper):
             yield scrapy.Request(url=self.get_next_page_url(link, self.page), callback=self.parse, meta=meta, cookies=self.cookies)
 
     def get_scenes(self, response):
-        scenes = response.xpath('//div[contains(@class,"videoimg_wrapper")]/a/@href').getall()
+        scenes = response.xpath('//div[@class="lv-info"]/h3/a/@href|//div[contains(@class,"video-thumb")]/a/@href').getall()
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
                 url=self.format_link(response, scene)
                 yield scrapy.Request(url, callback=self.parse_scene, dont_filter=True, meta=response.meta)
-
-    def get_title(self, response):
-        title = super().get_title(response)
-        return string.capwords(title.replace("-", " "))
-
-    def get_tags(self, response):
-        tags = response.xpath('//h4[contains(@class, "customhcolor")]/text()')
-        if tags:
-            return [
-                string.capwords(tag.strip())
-                for tag in tags.get().split(",")
-                if tag.strip()
-            ]
-        return []

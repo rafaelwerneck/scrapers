@@ -45,7 +45,7 @@ class siteDarkkoTVPerformerSpider(BasePerformerScraper):
         # '/models/models_%s.html?g=nb',
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 
@@ -121,3 +121,11 @@ class siteDarkkoTVPerformerSpider(BasePerformerScraper):
                 if "No" in boob_text:
                     fakeboobs = 'yes'
         return fakeboobs
+    
+    def get_name(self, response):
+        name = super().get_name(response)
+        if name:
+            name = name.lower()
+            name = name.replace("darkko tv bio for model", "")
+            return string.capwords(name.strip())
+        return None

@@ -28,7 +28,7 @@ class NetworkFanCentroSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
 
         for link in self.start_urls:

@@ -25,7 +25,7 @@ class PinkLabelSpider(BaseSceneScraper):
         'trailer': '',
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(url="https://pinklabel.tv/on-demand/studios/", callback=self.get_studios, headers=self.headers, cookies=self.cookies)
 
 

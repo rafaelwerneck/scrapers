@@ -33,7 +33,7 @@ class MovieNewSensationsSpider(BaseSceneScraper):
         # ~ 'CONCURRENT_REQUESTS': 2,
         # ~ 'USE_PROXY': True,
         # ~ 'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
-        # ~ 'CONCURRENT_REQUESTS_PER_IP': 2,
+        # ~ 'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
         # ~ "MEDIA_ALLOW_REDIRECTS": True,
     }
 

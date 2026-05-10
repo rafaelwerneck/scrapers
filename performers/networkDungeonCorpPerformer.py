@@ -18,8 +18,7 @@ class NetworkDungeonCorpPerformerSpider(BasePerformerScraper):
         'external_id': r'girls/(.+)/?$'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         url = "http://dungeoncorp.com/index.php?p=models"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

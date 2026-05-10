@@ -32,7 +32,7 @@ class SiteFemjoySpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta = {'dont_redirect': True, "handle_httpstatus_list": [302]}
         url = "https://www.femjoy.com"

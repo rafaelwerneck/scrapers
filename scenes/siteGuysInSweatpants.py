@@ -27,7 +27,7 @@ class SiteGuysInSweatpantsSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request("https://guysinsweatpants.com/scenes", callback=self.get_scenes, meta=meta, headers=self.headers, cookies=self.cookies)

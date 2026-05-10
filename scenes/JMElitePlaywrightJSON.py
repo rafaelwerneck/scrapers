@@ -60,7 +60,7 @@ class JMElitePlaywrightJSONSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         settings = get_project_settings()
 
         if not hasattr(self, 'start_urls'):

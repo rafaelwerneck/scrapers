@@ -1,3 +1,4 @@
+from os import link
 import scrapy
 
 from scrapy.http import HtmlResponse
@@ -25,7 +26,7 @@ class networkVRLifePerformerSpider(BasePerformerScraper):
         'date_formats': ['%d/%m/%Y'],
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             url = f"{link}/wp-admin/admin-ajax.php"
             headers = self.headers
@@ -35,11 +36,13 @@ class networkVRLifePerformerSpider(BasePerformerScraper):
                                  callback=self.parse,
                                  method="POST",
                                  body=body,
-                                 meta={'page': self.page},
+                                 meta={'page': self.page, 'orig_url': url},
                                  headers=headers,
                                  cookies=self.cookies)
+    
 
     def parse(self, response, **kwargs):
+        meta = response.meta
         performers = self.get_performers(response)
         count = 0
         for performer in performers:
@@ -55,24 +58,26 @@ class networkVRLifePerformerSpider(BasePerformerScraper):
                 headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
                 print('NEXT PAGE: ' + str(meta['page']))
-                yield scrapy.Request(url=self.get_next_page_url(response.url, meta['page']),
-                                     callback=self.parse,
-                                     meta=meta,
-                                     method="POST",
-                                     body=body,
-                                     headers=headers,
-                                     cookies=self.cookies)
+                url = meta['orig_url']
+                yield scrapy.Request(url=url,
+                                    callback=self.parse,
+                                    method="POST",
+                                    body=body,
+                                    meta=meta,
+                                    headers=headers,
+                                    cookies=self.cookies)
 
     @staticmethod
     def create_post_data(page):
         return f"action=virtualreal_get_performers&sort=rating&sortDirection=DESC&index={(page-1)}&itemsPerPage=15"
 
     def get_performers(self, response):
+        meta = response.meta
         json_data = response.json()['performers']
         for json_row in json_data:
             response = HtmlResponse(url=response.url, body=json_row, encoding='utf-8')
             url = self.process_xpath(response, self.get_selector_map('url')).get()
-            yield scrapy.Request(url=self.format_link(response, url), callback=self.parse_performer)
+            yield scrapy.Request(url=self.format_link(response, url), callback=self.parse_performer, meta=meta)
 
     def parse_performer(self, response):
         jslde = JsonLdExtractor()
@@ -88,13 +93,13 @@ class networkVRLifePerformerSpider(BasePerformerScraper):
             if key not in ["Gender", "Date of birth", "Country", "Eyes color", "Hair color", "Bust", "Waist", "Hips", "Piercing", "Tattoo", "Penis size", "Blog / Web"]:
                 raise Exception(f"{key} not found")
 
-        item = PerformerItem()
+        item = self.init_performer()
         item['url'] = response.url
         item['network'] = self.network
 
         item['name'] = data['name']
         if 'image' in data:
-            item['image'] = data['image']
+            item['image'] = data['image'][0]['contentUrl']
             item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
         if 'description' in data:
@@ -102,10 +107,15 @@ class networkVRLifePerformerSpider(BasePerformerScraper):
 
         if 'Gender' in bio_data:
             item['gender'] = bio_data['Gender']
+            if item['gender'] == "Female Trans":
+                item['gender'] = "Transgender Female"
+            if item['gender'] == "Male Trans":
+                item['gender'] = "Transgender Male"
 
         if 'Date of birth' in bio_data:
             date_formats = self.get_selector_map('date_formats')
-            item['birthday'] = self.parse_date(self.cleanup_text(bio_data['Date of birth']), date_formats=date_formats).isoformat()
+            if 'Date of birth' in bio_data and bio_data['Date of birth']:
+                item['birthday'] = self.parse_date(self.cleanup_text(bio_data['Date of birth']), date_formats=date_formats).strftime('%Y-%m-%d')
 
         if 'Country' in bio_data:
             item['birthplace'] = bio_data['Country']

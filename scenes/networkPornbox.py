@@ -47,7 +47,7 @@ class SitePornboxSpider(BaseSceneScraper):
         pagination = pagination.replace("<timestamp>", timestamp)
         return self.format_url(base, pagination % page)
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         if self.limit_pages == 1:
@@ -132,6 +132,7 @@ class SitePornboxSpider(BaseSceneScraper):
                    'only3xgirls', 'parasited', 'hazeher', 'collegerules', 'abuseme', 'only3xvr', 'justpov', 'girlsgonewild', 'plumperpassstudio', 'only3xlost', 'onlygolddigger', 'wetandpuffy', 'mypervyfamily', 'mykebrazil', 'mylifeinmiami',
                    'claudiamarie', 'rawwhitemeat', 'industryinvaders', 'cockyboys', 'touchmywife', 'blackbullchallenge', 'topwebmodels', 'realsexpass', 'riggsfilms', 'pervfect', 'mollyredwolf', 'bluepillmen', 'blacksonmoms', 'peter\'skingdom',
                    'pornmuschimovie', 'chickpass', 'grooby', 'pornpros', 'lubed', 'povd', 'facials4k', 'girlcum', 'exotic4k', 'nannyspy', 'castingcouchx', 'mom4k', 'bluebirdfilms', 'dreamtranny', 'pornworld', 'randyblue', 'plantsvscunts',
-                   'mugurporn', 'bradmontanastudio', 'interracialvision', 'melinamay', 'primalfetish', 'sexmex', 'gotfilled', 'alexlegend', 'aglaeaproductions', 'mrlucky', 'mrluckypov', 'povmasters', 'dripdrop', 'dripdropprod', 'artemixxx', 'theartemixxx']
+                   'mugurporn', 'bradmontanastudio', 'interracialvision', 'melinamay', 'primalfetish', 'sexmex', 'gotfilled', 'alexlegend', 'aglaeaproductions', 'mrlucky', 'mrluckypov', 'povmasters', 'dripdrop', 'dripdropprod', 'artemixxx', 'theartemixxx',
+                   'madbros', 'madbrosx', 'girlfriendsfilms', 'realkingcobra', 'brandnewamateurs']
         if not any(x in item['site'].lower().replace(" ", "").replace("-", "").replace("_", "") for x in matches):
             yield self.check_item(item, self.days)

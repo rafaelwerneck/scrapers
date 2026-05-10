@@ -13,6 +13,9 @@ class NetworkPornhub_7Spider(BaseSceneScraper):
         ["/model/zirael_rem/videos?page=%s", "Zirael_Rem", "Pornhub: Zirael_Rem"],
         ["model/wild-hope/videos?page=%s", "Wild Hope", "Pornhub: Wild Hope"],
         ["model/plasticqueeen/videos?page=%s", "Plasticqueeen", "Pornhub: Plasticqueeen"],
+        ["/model/shinaryen/videos?page=%s", "Shinaryen", "Pornhub: Shinaryen"],
+        ["/model/isabella-seduction/videos?page=%s", "Isabella Seduction", "Pornhub: Isabella Seduction"],
+        ["/model/bearuby/videos?page=%s", "Bea Ruby", "Pornhub: Bea Ruby"],
     ]
 
     selector_map = {
@@ -52,7 +55,7 @@ class NetworkPornhub_7Spider(BaseSceneScraper):
     def get_next_page_url(self, base, page, pagination):
         return self.format_url(base, pagination % page)
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['playwright'] = True

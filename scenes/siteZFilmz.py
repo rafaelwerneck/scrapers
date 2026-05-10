@@ -15,7 +15,7 @@ class SiteZFilmzSpider(BaseSceneScraper):
         'pagination': '/_next/data/<buildID>/videos.json?page=%s&order_by=publish_date&sort_by=desc',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://z-filmz-originals.com/', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

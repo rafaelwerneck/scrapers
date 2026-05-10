@@ -1,0 +1,178 @@
+import scrapy
+import re
+import html
+import string
+from tpdb.BaseSceneScraper import BaseSceneScraper
+from scrapy import Selector
+from scrapy_splash import SplashRequest
+import scrapy_splash
+
+
+class networkPornhubChannelsSpider(BaseSceneScraper):
+    name = 'PornhubChannels'
+
+    start_urls = [
+        ['/channels/pascal-sub-sluts/videos?o=da&page=%s', 'Pascals Sub Sluts','Pascals Sub Sluts','Pascals Sub Sluts', 'PASCALSSUBSLUTS - '],
+    ]
+
+    url = "https://pornhub.com"
+
+    script = '''
+        function main(splash, args)
+            local host = "proxy.crawlera.com"
+            local port = 8010
+            local user = "8d88ef5d76a34660b965cbe73c4c50d9:"
+            local password = ""
+            local session_header = "X-Crawlera-Session"
+            local session_id = "create"
+            splash:on_request(function(request)
+                request:set_header('X-Crawlera-Cookies', 'disable')
+                request:set_header(session_header, session_id)
+                request:set_proxy{host, port, username=user, password=''}
+                request:set_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36')
+            end)
+            splash.images_enabled = false
+            splash.js_enabled = true
+            splash.private_mode_enabled = false
+            assert(splash:go(args.url))
+            assert(splash:wait(7))
+            return splash:html()
+        end
+    '''
+
+    async def start(self):
+        meta = {}
+        for link in self.start_urls:
+            meta['site'] = link[1]
+            meta['parent'] = link[2]
+            meta['network'] = link[3]
+            meta['titlereplace'] = link[4]
+            meta['pagination'] = link[0]
+            meta['page'] = self.page
+            url=self.get_next_page_url(self.url, self.page, meta['pagination'])
+            print(f'URL: {url}')
+            yield SplashRequest(url,
+                                 callback=self.parse,
+                                 meta=meta,
+                                 endpoint='execute',
+                                 args={'lua_source': self.script},
+                                 headers=self.headers,
+                                 cookies=self.cookies)
+
+    def parse(self, response, **kwargs):
+        scenes = self.get_scenes(response)
+        count = 0
+        for scene in scenes:
+            count += 1
+            yield scene
+
+        if count:
+            if 'page' in response.meta and response.meta['page'] < self.limit_pages:
+                meta = response.meta
+                meta['page'] = meta['page'] + 1
+                print('NEXT PAGE: ' + str(meta['page']))
+                yield SplashRequest(url=self.get_next_page_url(response.url, meta['page'], meta['pagination']),
+                                     callback=self.parse,
+                                     meta=meta,
+                                     endpoint='execute',
+                                     args={'lua_source': self.script},
+                                     headers=self.headers,
+                                     cookies=self.cookies)
+
+    def get_next_page_url(self, base, page, pagination):
+        return self.format_url(base, pagination % page)
+
+    selector_map = {
+        'title': '//meta[@property="og:title"]/@content',
+        'description': '',
+        'date': '//script[contains(@type,"json")]',
+        're_date': 'Date\": \"(.*?)\"',
+        'image': '//meta[@property="og:image"]/@content',
+        'performers': '//a[contains(@class,"pstar-list-btn")]/@data-mxptext',
+        'tags': '//div[@class="tagsWrapper"]/a/text()|//div[@class="categoriesWrapper"]/a/text()',
+        'external_id': 'videoId: (\d+),',
+        'trailer': '',
+        'pagination': '/categories/movies_%s_d.html#'
+    }
+
+    def get_scenes(self, response):
+        # ~ print(response.headers)
+        # ~ print(response.meta)
+        # ~ print(response.text)
+        meta = response.meta
+        data = html.unescape(response.text)
+        sel = Selector(text=data)
+        scenes = sel.xpath('//div[contains(@class,"sectionChannelsWrapper")]//div[@class="phimage"]/a/@href').getall()
+        for scene in scenes:
+            yield SplashRequest(url=self.format_link(response, scene),
+                                callback=self.parse_scene, meta=meta,
+                                endpoint='execute',
+                                args={'lua_source': self.script},
+                                )
+
+    def get_site(self, response):
+        return response.meta['site']
+
+    def get_parent(self, response):
+        return response.meta['parent']
+
+    def get_network(self, response):
+        return response.meta['network']
+
+
+    def get_title(self, response):
+        replacestring = response.meta['titlereplace']
+        title = self.process_xpath(response, self.get_selector_map('title'))
+        if title:
+            title = self.get_from_regex(title.get(), 're_title')
+            if title:
+                return string.capwords(html.unescape(title.replace(replacestring,"").strip()))
+
+        return None
+
+
+    def get_id(self, response):
+        if 'external_id' in self.regex and self.regex['external_id']:
+            extern_string = response.xpath('//script[contains(text(),"videoId")]/text()').getall()
+            extern_string = " ".join(extern_string)
+            search = self.regex['external_id'].search(extern_string)
+            if search:
+                return search.group(1)
+
+        return None
+
+
+    def get_description(self,response):
+        return ''
+
+
+    def get_tags(self, response):
+        meta = response.meta
+        performers = self.process_xpath(response, self.get_selector_map('performers'))
+        if performers:
+            performers = list(map(lambda x: x.strip().lower(), performers.getall()))
+
+        if self.get_selector_map('tags'):
+            tags = self.process_xpath(response, self.get_selector_map('tags'))
+            if tags:
+                tags = list(map(lambda x: x.strip().lower(), tags.getall()))
+
+            if meta['site'].lower() in tags:
+                tags.remove(meta['site'].lower())
+
+            for performer in performers:
+                if performer in tags:
+                    tags.remove(performer)
+
+            tags2 = tags.copy()
+            for tag in tags2:
+                matches = ['pascalssubsluts', 'sd', 'hd', 'mkv']
+                if any(x in tag.lower() for x in matches):
+                    tags.remove(tag)
+
+            tags = list(map(lambda x: x.strip().title(), tags))
+            return tags
+
+
+        return []
+

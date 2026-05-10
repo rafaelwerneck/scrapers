@@ -48,7 +48,7 @@ class SiteMyDirtyHobbySpecificPerformerSpider(BaseSceneScraper):
         link = f"https://www.mydirtyhobby.com/content/api/v2/videos?page={str(page)}&pagesize=20&user_language=en&user_id={profile_id}"
         return link
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         link = "https://www.mydirtyhobby.com/"

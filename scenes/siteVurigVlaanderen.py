@@ -69,7 +69,7 @@ class SiteVurigVlaanderenSpider(BaseSceneScraper):
         url = 'https://api.sysero.nl/videos?page={}&count=20&type=video&include=images:types(thumb|thumb_mobile),products,categories,clips&filter[status]=published&filter[products]=1%2C2&filter[recurring]=1&sort[recommended_at]=DESC&frontend=3'
         return self.format_url(base, url.format(page))
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

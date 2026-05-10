@@ -28,7 +28,7 @@ class SiteDownBlouseWowSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(link, callback=self.get_scenes, headers=self.headers, cookies=self.cookies)
 

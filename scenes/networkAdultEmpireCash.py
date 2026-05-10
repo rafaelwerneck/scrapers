@@ -65,7 +65,7 @@ class AdultEmpireCashScraper(BaseSceneScraper):
         }
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         # ~ meta['playwright'] = True
@@ -259,7 +259,7 @@ class AdultEmpireCashScraper(BaseSceneScraper):
         if "hornyhousehold" in base:
             pagination = "/watch-newest-clips-and-scenes.html?page=%s&hybridview=member"
         if "jayspov" in base:
-            pagination = "/jays-pov-updates.html?page=%s&hybridview=member"
+            pagination = "/jays-pov-updates.html?page=%s&hybridview=member&view=grid"
         if "joannaangel" in base:
             pagination = "/watch-newest-joanna-angel-clips-and-scenes.html?page=%s"
         if "latinoguys" in base:

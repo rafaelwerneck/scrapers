@@ -30,7 +30,7 @@ class SiteMyPrivateModelSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         categories = requests.get("https://private-lola.com/subdomain/categories/1")
         if categories:
             categories = json.loads(categories.content)

@@ -22,7 +22,7 @@ class SiteAdultAuditionsPerformerSpider(BasePerformerScraper):
         'https://adultauditions.co',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = 'https://adultauditions.co'
         yield scrapy.Request(url, callback=self.start_requests_2, headers=self.headers, cookies=self.cookies)
 

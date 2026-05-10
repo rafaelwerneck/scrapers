@@ -22,7 +22,7 @@ class SiteFightingDollsPerformerSpider(BasePerformerScraper):
         'https://www.trib-dolls.com/all-our-girls/',
     ]
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(link,
                                  callback=self.get_performers,

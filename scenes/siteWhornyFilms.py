@@ -20,7 +20,7 @@ class SiteWhornyFilmsSpider(BaseSceneScraper):
         'AUTOTHROTTLE_MAX_DELAY': 10,
         'CONCURRENT_REQUESTS': 1,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'DOWNLOAD_DELAY': 2,
     }
 
@@ -41,7 +41,7 @@ class SiteWhornyFilmsSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://whornyfilms.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies)
 
     def start_requests2(self, response):

@@ -88,7 +88,7 @@ class NetworkPubaNetworkSpider(BaseSceneScraper):
         ['Vyxen Steel', '98'],
     ]
 
-    def start_requests(self):
+    async def start(self):
         for site in self.sites:
 
             yield scrapy.Request(url=self.get_next_page_url(self.url, self.page, site[1]),

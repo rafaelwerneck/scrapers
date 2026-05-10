@@ -21,7 +21,7 @@ class SiteCumCountdownSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         for link in self.start_urls:

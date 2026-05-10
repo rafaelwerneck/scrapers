@@ -12,6 +12,14 @@ class VixenScraper(BaseSceneScraper):
     name = 'Vixen'
     network = 'vixen'
 
+    custom_settings = {
+        "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
+        "DOWNLOAD_HANDLERS": {
+            "http": "scrapy_impersonate.ImpersonateDownloadHandler",
+            "https": "scrapy_impersonate.ImpersonateDownloadHandler",
+        },
+    }
+
     start_urls = [
         'https://www.vixen.com',
         'https://www.blacked.com',
@@ -23,6 +31,13 @@ class VixenScraper(BaseSceneScraper):
         'https://www.slayed.com',
         'https://www.wifey.com',
     ]
+
+    headers = {
+        "Accept-Encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "DNT": "1",
+    }        
 
     sites = {
         'VIXEN': 'Vixen',
@@ -43,33 +58,41 @@ class VixenScraper(BaseSceneScraper):
     page = 0
     per_page = 200
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
         for link in self.start_urls:
-            yield scrapy.Request(
-                url=link + '/graphql',
-                callback=self.parse,
-                method='POST',
-                headers={'Content-Type': 'application/json'},
-                meta={'page': self.page},
-                body=self.get_graphql_search_body(self.per_page, self.page, link),
-            )
+
+          headers = self.headers.copy()
+          headers['Referer'] = link
+          yield scrapy.Request(
+              url=link + '/graphql',
+              callback=self.parse,
+              method='POST',
+              headers=headers,
+              meta={'page': self.page, 'link': link, 'impersonate': 'chrome120'},
+              body=self.get_graphql_search_body(self.per_page, self.page, link),
+          )
 
     def parse(self, response, **kwargs):
         jsondata = response.json()['data']['findVideos']
         scenes = jsondata['edges']
+        headers = self.headers.copy()
+        headers['Referer'] = response.meta['link']
         for item in scenes:
             sceneid = item['node']['slug']
             scene = self.init_scene()
             scene['date'] = self.parse_date(item['node']['releaseDate']).strftime('%Y-%m-%d')
             if self.check_item(scene, self.days):
+
+              body = self.get_graphql_body(sceneid, response.url)
               yield scrapy.Request(
                   url=response.url,
                   callback=self.parse_scene,
                   method='POST',
-                  headers={'Content-Type': 'application/json'},
-                  body=self.get_graphql_body(sceneid, response.url),
+                  headers=headers,
+                  meta={'impersonate': 'chrome120'},
+                  body=body,
               )
 
         if 'page' in response.meta and response.meta['page'] < self.limit_pages and jsondata['pageInfo']['hasNextPage']:
@@ -81,15 +104,14 @@ class VixenScraper(BaseSceneScraper):
                 url=response.url,
                 callback=self.parse,
                 method='POST',
-                headers={'Content-Type': 'application/json'},
-                meta={'page': meta['page']},
+                headers = headers,
+                meta=meta,
                 body=self.get_graphql_search_body(self.per_page, meta['page'], response.url),
             )
 
     def parse_scene(self, response):
         data = response.json()['data']['findOneVideo']
-        # ~ print(data)
-        scene = SceneItem()
+        scene = self.init_scene()
 
         # ~ try:
         scene['id'] = data['id']
@@ -101,6 +123,9 @@ class VixenScraper(BaseSceneScraper):
         if site.upper() in self.sites:
             site = self.sites[site.upper()]
         scene['site'] = site
+
+        if "runLength" in data and data['runLength']:
+            scene['duration'] = self.duration_to_seconds(data['runLength'])
 
         scene['network'] = 'Vixen'
         scene['parent'] = site
@@ -115,11 +140,6 @@ class VixenScraper(BaseSceneScraper):
           scene['performers'] = []
           for model in data['models']:
               scene['performers'].append(model['name'])
-
-          scene['tags'] = []
-          if data['tags']:
-              for tag in data['tags']:
-                  scene['tags'].append(tag)
 
           scene['markers'] = []
           if 'chapters' in data:
@@ -225,7 +245,7 @@ query getVideo($videoSlug: String, $site: Site) {
     site
     description
     releaseDate
-    tags
+    runLength
     chapters {
       video {
         title

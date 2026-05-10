@@ -32,7 +32,7 @@ class SiteLustCinemaSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "https://lustcinema.com/series"
         yield scrapy.Request(link, callback=self.start_requests_2, headers=self.headers, cookies=self.cookies)
 

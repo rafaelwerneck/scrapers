@@ -28,7 +28,7 @@ class SiteSexyMommaSpider(BaseSceneScraper):
         'pagination': '/moms/%s/#enter'
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.sexymomma.com/moms"
         yield scrapy.Request(url, callback=self.get_scenes, headers=self.headers, cookies=self.cookies)
 

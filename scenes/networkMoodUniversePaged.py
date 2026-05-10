@@ -35,7 +35,7 @@ class NetworkMoodUniversePagedSpider(BaseSceneScraper):
         'http://mood-pictures.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             link = link + "/movies.php"
             yield scrapy.Request(link, callback=self.parse,

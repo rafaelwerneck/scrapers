@@ -43,7 +43,7 @@ class Site2Poles1HoleSpider(BaseSceneScraper):
         link = pagination % page
         return link
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

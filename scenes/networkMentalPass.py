@@ -31,7 +31,7 @@ class NetworkMentalPassSpider(BaseSceneScraper):
         'pagination': '/movies/page-%s/?tag=&q=&model=&sort=recent'
     }
 
-    def start_requests(self):
+    async def start(self):
         for pagination in self.paginations:
             url = self.get_next_page_url(pagination[0], self.page, pagination[1], pagination[2])
             print(f'Url: {url}')

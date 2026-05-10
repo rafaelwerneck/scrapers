@@ -27,7 +27,7 @@ class SiteCruelFuriesSpider(BaseSceneScraper):
         'pagination': '/list/%s',
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.cruel-furies.com/"
         yield scrapy.Request(url,
                              callback=self.start_requests2,

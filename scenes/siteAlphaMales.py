@@ -45,7 +45,7 @@ class SiteAlphaMales(BaseSceneScraper):
         'pagination': '/?page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         for pagination in self.paginations:

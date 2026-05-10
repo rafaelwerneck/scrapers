@@ -40,7 +40,7 @@ class networkPornRoleplaySpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         link = self.url
         meta = {}
         for site in self.sites:

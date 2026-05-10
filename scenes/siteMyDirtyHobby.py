@@ -25,7 +25,7 @@ class SiteMyDirtyHobbySpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         link = "https://www.mydirtyhobby.com/"
         yield scrapy.Request(link, callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

@@ -27,8 +27,7 @@ class SiteDeflorationSpider(BaseSceneScraper):
         'pagination': '/freetour.php?page=%s'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url=link,
                                  callback=self.parse,

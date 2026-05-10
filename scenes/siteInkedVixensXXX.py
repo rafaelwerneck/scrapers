@@ -21,7 +21,7 @@ class SiteInkedVixensXXXSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         tagdata = []
         for i in range(1, 10):
             req = requests.get(f'https://inkedvixensxxx.com/wp-json/wp/v2/movie_tags?per_page=100&page={str(i)}')

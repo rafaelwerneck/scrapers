@@ -50,7 +50,7 @@ class MovieDorcelClubSpider(BaseSceneScraper):
         'gen_disclaimer': '1',
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://www.dorcelclub.com/en/", callback=self.start_requests_2, headers=self.headers, cookies=self.cookies)
 
     def start_requests_2(self, response):

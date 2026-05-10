@@ -30,7 +30,7 @@ class VRLifeSpider(BaseSceneScraper):
         'DOWNLOAD_DELAY': 5,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
-        'CONCURRENT_REQUESTS_PER_IP': 2,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
     }
 
     selector_map = {

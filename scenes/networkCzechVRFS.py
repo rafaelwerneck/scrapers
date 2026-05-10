@@ -50,7 +50,7 @@ class NetworkCzechVRSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             url = self.get_next_page_url(link, self.page, link)
             headers = self.headers

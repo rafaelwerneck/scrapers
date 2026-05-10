@@ -29,7 +29,7 @@ class SiteBlurredMediaSpider(BaseSceneScraper):
         url = self.format_url(base, self.get_selector_map('pagination') % page)
         return url
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

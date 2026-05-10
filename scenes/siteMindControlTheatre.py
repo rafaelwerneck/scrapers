@@ -31,7 +31,7 @@ class MindControlTheatreScraper(BaseSceneScraper):
 
     max_pages = 1
 
-    def start_requests(self):
+    async def start(self):
         url = "https://mindcontroltheatre.com/movies"
         yield scrapy.Request(url, callback=self.get_scenes,
                              meta={'page': self.page},

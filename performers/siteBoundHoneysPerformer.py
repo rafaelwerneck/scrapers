@@ -26,7 +26,7 @@ class SiteBoundHoneysPerformerSpider(BasePerformerScraper):
         'external_id': r'model\/(.*)/'
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "http://boundhoneys.com/bondage-girls.php"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

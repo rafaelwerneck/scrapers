@@ -1,4 +1,5 @@
 import re
+import string
 import scrapy
 from tpdb.BaseSceneScraper import BaseSceneScraper
 
@@ -13,10 +14,11 @@ class NetworkNookiesSpider(BaseSceneScraper):
 
     selector_map = {
         'title': '//div[@class="video-box"]/h1/text()|//div[contains(@class,"video-content")]/h1/text()',
-        'description': '//div[contains(@class,"video-content")]/h6/following-sibling::p//text()|//div[@class="desc-container"]/p/text()',
-        'performers': '//div[@class="tags"]/a[contains(@href, "/model/")]/span/text()',
+        'description': '//comment()[contains(., "Description")]/following-sibling::div[1]/p[not(contains(text(), "Description:"))]//text()',
+        'performers': '//comment()[contains(., "Models")]/following-sibling::div[1]/a/span/text()',
         'tags': '//a[@class="pill-link" and contains(@href, "/tag/")]/text()',
-        'duration': '',
+        'duration': '//h3/following-sibling::p//i[contains(@class, "fa-video")]/following-sibling::text()[contains(., ":")]',
+        're_duration': r'((?:\d{1,2}\:)?\d{2}\:\d{2})',
         'trailer': '//div[@class="video-box"]/div[@class="player"]//source/@src',
         'external_id': r'.*/(.*)$',
         'pagination': '/videos?page=%s',
@@ -33,11 +35,11 @@ class NetworkNookiesSpider(BaseSceneScraper):
                 if scenedate:
                     meta['date'] = scenedate.group(1)
             scene = scene.xpath('./h4/a/@href').get()
-            if re.search(self.get_selector_map('external_id'), scene):
+            if re.search(self.get_selector_map('external_id'), scene) and self.check_item(meta, self.days):
                 yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
 
     def get_site(self, response):
-        site = response.xpath('//div[@class="tags"]/a[contains(@href, "/site/")]/span/text()')
+        site = response.xpath('//comment()[contains(., "Site")]/following-sibling::div[1]/a/span/text()|//a[contains(@class, "btn-site")]/img/@alt')
         if site:
             site = site.get()
             return site.strip()
@@ -45,7 +47,7 @@ class NetworkNookiesSpider(BaseSceneScraper):
             return "Nookies"
 
     def get_parent(self, response):
-        parent = response.xpath('//div[@class="tags"]/a[contains(@href, "/site/")]/span/text()')
+        parent = response.xpath('//comment()[contains(., "Site")]/following-sibling::div[1]/a/span/text()|//a[contains(@class, "btn-site")]/img/@alt')
         if parent:
             parent = parent.get()
             return parent.strip()
@@ -65,3 +67,16 @@ class NetworkNookiesSpider(BaseSceneScraper):
         if image:
             image = image.replace(" ", "%20")
         return image
+    
+    def get_performers_data(self, response):
+        performers = super().get_performers(response)
+        performers_data = []
+        for performer in performers:
+            performer = string.capwords(performer.strip())
+            performer_extra = {}
+            performer_extra['name'] = performer
+            performer_extra['site'] = "Nookies"
+            performer_extra['extra'] = {}
+            performer_extra['extra']['gender'] = "Female"
+            performers_data.append(performer_extra)
+        return performers_data

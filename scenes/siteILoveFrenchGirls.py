@@ -22,7 +22,7 @@ class SiteILoveFrenchGirlsSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         tagdata = []
         for i in range(1, 10):
             req = requests.get(f'https://ilovefrenchgirls.blog/index.php/wp-json/wp/v2/tags?per_page=100&page={str(i)}')

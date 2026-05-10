@@ -327,6 +327,10 @@ class SiteMyModelSiteSpider(BaseSceneScraper):
             "api": "psilosirenxxx.mymember.site",
             "name": "PsiloSiren",
         },
+        "realkingcobraxxx.com": {
+            "api": "realkingcobraxxx.mymember.site",
+            "name": "RealKingCobra",
+        },
         "riggsfilms.vip": {
             "api": "riggsfilms.mymember.site",
             "name": "Riggs Films",
@@ -415,7 +419,7 @@ class SiteMyModelSiteSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

@@ -43,7 +43,7 @@ class NewSensationsPt1Spider(BaseSceneScraper):
         'pagination': '/tour_ns/categories/movies_%s_d.html'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['local'] = self.settings.get('local')

@@ -30,10 +30,10 @@ class JavJAVTrailersSpider(BaseSceneScraper):
         # ~ 'CONCURRENT_REQUESTS': 4,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         # ~ 'CONCURRENT_REQUESTS_PER_DOMAIN': 4,
-        # ~ 'CONCURRENT_REQUESTS_PER_IP': 4,
+        # ~ 'CONCURRENT_REQUESTS_PER_DOMAIN': 4,
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

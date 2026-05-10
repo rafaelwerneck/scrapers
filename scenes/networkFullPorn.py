@@ -106,12 +106,12 @@ class FullPornNetworkSpider(BaseSceneScraper):
         'description': '//p[@class="description-text"]/text()',
         'performers': '//div[@class="video-info"]//span[@class="update_models"]/a/text()',
         'image': '//video/@poster|//div[@id="preview"]/a/div/img/@src0_1x',
-        'date': '//label[contains(text(), "Date Added")]/following-sibling::p[1]/text()',
+        'date': '//label[contains(text(), "Date Added")]/following-sibling::p[1]/text()|//label[contains(text(), "Added:")]/following-sibling::text()',
         'date_formats': ['%Y-%m-%d'],
         'tags': '//ul/li/a[contains(@href, "/categories/")]/text()',
-        'external_id': r'trailers/([A-Za-z0-9-_]+)[\.htm?|/]',
+        'external_id': r'trailers/([A-Za-z0-9-_]+)[\.htm?|/]?$',
         'trailer': '',
-        'pagination': '/categories/movies_%s_d.html'
+        'pagination': 'porn-categories/movies/?page=%s&sort=most-recent'
     }
 
     def get_next_page_url(self, base, page):
@@ -124,10 +124,13 @@ class FullPornNetworkSpider(BaseSceneScraper):
         return self.format_url(base, pagination % page)
 
     def get_scenes(self, response):
+        # print(response.url)
         # ~ scenes = response.xpath('//div[contains(@class,"video_preview")]/a/@href').getall()
         scenes = response.xpath('//div[contains(@class,"video-thumbnail-link")]/ancestor::a[1]/@href').getall()
         for scene in scenes:
+            # print(scene)
             if re.search(self.get_selector_map('external_id'), scene):
+                # print(scene)
                 yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene)
 
     def get_site(self, response):
@@ -174,3 +177,18 @@ class FullPornNetworkSpider(BaseSceneScraper):
             site = tldextract.extract(response.url).domain
 
         return site
+
+    def get_image(self, response):
+        image = super().get_image(response)
+        if not image or image in response.url:
+            image = response.xpath('//meta[@property="og:image"]/@content').get()
+        if image and image not in response.url:
+            return image
+        return None
+    
+    def get_performers(self, response):
+        performers = super().get_performers(response)
+        if not performers:
+            performers = response.xpath('//label[contains(text(), "Starring:")]/following-sibling::div/a/span/text()').getall()
+            performers = [n.strip() for n in performers if n.strip()]
+        return performers

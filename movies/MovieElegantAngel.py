@@ -27,7 +27,7 @@ class MovieElegantAngelSpider(BaseSceneScraper):
         'CONCURRENT_REQUESTS': 1,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         "LOG_LEVEL": 'INFO',
         "EXTENSIONS": {'scrapy.extensions.logstats.LogStats': None},
     }
@@ -48,7 +48,7 @@ class MovieElegantAngelSpider(BaseSceneScraper):
     def get_next_page_url(self, base, page, pagination):
         return self.format_url(base, pagination % page)
 
-    def start_requests(self):
+    async def start(self):
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 
@@ -116,8 +116,7 @@ class MovieElegantAngelSpider(BaseSceneScraper):
             else:
                 item['director'] = ''
 
-            item['performers'] = response.xpath('//div[@class="video-performer"]/a/span/span/text()').getall()
-            item['performers'] = list(map(lambda x: x.strip(), item['performers']))
+            item['performers'], item['performers_data'] = self.get_performers(response)
 
             duration = response.xpath('//span[contains(text(), "Length:")]/following-sibling::text()')
             if duration:
@@ -205,8 +204,7 @@ class MovieElegantAngelSpider(BaseSceneScraper):
         else:
             item['director'] = ''
 
-        item['performers'] = response.xpath('//div[@class="video-performer"]/a/span/span/text()').getall()
-        item['performers'] = list(map(lambda x: x.strip(), item['performers']))
+        item['performers'], item['performers_data'] = self.get_performers(response)
 
         duration = response.xpath('//span[contains(text(), "Length:")]/following-sibling::text()')
         if duration:
@@ -249,3 +247,37 @@ class MovieElegantAngelSpider(BaseSceneScraper):
         item['url'] = response.url
         item['id'] = re.search(r'/(\d+)/.*?\.htm', response.url).group(1)
         yield item
+
+    def get_performers(self, response):
+        performers = response.xpath('//div[@class="video-performer"]/a/span/span/text()').getall()
+        perf_array = []
+        perf_data = []
+        if not performers:
+            performers = response.xpath('//div[contains(@class,"video-details")]/div[contains(@class, "video-performer")]/div[contains(@class, "video-performer")]/a')
+            if performers:
+                for performer in performers:
+                    performer_name = performer.xpath('./div[@class="performer-name"]/text()').get()
+                    if performer_name:
+                        performer_name = performer_name.strip()
+                        performer_url = performer.xpath('./@href')
+                        if performer_url:
+                            performer_id = re.search(r'/(\d+)/', performer_url.get())
+                            if performer_id:
+                                performer_id = performer_id.group(1)
+                                if " " not in performer_name:
+                                    performer_name = f"{performer_name} {performer_id}"
+                        performer_image = performer.xpath('./img/@data-bgsrc')
+                        if performer_image:
+                            performer_image = performer_image.get()
+                        else:
+                            performer_image = ''
+                        perf_array.append(performer_name)
+                        perf_data.append({
+                            "name": performer_name,
+                            "site": "Elegant Angel",
+                            "network": "Elegant Angel",
+                            "image": performer_image,
+                            "image_blob": self.get_image_blob_from_link(performer_image)
+                        })
+        perf_array = list(map(lambda x: x.strip(), perf_array))
+        return perf_array, perf_data    

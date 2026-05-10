@@ -36,7 +36,7 @@ class siteUraLesbianPerformerSpider(BasePerformerScraper):
     ]
 
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.uralesbian.com/getmodels.php?l=0&s=1&q="
         for link in self.start_urls:
             yield scrapy.Request(url,

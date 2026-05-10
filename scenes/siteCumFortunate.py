@@ -20,7 +20,7 @@ class SiteCumfortuneSpider(BaseSceneScraper):
         'pagination': '/categories/movies_%s_d.html#'
     }
 
-    def start_requests(self):
+    async def start(self):
         link = 'https://www.cumfortune.com/Scenes_Start.htm'
         yield scrapy.Request(link, callback=self.start_requests2)
 

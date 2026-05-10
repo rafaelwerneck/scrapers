@@ -46,9 +46,9 @@ class NetworkVegasDreamworksSpider(BaseSceneScraper):
         ['https://asiansexdiary.com', '/category/diary/page/%s/', 'Asian Sex Diary'],
         ['https://milftrip.com/', '/all-updates/page/%s/', 'MILF Trip'],
         ['https://helloladyboy.com', '/all-updates/page/%s/', 'Hello Ladyboy'],
-        ['https://paradisegfs.com', '/movies/page/%s/', 'Paradise GFs'],
+        ## ['https://paradisegfs.com', '/movies/page/%s/', 'Paradise GFs'],  # Domain delisted
         ['https://screwmetoo.com', '/all-updates/page/%s/', 'Screw Me Too'],
-        ['https://eurosexdiary.com', '/all-updates/page/%s/', 'Euro Sex Diary'],
+        ['https://eurosexdiary.com', '/category/diary/page/%s/', 'Euro Sex Diary'],
         ['https://trikepatrol.com/', '/all-updates/page/%s/', 'Trike Patrol'],
         ['https://tuktukpatrol.com/', '/all-updates/page/%s/', 'TukTuk Patrol'],
     ]
@@ -61,10 +61,9 @@ class NetworkVegasDreamworksSpider(BaseSceneScraper):
         'performers': '//div[@class="update-info"]/a[contains(@href,"/model/")]/text()|//div[@class="update_bb_info"]/a[contains(@href,"/model_content/")]/text()',
         'tags': '//div[@class="amp-category"]/span/a/text()|//div[@class="cat_tag"]/a/text()',
         'external_id': r'.*/(.+)/$',
-        'trailer': '//div[contains(@class,"video-player")]//amp-video/@src|//div[contains(@class,"preview_trailer")]//video/source/@src',
     }
 
-    def start_requests(self):
+    async def start(self):
         if not hasattr(self, 'start_urls'):
             raise AttributeError('start_urls missing')
 
@@ -146,13 +145,4 @@ class NetworkVegasDreamworksSpider(BaseSceneScraper):
         if image:
             return self.format_link(response, image)
 
-        return ''
-
-    def get_trailer(self, response):
-        if 'trailer' in self.get_selector_map() and self.get_selector_map('trailer'):
-            trailer = self.process_xpath(response, self.get_selector_map('trailer')).get()
-            if trailer:
-                if trailer[0:6] == "/asset":
-                    return ''
-                return trailer
         return ''

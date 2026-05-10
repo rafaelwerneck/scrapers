@@ -21,7 +21,7 @@ class SiteFalenoJAVPerformerPerformerSpider(BasePerformerScraper):
     name = 'FalenoJAVPerformer'
     network = 'Faleno'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

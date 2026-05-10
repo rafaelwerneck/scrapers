@@ -21,13 +21,6 @@ class SiteStripzVRSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '',
-        'description': '',
-        'date': '',
-        'image': '',
-        'performers': '',
-        'tags': '',
-        'trailer': '',
         'external_id': r'',
         'pagination': '/index.php/wp-json/wp/v2/pages?page=%s&per_page=10'
     }
@@ -35,6 +28,11 @@ class SiteStripzVRSpider(BaseSceneScraper):
     def get_scenes(self, response):
         jsondata = json.loads(response.text)
         for scene in jsondata:
+            content = scene.get('content', {}).get('rendered', '')
+            poster_match = re.search(r'<dl8-video[^>]+poster="([^"]+)"', content)
+            if not poster_match:
+                continue
+
             item = SceneItem()
 
             item['id'] = str(scene['id'])
@@ -51,7 +49,7 @@ class SiteStripzVRSpider(BaseSceneScraper):
                     item['performers'] = [re.search(r'featuring (.*)', title).group(1)]
                     title = re.search(r'(.*?) featuring', title).group(1)
             item['title'] = title
-            item['image'] = scene['yoast_head_json']['og_image'][0]['url']
+            item['image'] = poster_match.group(1)
             item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
             item['trailer'] = None

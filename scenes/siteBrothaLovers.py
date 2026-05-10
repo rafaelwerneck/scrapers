@@ -21,6 +21,10 @@ class SiteBrothaLoversSpider(BaseSceneScraper):
 
     pages = [
         'https://www.interracialsexx.com/interracialsexx/updates.htm',
+        'https://www.interracialsexx.com/interracialsexx/updates2025pt2.htm',
+        'https://www.interracialsexx.com/interracialsexx/updates2025pt1.htm',
+        'https://www.interracialsexx.com/interracialsexx/updates2024pt2.htm',
+        'https://www.interracialsexx.com/interracialsexx/updates2024pt1.htm',
         'https://www.interracialsexx.com/interracialsexx/updates2023pt2.htm',
         'https://www.interracialsexx.com/interracialsexx/updates2023pt1.htm',
         'https://www.interracialsexx.com/interracialsexx/updates2022pt2.htm',
@@ -49,7 +53,7 @@ class SiteBrothaLoversSpider(BaseSceneScraper):
     def get_scenes(self, response):
         scenes = response.xpath('//p[@align="center"]/font[contains(text(), "/")]')
         for scene in scenes:
-            item = SceneItem()
+            item = self.init_scene()
             scenedate = scene.xpath('./text()')
             if scenedate:
                 scenedate = scenedate.get()
@@ -100,5 +104,4 @@ class SiteBrothaLoversSpider(BaseSceneScraper):
                                     if sceneid:
                                         sceneid = sceneid.group(1)
                                         item['id'] = sceneid.strip()
-
                                         yield self.check_item(item, self.days)

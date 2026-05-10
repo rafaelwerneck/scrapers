@@ -14,7 +14,7 @@ class SiteAmelieLouSpider(BaseSceneScraper):
         'https://www.amelielou.com/films/',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = 'https://www.amelielou.com/films/'
         yield scrapy.Request(url, callback=self.get_scenes, meta={'page': self.page}, headers=self.headers, cookies=self.cookies)
 

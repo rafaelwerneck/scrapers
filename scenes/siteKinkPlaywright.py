@@ -2,8 +2,11 @@ import re
 import json
 import string
 import scrapy
+from scrapy_playwright.page import PageMethod
 from tpdb.BaseSceneScraper import BaseSceneScraper
 from tpdb.items import SceneItem
+true = True
+false = False
 
 
 class NetworkKinkSpider(BaseSceneScraper):
@@ -11,6 +14,11 @@ class NetworkKinkSpider(BaseSceneScraper):
     network = "Kink"
 
     url = 'https://www.kink.com'
+
+    # No hardcoded cookies — Playwright manages the session via its browser context.
+    # The age-gate click in start_requests creates a fresh server-side session each run.
+    cookies = []
+
 
     paginations = [
         '/shoots?thirdParty=false&sort=published&page=%s',
@@ -22,7 +30,7 @@ class NetworkKinkSpider(BaseSceneScraper):
     ]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5",
         "Accept-Encoding": "gzip, deflate",
@@ -64,27 +72,54 @@ class NetworkKinkSpider(BaseSceneScraper):
             'tpdb.custommiddlewares.CustomProxyMiddleware': 350,
             'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
             'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-            'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-            'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
         },
         'DOWNLOAD_HANDLERS': {
             "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
             "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-        }
+        },
+        'PLAYWRIGHT_BROWSER_TYPE': 'chromium',
+        'PLAYWRIGHT_LAUNCH_OPTIONS': {
+            'headless': True,
+            'args': [
+                '--disable-blink-features=AutomationControlled',
+                '--disable-features=IsolateOrigins,site-per-process',
+            ],
+        },
+        'PLAYWRIGHT_CONTEXTS': {
+            'default': {
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0',
+                'locale': 'en-US',
+                'timezone_id': 'America/New_York',
+                'viewport': {'width': 1920, 'height': 1080},
+            },
+        },
+        'PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT': 60000,
     }
 
-    def start_requests(self):
-        meta = {}
-        meta['playwright'] = True
-        meta['page'] = self.page
-        yield scrapy.Request("https://www.kink.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies, meta=meta)
+    async def start(self):
+        meta = {
+            'playwright': True,
+            'page': self.page,
+            'dont_merge_cookies': True,  # let Playwright's browser context manage cookies, not Scrapy
+            'playwright_page_methods': [
+                PageMethod('wait_for_load_state', 'domcontentloaded'),
+                PageMethod('wait_for_timeout', 3000),
+                # Conditionally click the age gate — JS no-op if not present
+                PageMethod('evaluate', 'document.getElementById("enter-actual-site")?.click()'),
+                PageMethod('wait_for_load_state', 'domcontentloaded'),
+                PageMethod('wait_for_timeout', 3000),
+            ],
+        }
+        yield scrapy.Request("https://www.kink.com", callback=self.start_requests2, headers=self.headers, meta=meta)
 
     def start_requests2(self, response):
-        meta = response.meta
+        meta = dict(response.meta)
+        # Click-through is only needed on the first request — strip it for downstream
+        meta.pop('playwright_page_methods', None)
         for pagination in self.paginations:
             link = self.get_next_page_url(self.url, self.page, pagination)
             meta['pagination'] = pagination
-            yield scrapy.Request(link, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+            yield scrapy.Request(link, callback=self.parse, meta=meta)
 
     def parse(self, response, **kwargs):
         if response.status == 200:
@@ -98,8 +133,7 @@ class NetworkKinkSpider(BaseSceneScraper):
                 if 'page' in response.meta and response.meta['page'] < self.limit_pages:
                     meta = response.meta
                     meta['page'] = meta['page'] + 1
-                    print('NEXT PAGE: ' + str(meta['page']))
-                    yield scrapy.Request(url=self.get_next_page_url(self.url, meta['page'], meta['pagination']), callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+                    yield scrapy.Request(url=self.get_next_page_url(self.url, meta['page'], meta['pagination']), callback=self.parse, meta=meta)
 
     def get_scenes(self, response):
         meta = response.meta

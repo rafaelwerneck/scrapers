@@ -13,7 +13,7 @@ class SitePervfectPerformerSpider(BasePerformerScraper):
         'external_id': r''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "http://www.pervfect.net/api/v1/performers?limit=500&offset=0&status=active&sort=sort&order=1&keyword=&sex=&size="
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

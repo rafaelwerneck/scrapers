@@ -11,6 +11,8 @@ class SiteIWantClipsSpecificSpider(BaseSceneScraper):
     name = 'IWantClipsSpecific'
     network = 'I Want Clips'
 
+    url_fragment = "468/Goddess-Lindsey"
+
     start_urls = [
         'https://iwantclips.com',
     ]
@@ -23,9 +25,9 @@ class SiteIWantClipsSpecificSpider(BaseSceneScraper):
     }
 
     def get_next_page_url(self, base, page):
-        return f"https://iwantclips.com/store/1207092/Alissa-Ryan?page={page}"
+        return f"https://iwantclips.com/store/{self.url_fragment}?page={page}"
 
-    def start_requests(self):
+    async def start(self):
         page = int(self.page) - 1
 
         for link in self.start_urls:
@@ -94,7 +96,8 @@ class SiteIWantClipsSpecificSpider(BaseSceneScraper):
             item['tags'] = scene['categories'] + scene['keywords']
             item['tags'] = [i for i in item['tags'] if i]
 
-            item['site'] = "I Want Clips: Marceline Leigh"
+            studioname = scene['model_username']
+            item['site'] = f"I Want Clips: {string.capwords(studioname)}"
             item['parent'] = "I Want Clips"
             item['network'] = "I Want Clips"
             item['url'] = scene['content_url']

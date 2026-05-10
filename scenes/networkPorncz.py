@@ -64,7 +64,7 @@ class PornCZSpider(BaseSceneScraper):
         # 'DOWNLOAD_DELAY': 60,
         # 'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'SPIDERMON_ENABLED': False,
         'DOWNLOAD_FAIL_ON_DATALOSS': True,
         'RETRY_ENABLED': True,
@@ -104,7 +104,7 @@ class PornCZSpider(BaseSceneScraper):
 
     def get_site(self, response):
         site = response.xpath('//div[contains(@class, "video-logo")]/a/img/@alt').get()
-        if site:
+        if site and site.lower() != 'porncz':
             return site.strip().title()
         else:
             site = response.xpath('//meta[@property="video:series"]/@content').get()

@@ -35,7 +35,7 @@ class MovieCombatZoneSpider(BaseSceneScraper):
         'AUTOTHROTTLE_ENABLED': True,
         'CONCURRENT_REQUESTS': 2,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
-        'CONCURRENT_REQUESTS_PER_IP': 2,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 2,
         "MEDIA_ALLOW_REDIRECTS": True,
     }
 

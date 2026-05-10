@@ -72,7 +72,7 @@ class NetworkDMEMediaV2Spider(BaseSceneScraper):
         'pagination': '/tour/categories/movies_%s_d.html'
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(link,
                                  callback=self.start_requests2,

@@ -1,4 +1,5 @@
 import re
+import string
 import scrapy
 from tpdb.BaseSceneScraper import BaseSceneScraper
 
@@ -55,3 +56,23 @@ class Spider(BaseSceneScraper):
 
     def get_parent(self, response):
         return match_site(super().get_parent(response))
+
+    def get_title(self, response):
+        if "jeffsmodels" in response.url:
+            title = response.xpath('//div[@class="section-title"]/h4/text()|//div[@class="section-title"]/h1/text()').get()
+            if title:
+                title = string.capwords(title.strip())
+                return title
+        else:
+            return super().get_title(response)
+
+    def get_image(self, response):
+        image = super().get_image(response)
+        if not image or image in response.url:
+            image = response.xpath('//div[@class="model-player"]//img/@src')
+            if image:
+                image = image.get()
+                image = self.format_link(response, image)
+        if image:
+            return image
+        return None

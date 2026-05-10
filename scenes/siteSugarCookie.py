@@ -28,7 +28,7 @@ class SiteSugarcookieSpider(BaseSceneScraper):
         'pagination': '/porn/page/%s/'
     }
 
-    def start_requests(self):
+    async def start(self):
         model_list = []
         for x in range(1, 50):
             link = 'https://sugarcookie.xxx/models/page/%s/' % x

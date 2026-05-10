@@ -14,7 +14,7 @@ class SiteEricVideosPerformerSpider(BasePerformerScraper):
     name = 'EricVideosPerformer'
     network = 'Eric Videos'
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         url = "https://www.ericvideos.com/EN/acteurs/"

@@ -58,7 +58,7 @@ class SiteXTimeSpider(BaseSceneScraper):
         'pagination': '/?act=Scenes&pageID=%s&order=data_pubblicazione&datapub=anno'
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "http://xtime.tv/?act=Disclaimer&accept=1"
         yield scrapy.Request(link, callback=self.start_requests_2,
                              meta={'page': self.page},

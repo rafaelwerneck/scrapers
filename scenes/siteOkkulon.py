@@ -23,7 +23,7 @@ class SiteOkkulonSpider(BaseSceneScraper):
 
     cookies = {"name": "age_gate", "value": "18"}
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         link = 'https://okkulon.com'
         yield scrapy.Request(link, callback=self.start_requests2, meta=meta, cookies=self.cookies)

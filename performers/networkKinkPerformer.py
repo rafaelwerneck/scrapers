@@ -59,7 +59,7 @@ class NetworkKinkPerformerPerformerSpider(BasePerformerScraper):
         }
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['playwright'] = True
         for pagination in self.paginations:

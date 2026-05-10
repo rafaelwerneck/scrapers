@@ -42,7 +42,25 @@ class SiteClips4Sale_4Spider(BaseSceneScraper):
         ['Clips4Sale', 'Clips4Sale: Bondage Agency', 'Clips4Sale: Bondage Agency', '171829', 'bondageagency'],
         ['Clips4Sale', 'Clips4Sale: Mistress Damazonia', 'Clips4Sale: Mistress Damazonia', '143325', 'mistress-damazonia'],
         ['Clips4Sale', 'Clips4Sale: Parannanza', 'Clips4Sale: Parannanza', '182611', 'parannanza'],
-        # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
+        ['Clips4Sale', 'Clips4Sale: Bedroom Bondage by Lorelei', 'Clips4Sale: Bedroom Bondage by Lorelei', '412', 'bedroom-bondage-by-lorelei'],
+        ['Clips4Sale', 'Clips4Sale: AlterEgoRey', 'Clips4Sale: AlterEgoRey', '294495', 'alteregorey'],
+        ['Clips4Sale', 'Clips4Sale: FrenchBondage', 'Clips4Sale: FrenchBondage', '322429', 'frenchbondage'],
+        ['Clips4Sale', 'Clips4Sale: Muffled Screams', 'Clips4Sale: Muffled Screams', '126155', 'muffled-screams'],
+        ['Clips4Sale', 'Clips4Sale: RECatadas Studio', 'Clips4Sale: RECatadas Studio', '135157', 'recatadas-studio'],
+        ['Clips4Sale', 'Clips4Sale: Keye Bondage Images', 'Clips4Sale: Keye Bondage Images', '22502', 'keye-bondage-images'],
+        ['Clips4Sale', 'Clips4Sale: Adult Stories', 'Clips4Sale: Adult Stories', '231415', 'adult-stories'],
+        ['Clips4Sale', 'Clips4Sale: Calista Vixen', 'Clips4Sale: Calista Vixen', '227107', 'calista-vixen'],
+        ['Clips4Sale', 'Clips4Sale: Empress Empire', 'Clips4Sale: Empress Empire', '9911', 'empress-empire'],
+        ['Clips4Sale', 'Clips4Sale: Realfetishwifey', 'Clips4Sale: realfetishwifey', '373473', 'realfetishwifey'],
+        ['Clips4Sale', 'Clips4Sale: Jayne Doe', 'Clips4Sale: Jayne Doe', '148787', 'jayne-doe'],
+        ['Clips4Sale', 'Clips4Sale: Bound by Choice', 'Clips4Sale: Bound by Choice', '23733', 'bound-by-choice'],
+        ['Clips4Sale', 'Clips4Sale: Tied Tales', 'Clips4Sale: Tied Tales', '111172', 'tied-tales'],
+        ['Clips4Sale', 'Clips4Sale: PsychoSJ Bondage Store', 'Clips4Sale: PsychoSJ Bondage Store', '405135', 'psychosj-bondage-store'],
+        ['Clips4Sale', 'Clips4Sale: Tony Houston Bondage Paranoia', 'Clips4Sale: Tony Houston Bondage Paranoia', '47002', 'tony-houston-bondage-paranoia'],
+        ['Clips4Sale', 'Clips4Sale: Amateur Boxxx', 'Clips4Sale: Amateur Boxxx', '140969', 'amateur-boxxx'],
+        ['Clips4Sale', 'Clips4Sale: Portia Everly', 'Clips4Sale: Portia Everly', '235967', 'Portia-Everly'],
+        ['Clips4Sale', 'Clips4Sale: KingDom Of Infinity', 'Clips4Sale: KingDom Of Infinity', '292343', 'kingdom-of-infinity'],
+        ['Clips4Sale', 'Clips4Sale: FJ Squirts', 'Clips4Sale: FJ Squirts', '304649', 'fj-squirts'],
         # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
         # ['Clips4Sale', 'Clips4Sale: ', 'Clips4Sale: ', '', ''],
     ]
@@ -56,7 +74,7 @@ class SiteClips4Sale_4Spider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         link = self.url
         meta = {}
         for site in self.sites:

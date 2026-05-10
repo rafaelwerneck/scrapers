@@ -74,7 +74,7 @@ class MovieSexVideoAllByStudioSpider(BaseSceneScraper):
         {"id": 483, "name": "Ultra Deca"},
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         link = "https://www.sexvideoall.com/main"

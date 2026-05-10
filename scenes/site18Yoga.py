@@ -26,7 +26,7 @@ class Site18YogaSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         link = "https://18yoga.com/videos"
         yield scrapy.Request(link, callback=self.get_scenes)
 

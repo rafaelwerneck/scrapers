@@ -20,7 +20,7 @@ class SiteSpermManiaSpider(BasePerformerScraper):
 
     max_pages = 1
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.spermmania.com/girls"
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

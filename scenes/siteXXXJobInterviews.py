@@ -23,7 +23,7 @@ class SiteXXXJobInterviewsSpider(BaseSceneScraper):
         'tags': '//div[@class="tags"]/ul/li/a/text()',
         'duration': '//div[@class="video-description"]//span[contains(text(), "Runtime")]/following-sibling::text()',
         'trailer': '',
-        'external_id': r'.*-(\d+)\.htm',
+        'external_id': r'-(\d+)(?:\.html)?$',
         'pagination': '/videos/page%s.html',
         'type': 'Scene',
     }

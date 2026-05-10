@@ -14,7 +14,7 @@ class SiteBenefitMonkeyPerformerSpider(BasePerformerScraper):
         'pagination': '/_next/data/<buildID>/models.json?page=%s&order_by=publish_date&sort_by=desc',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         yield scrapy.Request('https://www.benefitmonkey.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)

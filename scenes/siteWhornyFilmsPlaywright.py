@@ -21,7 +21,7 @@ class SiteWhornyFilmsPlaywrightSpider(BaseSceneScraper):
         'AUTOTHROTTLE_MAX_DELAY': 60,
         'CONCURRENT_REQUESTS': 1,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'DOWNLOAD_DELAY': 5,
         'PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT': 60000,  # 60s
         'DOWNLOADER_MIDDLEWARES': {
@@ -56,7 +56,7 @@ class SiteWhornyFilmsPlaywrightSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://whornyfilms.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies, meta={"playwright": True})
 
     def start_requests2(self, response):

@@ -31,7 +31,7 @@ class LegalPornoSpider(BaseSceneScraper):
         # ~ 'pagination': 'https://www.analvids.com/filter/%s?studio=latinhot_studio'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         if self.limit_pages == 1:
@@ -88,6 +88,7 @@ class LegalPornoSpider(BaseSceneScraper):
                        'only3xgirls', 'parasited', 'hazeher', 'collegerules', 'abuseme', 'only3xvr', 'justpov', 'girlsgonewild', 'plumperpassstudio', 'only3xlost', 'onlygolddigger', 'wetandpuffy', 'mypervyfamily', 'mykebrazil', 'mylifeinmiami',
                        'claudiamarie', 'rawwhitemeat', 'industryinvaders', 'cockyboys', 'touchmywife', 'blackbullchallenge', 'topwebmodels', 'realsexpass', 'riggsfilms', 'pervfect', 'mollyredwolf', 'bluepillmen', 'blacksonmoms', 'peter\'skingdom',
                        'pornmuschimovie', 'chickpass', 'grooby', 'pornpros', 'lubed', 'povd', 'facials4k', 'girlcum', 'exotic4k', 'nannyspy', 'castingcouch-x', 'mom4k', 'bluebirdfilms', 'dreamtranny', 'pornworld', 'randyblue',
-                       'bradmontanastudio', 'interracialvision', 'melinamay', 'primalfetish', 'sexmex', 'sexmex', 'alexlegend', 'aglaeaproductions', 'dripdrop', 'dripdropprod', 'artemixxx', 'theartemixxx', 'bradmontanaproductions']
+                       'bradmontanastudio', 'interracialvision', 'melinamay', 'primalfetish', 'sexmex', 'sexmex', 'alexlegend', 'aglaeaproductions', 'dripdrop', 'dripdropprod', 'artemixxx', 'theartemixxx', 'bradmontanaproductions',
+                       'madbros', 'madbrosx', 'girlfriendsfilms', 'realkingcobra', 'brandnewamateurs']
             if not any(x in item['site'].lower().replace(" ", "").replace("-", "").replace("_", "") for x in matches):
                 yield self.check_item(item, self.days)

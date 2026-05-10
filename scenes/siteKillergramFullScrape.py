@@ -56,7 +56,7 @@ class SiteKillergramFullScrapeSpider(BaseSceneScraper):
         'external_id': r'id=(\d+)',
     }
 
-    def start_requests(self):
+    async def start(self):
         for pagination in self.paginations:
             url=self.get_next_page_url(self.url, self.page, pagination[0])
             print(url)

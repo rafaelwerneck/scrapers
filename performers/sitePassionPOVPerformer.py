@@ -14,7 +14,7 @@ class SitePassionPOVPerformerSpider(BasePerformerScraper):
         'external_id': r''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://passionpov.com/models?order_by=publish_date&gender="
         yield scrapy.Request(url, callback=self.get_performers,
                              meta={'page': self.page},

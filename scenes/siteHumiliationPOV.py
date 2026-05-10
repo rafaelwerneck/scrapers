@@ -38,7 +38,7 @@ class SiteHumiliationPOVSpider(BaseSceneScraper):
         'pagination': '/blog/wp-json/wp/v2/posts?page=%s&per_page=10'
     }
 
-    def start_requests(self):
+    async def start(self):
         tagdata = []
         for i in range(1, 10):
             req = requests.get(f'https://www.humiliationpov.com/blog/wp-json/wp/v2/categories?page={str(i)}&per_page=100')

@@ -28,7 +28,7 @@ class PornCZPerformerSpider(BasePerformerScraper):
         'pagination': '/en/models?do=next&_=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(url="https://www.porncz.com/en/models",
                              callback=self.parse,
                              meta={'page': 0},

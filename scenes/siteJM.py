@@ -51,7 +51,7 @@ class SiteJacquieEtMichelTVSpider(BaseSceneScraper):
         'pagination': '/en/videos/page%s.html'
     }
 
-    def start_requests(self):
+    async def start(self):
         if hasattr(self, 'start_page'):
             page = self.start_page
         else:

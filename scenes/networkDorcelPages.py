@@ -52,7 +52,7 @@ class SiteDorcelPagesSpider(BaseSceneScraper):
         url = f"https://dorcelnetwork.com/collection/{site}/more?lang=en&page={str(page)}"
         return url
 
-    def start_requests(self):
+    async def start(self):
         for site in self.sites:
             meta = {}
             meta['orig_site'] = site

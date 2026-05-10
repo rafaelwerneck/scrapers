@@ -56,7 +56,8 @@ class PornboxSingleSiteSpider(BaseSceneScraper):
         # ~ {'studio': 2826, 'site': 'Daisymelanin00'},
         # {'studio': 996, 'site': 'TedOficial'},
         # {'studio': 460, 'site': 'RichardMannsWorld'},
-        {'studio': 1184, 'site': 'Jayblak'},
+        # {'studio': 1184, 'site': 'Jayblak'},
+        {'studio': 2693, 'site': 'Sweetie Fox'},
     ]
 
     content_json_url = 'https://pornbox.com/contents/%s'
@@ -68,7 +69,7 @@ class PornboxSingleSiteSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         for studio in self.studios:
             meta = {}
             meta['site'] = studio['site']

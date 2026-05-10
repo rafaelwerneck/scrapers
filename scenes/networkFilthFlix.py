@@ -38,7 +38,7 @@ class NetworkFilthFlixSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             base = link[0]
             pagination = link[1]

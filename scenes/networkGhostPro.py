@@ -20,11 +20,9 @@ class SiteGhostProSpider(BaseSceneScraper):
         'https://www.asiansybian.com',
         'https://www.thaipussymassage.com',
         'https://www.thainee.com',
-        'https://www.analjesse.com',
-        'https://www.analjesse_ss.com',
-        'https://www.lulusexbomb.com',
-        'https://www.submityourthai.com',
-        'https://www.tailynn.com',
+        ## 'https://www.analjesse.com',  # Moved to Monger
+        ## 'https://www.submityourthai.com',  # Moved to Monger
+        ## 'https://www.tailynn.com',  # Moved to Monger
         'https://www.thaigirlswild.com',
         'https://www.tussinee.com',
         'https://www.tittiporn.com',
@@ -36,8 +34,6 @@ class SiteGhostProSpider(BaseSceneScraper):
     }
 
     def get_next_page_url(self, base, page):
-        if "lulusex" in base:
-            pagination = '/categories/updates_%s_d.html'
         if "analjesse_ss" in base:
             pagination = '/tags/shorts?page=%s&order_by=publish_date&sort_by=desc'
             base = 'https://www.analjesse.com'
@@ -46,7 +42,6 @@ class SiteGhostProSpider(BaseSceneScraper):
         return self.format_url(base, pagination % page)
 
     def get_scenes(self, response):
-        print(response.url)
         jsoncode = response.xpath('//script[contains(@id, "NEXT_DATA")]/text()')
         if jsoncode:
             jsondata = json.loads(jsoncode.get())

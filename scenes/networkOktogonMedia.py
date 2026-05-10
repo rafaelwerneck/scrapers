@@ -23,6 +23,7 @@ class OktogonMediaSpider(BaseSceneScraper):
     start_urls = [
         'https://www.shelovesblack.com',
         'https://www.loveherboobs.com',
+        'https://www.loveherbutt.com',
         'https://www.loveherfeet.com',
         'https://www.loveherfilms.com',
     ]
@@ -46,7 +47,7 @@ class OktogonMediaSpider(BaseSceneScraper):
         'pagination': '/%s/latest/'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         singleurl = self.settings.get('url')
         if singleurl:
@@ -114,6 +115,8 @@ class OktogonMediaSpider(BaseSceneScraper):
 
                     if "loveherboobs" in response.url:
                         xsite = "677d3f422e587cf94d1a9e5b"
+                    if "loveherbutt" in response.url:
+                        xsite = "677d3f422e587cf94d1a9e5e"
                     if "shelovesblack" in response.url:
                         xsite = "677d3f422e587cf94d1a9e5c"
                     if "loveherfeet" in response.url:

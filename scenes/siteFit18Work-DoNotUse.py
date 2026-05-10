@@ -20,7 +20,7 @@ class SiteFit18WorkSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

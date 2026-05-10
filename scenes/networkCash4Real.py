@@ -24,6 +24,7 @@ class NetworkCash4RealSpider(BaseSceneScraper):
         're_trailer': r'playsinline src=\"(.*?\.mp4)',
         'external_id': r'trailers/(.*).html',
         'pagination': '/tour/categories/Movies_%s_d.html'
+        # 'pagination': '/tour/updates/page_%s.html'
     }
 
     def get_next_page_url(self, base, page):
@@ -33,6 +34,7 @@ class NetworkCash4RealSpider(BaseSceneScraper):
         return self.format_url(base, pagination % page)
 
     def get_scenes(self, response):
+        print(response.url)
         scenes = response.xpath('//a[contains(@href, "/trailers/")]/@href').getall()
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
@@ -64,7 +66,7 @@ class NetworkCash4RealSpider(BaseSceneScraper):
                 date = re.search(r'(\w+\.? \d{1,2}, \d{4})', xdate).group(1)
                 date = date.replace(".", "")
                 return self.parse_date(date, date_formats=['%b %d, %Y']).isoformat()
-        return self.parse_date('today').isoformat()
+        return self.parse_date('today').strftime('%Y-%m-%d')
 
     def get_image(self, response):
         if 'image' in self.get_selector_map():

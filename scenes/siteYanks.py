@@ -28,7 +28,7 @@ class SiteYanksSpider(BaseSceneScraper):
         'pagination': '/categories/Movies_%s_d.html'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['check_date'] = "2024-03-15"

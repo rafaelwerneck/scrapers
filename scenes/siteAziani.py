@@ -36,7 +36,7 @@ class SiteAzianiSpider(BaseSceneScraper):
         link = f'https://azianistudios.com/tour_api.php/content/sets?cms_set_ids=&data_types=1&content_count=1&count=18&start={page}&cms_area_id=3b4c609c-6a0d-4cb9-9cce-0605f32b79ec&cms_block_id=114458&orderby=published_desc&content_type=video&status=enabled&text_search='
         return link
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

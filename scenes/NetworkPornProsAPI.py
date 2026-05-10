@@ -46,7 +46,7 @@ class NetworkPornProsAPISpider(BaseSceneScraper):
     def get_next_page_url(self, site, page):
         return f"https://{site}.com/api/releases?sort=latest&page={str(page)}"
 
-    def start_requests(self):
+    async def start(self):
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 
@@ -131,6 +131,9 @@ class NetworkPornProsAPISpider(BaseSceneScraper):
                     submit = False
 
                 if "facials4k" in item['site'] and "pornplus" in item['url']:
+                    submit = False
+
+                if "anal4k" in item['site'] and "pornplus" in item['url']:
                     submit = False
 
                 if item['site'].lower() == "exploited-cheerleaders":

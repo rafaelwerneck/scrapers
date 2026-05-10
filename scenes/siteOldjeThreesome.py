@@ -30,3 +30,9 @@ class SiteOldje3someSpider(BaseSceneScraper):
         for scene in scenes:
             if re.search(self.get_selector_map('external_id'), scene):
                 yield scrapy.Request(url=self.format_link(response, scene), callback=self.parse_scene, meta=meta)
+
+    def get_title(self, response):
+        title = super().get_title(response)
+        if not title:
+            title = re.search(r'.*/(.*?)$', response.url).group(1)
+        return title.strip() if title else None

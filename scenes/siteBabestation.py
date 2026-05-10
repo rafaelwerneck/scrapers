@@ -30,7 +30,7 @@ class BabestationSpider(BaseSceneScraper):
         'pagination': '/video/vip-previews/page/%s',
     }
 
-    def start_requests(self):
+    async def start(self):
         start_url = 'https://www.babestation.tv/video/vip-previews/page/1'
         yield scrapy.Request(start_url, callback=self.start_requests2)
 

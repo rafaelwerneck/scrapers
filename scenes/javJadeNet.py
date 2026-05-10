@@ -28,7 +28,7 @@ class JAVJadeNetSpider(BaseSceneScraper):
         'type': 'JAV',
     }
 
-    def start_requests(self):
+    async def start(self):
         if self.days == 20 and self.page == 1 and self.limit_pages == 1:
             current_month = datetime.datetime.now().strftime('%m')
             current_year = datetime.datetime.now().strftime('%Y')

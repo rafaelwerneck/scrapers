@@ -136,7 +136,10 @@ class PerformerSpider(BasePerformerScraper):
         performers = response.xpath('//div[@class="modelimage"]/..')
         for performer in performers:
             name = performer.xpath('.//h3/a/text()').get()
-            meta['name'] = self.cleanup_title(name)
+            name = name.lower()
+            name = name.replace('model', '')
+            name = name.replace('smoking', '')
+            meta['name'] = self.cleanup_title(name.strip())
 
             performer = performer.xpath('./div[1]/a/@href').get()
             yield scrapy.Request(url=self.format_link(response, performer), callback=self.parse_performer, meta=meta)

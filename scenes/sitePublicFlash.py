@@ -15,8 +15,7 @@ class PublicFlashFullImportSpider(BaseSceneScraper):
         'pagination': '/models/%s/popular/'
     }
 
-    def start_requests(self):
-
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url=self.get_next_page_url(link, self.page),
                                  callback=self.parse_model_page,

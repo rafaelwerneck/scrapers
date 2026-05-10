@@ -5,23 +5,23 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 from tpdb.items import SceneItem
 
 
-class SitePervectJSONSpider(BaseSceneScraper):
-    name = 'SitePervectJSON'
-    network = 'Pervect'
-    parent = 'Pervect'
-    site = 'Pervect'
+class SiteXXXTryoutSpider(BaseSceneScraper):
+    name = 'XXXTryout'
+    network = 'XXX Tryout'
+    parent = 'XXX Tryout'
+    site = 'XXX Tryout'
 
-    start_url = 'https://pervect.com/'
+    start_url = 'https://xxxtryout.com'
 
     selector_map = {
         'external_id': r'',
-        'pagination': '/_next/data/<buildID>/scenes.json?page=%s&order_by=publish_date&sort_by=desc'
+        'pagination': '/_next/data/<buildID>/videos.json?page=%s&order_by=publish_date&sort_by=desc'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
-        yield scrapy.Request('https://pervect.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)
+        yield scrapy.Request('https://xxxtryout.com', callback=self.start_requests_2, meta=meta, headers=self.headers, cookies=self.cookies)
 
     def start_requests_2(self, response):
         meta = response.meta
@@ -56,23 +56,35 @@ class SitePervectJSONSpider(BaseSceneScraper):
             jsondata = jsondata['pageProps']['contents']
             for scene in jsondata['data']:
                 item = SceneItem()
-                item['site'] = "Pervect"
-                item['parent'] = "Pervect"
-                item['network'] = "Pervect"
+                item['site'] = "XXX Tryout"
+                item['parent'] = "XXX Tryout"
+                item['network'] = "XXX Tryout"
                 item['title'] = self.cleanup_title(scene['title'])
                 item['description'] = self.cleanup_text(scene['description'])
-                item['performers'] = []
-                if "models_slugs" in scene:
-                    for performer in scene['models_slugs']:
-                        item['performers'].append(performer['name'])
+                item['performers'], item['performers_data'] = self.get_performers_data(scene['models_thumbs'])
                 item['date'] = self.parse_date(scene['publish_date']).isoformat()
-                item['id'] = scene['slug']
+                item['id'] = scene['id']
                 if scene['videos_duration']:
                     item['duration'] = self.duration_to_seconds(scene['videos_duration'])
                 item['image'] = scene['thumb'].replace(" ", "%20")
                 item['image_blob'] = self.get_image_blob_from_link(item['image'])
                 item['tags'] = scene['tags']
                 item['trailer'] = scene['trailer_url'].replace(" ", "%20")
-                item['url'] = f"https://pervect.com/{scene['slug']}"
+                item['url'] = f"https://xxxtryout.com/videos/{scene['slug']}"
 
                 yield self.check_item(item, self.days)
+
+    def get_performers_data(self, models):
+        performers = []
+        performers_data = []
+        for model in models:
+            performers.append(model['name'])
+            performers_data.append({
+                "name": model['name'],
+                "image": model['thumb'],
+                "gender": model['gender'],
+                "image_blob": self.get_image_blob_from_link(model['thumb']),
+                "site": "XXX Tryout",
+                "network": "XXX Tryout"
+            })
+        return performers, performers_data

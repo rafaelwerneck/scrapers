@@ -28,7 +28,7 @@ class SiteVurigVlaanderenPerformerSpider(BasePerformerScraper):
         url = 'https://api.sysero.nl/models?page={}&count=16&include=images:types(square):limit(1|0),products,categories&filter[status]=published&sort[published_at]=DESC&video_images=thumb&frontend=3'
         return self.format_url(base, url.format(page))
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

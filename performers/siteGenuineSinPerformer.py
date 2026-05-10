@@ -20,7 +20,7 @@ class SiteGenuineSinPerformerSpider(BasePerformerScraper):
     name = 'GenuineSinPerformer'
     network = "Genuine Sin"
 
-    def start_requests(self):
+    async def start(self):
         for pagination in self.paginations:
             yield scrapy.Request(url=self.get_next_page_url(self.url, self.page, pagination),
                                  callback=self.parse,

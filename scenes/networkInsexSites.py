@@ -63,7 +63,7 @@ class InsexSitesSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         if hasattr(self, 'full') and self.full:
             links = self.start_urls_full
             print('Using reverse date order for full import')

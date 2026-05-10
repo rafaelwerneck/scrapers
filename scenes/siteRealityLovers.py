@@ -36,7 +36,7 @@ class SiteRealityLoversSpider(BaseSceneScraper):
         },
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         meta['reg_pagination'] = "https://realitylovers.com/videos/page%s"

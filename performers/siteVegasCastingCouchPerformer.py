@@ -17,7 +17,7 @@ class SiteVegasCastingCouchPerformerSpider(BasePerformerScraper):
         'https://www.vegascastingcouch.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         link = 'https://www.vegascastingcouch.com/api/v1/performers?limit=200&offset=0&status=active&sort=sort&order=1&keyword=&sex=&size='
         yield scrapy.Request(link, callback=self.get_performers, headers=self.headers, cookies=self.cookies)
 

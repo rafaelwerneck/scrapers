@@ -25,7 +25,7 @@ class SiteWestCoastGangbangsSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         settings = get_project_settings()
 
         meta = {}

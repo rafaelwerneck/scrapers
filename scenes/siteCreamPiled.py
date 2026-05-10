@@ -35,7 +35,7 @@ class SiteCreamPiledSpider(BaseSceneScraper):
         link = pagination.replace("<PAGE>", page)
         return link
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 

@@ -14,7 +14,7 @@ class SiteModelMediaAsiaSpider(BaseSceneScraper):
     network = 'Model Media Asia'
 
     start_urls = [
-        'https://api.modelmediaasia.com',
+        'https://model-api.bvncmsldo.com',
     ]
 
     selector_map = {
@@ -28,7 +28,7 @@ class SiteModelMediaAsiaSpider(BaseSceneScraper):
         scenes = response.json()
         scenes = scenes['data']['list']
         for scene in scenes:
-            url = f"https://api.modelmediaasia.com/api/v2/videos/{scene['serial_number']}"
+            url = f"https://model-api.bvncmsldo.com/api/v2/videos/{scene['serial_number']}"
             yield scrapy.Request(url, callback=self.parse_scene, meta=meta)
 
     def parse_scene(self, response):

@@ -39,7 +39,7 @@ class NetworkAVRevenueSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         settings = get_project_settings()
 
         meta = {}
@@ -70,6 +70,7 @@ class NetworkAVRevenueSpider(BaseSceneScraper):
         root = etree.fromstring(response.body, parser=parser, base_url=response.url)
         selector = Selector(root=root)
         scenes = selector.xpath('//item', namespaces=self.NSMAP)
+        print(scenes)
         for scene in scenes:
             item = SceneItem()
             item['title'] = self.cleanup_title(self.get_field(scene, './title/text()'))

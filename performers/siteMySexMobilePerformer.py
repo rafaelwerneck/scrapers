@@ -17,7 +17,7 @@ class SiteMySexMobilePerformerSpider(BasePerformerScraper):
         'https://mysexmobile.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         url = "https://mysexmobile.com/girls"
         yield scrapy.Request(url, callback=self.get_performers, meta={'page': self.page}, headers=self.headers, cookies=self.cookies)
 

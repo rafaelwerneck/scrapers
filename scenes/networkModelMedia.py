@@ -20,7 +20,7 @@ class NetworkModelMediaSpider(BaseSceneScraper):
         'pagination': '/videos?sort=published_at&page=%s'
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
         for link in self.start_urls:

@@ -16,7 +16,7 @@ class SiteKylieMariaSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = 'https://kyliemaria.xxx/api/content.load?_method=content.load&tz=0&fields[0]=generatedContentLink&[fields][0]=id&fields[1]=title&fields[2]=_resources.primary.url&fields[4]=sites.publishDate&fields[5]=description&fields[6]=length&fields[7]=tags&fields[8]=_tags._last&fields[9]=_tags.alias&fields[10]=_resources.base.url&metaFields[resources][thumb]=baseline.sprite.w225i&transitParameters[showOnHome]=true&transitParameters[v1]=ykYa8ALmUD&transitParameters[v2]=ykYa8ALmUD&transitParameters[preset]=scene&limit=300'
         yield scrapy.Request(url, callback=self.get_scenes, headers=self.headers, cookies=self.cookies)
 

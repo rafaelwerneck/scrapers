@@ -7,7 +7,7 @@ from tpdb.BaseSceneScraper import BaseSceneScraper
 class SiteNaughtyMagSpider(BaseSceneScraper):
     name = 'NaughtyMag'
     network = 'Score Pass'
-    parent = 'Porn Mega Load"'
+    parent = 'Porn Mega Load'
 
     start_urls = [
         'https://www.naughtymag.com',
@@ -16,7 +16,7 @@ class SiteNaughtyMagSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '//section//h1/text()',
+        'title': '//article//h1/text()',
         'description': '//div[contains(@class, "p-desc")]/text()',
         'date': '//span[@class="label" and contains(text(), "Date:")]/following-sibling::span[1]/text()',
         'image': '//style[contains(text(), "min-width: 1000px")]/text()',
@@ -33,7 +33,7 @@ class SiteNaughtyMagSpider(BaseSceneScraper):
     custom_scraper_settings = {
         'CONCURRENT_REQUESTS': 1,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         # ~ 'DOWNLOAD_FAIL_ON_DATALOSS': True,
         'COMPRESSION_ENABLED': False,
         'RETRY_ENABLED': True,

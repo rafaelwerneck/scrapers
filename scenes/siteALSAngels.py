@@ -33,7 +33,7 @@ class SiteALSAngelsSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "http://www.alsangels.com/dailyvideos.html"
         yield scrapy.Request(url, callback=self.get_scenes,
                              headers=self.headers,
@@ -70,7 +70,7 @@ class SiteALSAngelsSpider(BaseSceneScraper):
                 titletext = performerlist
 
                 performerlist = re.sub('[^a-zA-Z,:& ]', '', performerlist)
-                performerlist = performerlist.replace("Shoot ", "").strip()
+                performerlist = performerlist.replace("Shoot", "").strip()
                 performerlist = performerlist.replace("Body Painting", "").strip()
                 performerlist = performerlist.replace("Nude In Public", "").strip()
                 performerlist = performerlist.replace("With ", "& ").strip()
@@ -79,7 +79,7 @@ class SiteALSAngelsSpider(BaseSceneScraper):
                 performerlist = performerlist.replace("  ", " ").strip()
 
                 item['performers'] = performerlist.split("&")
-                item['performers'] = list(map(lambda x: string.capwords(x.strip()), item['performers']))
+                item['performers'] = list(map(lambda x: string.capwords(x.replace("Shoot ", "").strip()), item['performers']))
 
                 item['title'] = self.cleanup_title(titletext + " " + item['tags'][0])
             else:

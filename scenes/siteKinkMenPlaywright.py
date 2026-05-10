@@ -74,7 +74,7 @@ class NetworkKinkMenSpider(BaseSceneScraper):
         # ~ }
     # ~ }
 
-    def start_requests(self):
+    async def start(self):
         # ~ yield scrapy.Request("https://www.kinkmen.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies, meta={"playwright": True})
         yield scrapy.Request("https://www.kinkmen.com", callback=self.start_requests2, headers=self.headers, cookies=self.cookies)
 

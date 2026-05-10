@@ -34,7 +34,7 @@ class NetworkPureCFNMSpider(BaseSceneScraper):
     }
     custom_scraper_settings = {'DOWNLOADER_CLIENT_TLS_CIPHERS': 'DEFAULT:!DH'}
 
-    def start_requests(self):
+    async def start(self):
         for link in self.start_urls:
             yield scrapy.Request(url=self.get_next_page_url(link[0], self.page, link[1]),
                                  callback=self.parse,

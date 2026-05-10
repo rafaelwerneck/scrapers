@@ -37,7 +37,7 @@ class SiteCumLouderSpider(BaseSceneScraper):
         'pagination': '/%s/?s=last'
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(url="https://www.cumlouder.com/porn/?s=last",
                              callback=self.parse,
                              meta={'page': self.page},

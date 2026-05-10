@@ -8,26 +8,17 @@ from tpdb.items import SceneItem
 
 class SiteJadeKinkSpider(BaseSceneScraper):
     name = 'JadeKink'
-    network = ''
-    parent = ''
-    site = ''
 
     start_urls = [
     ]
 
     selector_map = {
-        'title': '',
-        'description': '',
-        'date': '',
-        'image': '',
-        'performers': '',
-        'tags': '',
         'external_id': r'',
         'trailer': '',
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://api.jadekink.com/user/assets/videos/search?limit=500&offset=0"
         yield scrapy.Request(url, callback=self.get_scenes, meta={'page': self.page}, headers=self.headers, cookies=self.cookies)
 

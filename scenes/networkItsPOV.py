@@ -52,7 +52,7 @@ class NetworkItsPOVSpider(BaseSceneScraper):
     def get_next_page_url(self, base, page, pagination):
         return self.format_url(base, pagination % page)
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request("https://itspov.com/en/", callback=self.start_requests2, headers=self.headers, cookies=self.cookies)
 
     def start_requests2(self, response):

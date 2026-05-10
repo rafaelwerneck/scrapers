@@ -26,7 +26,7 @@ class siteALSAngelsPerformerSpider(BasePerformerScraper):
         'http://www.alsangels.com'
     ]
     
-    def start_requests(self):
+    async def start(self):
         url = "http://www.alsangels.com/modelbios.html"
         yield scrapy.Request(url,
                              callback=self.get_performers,

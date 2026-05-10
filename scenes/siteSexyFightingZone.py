@@ -17,7 +17,7 @@ class SiteSexyFightingZoneSpider(BaseSceneScraper):
     def get_next_page_url(self, base, page):
         return self.format_url(base, self.get_selector_map('pagination') % page)
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

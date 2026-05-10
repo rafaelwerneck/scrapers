@@ -29,7 +29,7 @@ class SiteXTimePerformerSpider(BasePerformerScraper):
 
     url = 'http://xtime.tv'
 
-    def start_requests(self):
+    async def start(self):
         link = "http://xtime.tv/?act=Disclaimer&accept=1"
         yield scrapy.Request(link, callback=self.start_requests_2,
                              meta={'page': self.page},

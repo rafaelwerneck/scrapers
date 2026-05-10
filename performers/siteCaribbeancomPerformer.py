@@ -19,7 +19,7 @@ class SiteCaribbeancomPerformerSpider(BasePerformerScraper):
         'https://en.caribbeancom.com',
     ]
 
-    def start_requests(self):
+    async def start(self):
         orig_link = 'https://en.caribbeancom.com/eng/actress/%s.html'
         for c in list(string.ascii_lowercase):
             link = orig_link % c

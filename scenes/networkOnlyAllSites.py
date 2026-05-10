@@ -44,7 +44,7 @@ class NetworkOnlyAllSitesSpider(BaseSceneScraper):
         'cookieconsent_status': 'dismiss',
     }
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.onlyallsites.com/updates"
         yield scrapy.Request(url, callback=self.start_requests2,
                              headers=self.headers,

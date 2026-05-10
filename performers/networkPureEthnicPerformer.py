@@ -11,8 +11,10 @@ class NetworkPureEthnicPerformerSpider(BasePerformerScraper):
     name = 'PureEthnicPerformer'
     network = 'Pure Ethnic'
 
+    # Site Down, 2026-05-03
+
     start_urls = [
-        'https://www.pureethnic.com',
+        # 'https://www.pureethnic.com',
     ]
 
     def get_gender(self, response):

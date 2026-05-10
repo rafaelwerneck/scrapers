@@ -29,7 +29,7 @@ class MovieAyloAPISpider(BaseSceneScraper):
 
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         for url in self.start_urls:
             meta['url'] = url

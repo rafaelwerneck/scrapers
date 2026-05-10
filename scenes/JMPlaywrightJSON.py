@@ -64,7 +64,7 @@ class JMPlaywrightJSONSpider(BaseSceneScraper):
         'type': 'Scene',
     }
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         # ~ meta['playwright'] = True
         meta['page'] = self.page

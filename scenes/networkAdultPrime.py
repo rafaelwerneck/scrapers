@@ -67,7 +67,7 @@ class NetworkAdultPrimeSpider(BaseSceneScraper):
     ]
 
     selector_map = {
-        'title': '//span[@class="active-crumb"]/text()',
+        'title': '//li[@class="active-crumb"]/text()',
         # ~ 'description': '//p[contains(@class,"ap-limited-description-text")]/text()',  # Blocked due to public scenes having generic site descriptions
         'description': '',
         'date': '//div[contains(@class, "player-wrapper")]//span[@class="description-releasedate"]/text()',
@@ -75,7 +75,7 @@ class NetworkAdultPrimeSpider(BaseSceneScraper):
         'image': '//div[contains(@class,"update-video-wrapper")]/a/div/@style|//video/@poster',
         're_image': r'(http.*\.jpg)',
         'performers': '//p[contains(@class,"update-info-line")]/b[contains(text(), "Performer")]/following-sibling::a/text()',
-        'tags': '//b[contains(text(), "Niches")]/following-sibling::text()',
+        'tags': '//div[contains(@class, "update-info-block")]//a[contains(@href, "?niche")]/text()',
         'external_id': r'.*/(\d+)',
         'trailer': '',
         'pagination': '/studios/videos?q=&website=&niche=&year=&type=&sort=&page=%s#focused'
@@ -124,16 +124,6 @@ class NetworkAdultPrimeSpider(BaseSceneScraper):
         else:
             site = "AdultPrime"
         return site.strip()
-
-    def get_tags(self, response):
-        tags = response.xpath('//b[contains(text(), "Niches")]/following-sibling::text()')
-        if tags:
-            tags = tags.get()
-            tags = tags.split(",")
-            tags = list(map(lambda x: x.strip(), tags))
-            if "" in tags:
-                tags.remove("")
-        return tags
 
     def get_image(self, response):
         image = super().get_image(response)

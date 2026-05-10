@@ -54,7 +54,7 @@ class ModelHubScraper(BaseSceneScraper):
         'trailer': '',
     }
 
-    def start_requests(self):
+    async def start(self):
         for model in self.models:
             yield scrapy.Request(url=self.get_next_page_url(model, self.page),
                                  callback=self.parse,

@@ -55,12 +55,12 @@ class SiteTranzVRSpider(BaseSceneScraper):
             images = images.split(",")
             images = images[-1]
             if images and " " in images:
-                item['image'] = re.search(r'(.*) ', images).group(1)
+                item['image'] = re.search(r'(.*) ', images).group(1).strip()
                 item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
         if not item['image']:
             if 'thumbnailUrl' in scene and scene['thumbnailUrl']:
-                item['image'] = scene['thumbnailUrl']
+                item['image'] = scene['thumbnailUrl'].strip()
                 item['image_blob'] = self.get_image_blob_from_link(item['image'])
 
         if scene['contentUrl']:

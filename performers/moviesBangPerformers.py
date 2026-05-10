@@ -17,7 +17,7 @@ class MoviesBangPerformerSpider(BasePerformerScraper):
 
     per_page = 50
 
-    def start_requests(self):
+    async def start(self):
         if self.page:
             page = int(self.page)
         else:

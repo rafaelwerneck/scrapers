@@ -27,7 +27,7 @@ class SitePervfectSpider(BaseSceneScraper):
         'pagination': ''
     }
 
-    def start_requests(self):
+    async def start(self):
         performers = requests.get("http://www.pervfect.net/api/v1/performers?limit=500&offset=0&status=active&sort=sort&order=1&keyword=&sex=&size=")
         if performers:
             performers = json.loads(performers.content)

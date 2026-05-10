@@ -31,7 +31,7 @@ class SiteLoveWettingSpider(BaseSceneScraper):
         page = max_pages - int(page)
         return self.format_url(base, self.get_selector_map('pagination') % page)
 
-    def start_requests(self):
+    async def start(self):
         ip = requests.get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 

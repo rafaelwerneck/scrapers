@@ -36,7 +36,7 @@ class siteLetsDoeItPerformerSpider(BasePerformerScraper):
     name = 'LetsDoeItPerformer'
     network = "LetsDoeIt"
 
-    def start_requests(self):
+    async def start(self):
         for pagination in self.paginations:
             yield scrapy.Request(url=self.get_next_page_url(pagination[0], self.page, pagination[1]),
                                  callback=self.parse,

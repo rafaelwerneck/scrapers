@@ -36,7 +36,7 @@ class siteUraLesbianPerformerSpider(BasePerformerScraper):
     ]
 
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.afterschool.jp/en/schoolgirls"
         for link in self.start_urls:
             yield scrapy.Request(url,

@@ -37,10 +37,11 @@ class SitePAWGNextDoorSpider(BaseSceneScraper):
         duration = response.xpath('//div[@class="update_counts_preview_table"]')
         if duration:
             duration = duration.get()
-            duration = duration.replace("&nbsp;", "")
-            duration = re.search(r'(\d+).*?min', duration)
-            if duration:
-                duration = str(int(duration.group(1)) * 60)
+            if "min" in duration.lower():
+                duration = duration.replace("&nbsp;", "")
+                duration = re.search(r'(\d+)(?=[^\d]*min)', duration)
+                if duration:
+                    duration = str(int(duration.group(1)) * 60)
                 return duration
         return None
 

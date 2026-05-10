@@ -39,7 +39,7 @@ class SiteScorelandPerformerPerformerSpider(BasePerformerScraper):
         # ~ 'DOWNLOAD_DELAY': 60,
         # ~ 'RANDOMIZE_DOWNLOAD_DELAY': True,
         'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
-        'CONCURRENT_REQUESTS_PER_IP': 1,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1,
         'DOWNLOAD_FAIL_ON_DATALOSS': False,
     }
 

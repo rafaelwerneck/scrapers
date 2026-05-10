@@ -37,9 +37,11 @@ class NetworkSwagLiveSpider(BaseSceneScraper):
         ["5fb64491f1916c6904eac70b", "Elvababe", "SwagLive: elvababe"],
         ["635688324a11ceb2c9fc3fa7", "", "SwagLive: daxiangtw"],
         ["6176227bcffc3a85b9ef74dd", "", "SwagLive: peachmedia"],
+        ["660babfd89e87eb592393e17", "", "SwagLive: roosters_clubtw"],
+        ["65aa1ed7c60af8a82eeaf859", "", "SwagLive: Ed Mosaic"],
     ]
 
-    def start_requests(self):
+    async def start(self):
         meta = {}
         meta['page'] = self.page
 
@@ -61,7 +63,7 @@ class NetworkSwagLiveSpider(BaseSceneScraper):
         pagination = response.url
         meta['pagination'] = re.sub(r'page=\d+', 'page=%s', pagination.replace("limit=100", "limit=10"))
         link = meta['pagination'] % meta['page']
-        yield scrapy.Request(link, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+        yield scrapy.Request(link, callback=self.parse, meta=meta)
 
     def parse(self, response, **kwargs):
         scenes = self.get_scenes(response)
@@ -76,7 +78,7 @@ class NetworkSwagLiveSpider(BaseSceneScraper):
                 meta['page'] = meta['page'] + 1
                 print('NEXT PAGE: ' + str(meta['page']))
                 link = meta['pagination'] % meta['page']
-                yield scrapy.Request(link, callback=self.parse, meta=meta, headers=self.headers, cookies=self.cookies)
+                yield scrapy.Request(link, callback=self.parse, meta=meta)
 
     def get_scenes(self, response):
         meta = response.meta
@@ -92,50 +94,56 @@ class NetworkSwagLiveSpider(BaseSceneScraper):
                 meta['tags'].append(string.capwords(tag.replace("_", " ")))
             meta['image'] = f"https://public.swag.live/messages/{meta['id']}/poster.jpg"
             meta['url'] = f"https://swag.live/post/{meta['id']}?lang=en"
-            yield scrapy.Request(meta['url'], callback=self.parse_scene, meta=meta, headers=self.headers, cookies=self.cookies)
+            yield scrapy.Request(meta['url'], callback=self.parse_scene, meta=meta)
 
     def parse_scene(self, response):
         meta = response.meta
-        script_text = response.xpath('//script[contains(text(), "self.__next_f.push") and contains(text(), "i18nCaption")]/text()').get()
-        script_text = script_text.replace('\\"', '"')
-        search_text = r'\"<ID>\"\:(\{\"created.*?\"cast\".*?\]\})'.replace("<ID>", meta['id'])
-        script_text = re.search(search_text, script_text).group(1)
-        script_text = script_text.replace('\\\\', '\\').replace('\n', ' ').replace('\"', '"')
-        try:
-            scene = json.loads(script_text)
 
-            item = self.init_scene()
-            item['id'] = meta['id']
-            item['date'] = meta['date']
-            item['tags'] = meta['tags']
-            if meta['performers']:
-                item['performers'] = meta['performers']
-            else:
-                item['performers'] = []
+        item = self.init_scene()
+        item['id'] = meta['id']
+        item['date'] = meta['date']
+        item['tags'] = meta['tags']
+        if meta['performers']:
+            item['performers'] = meta['performers']
+        else:
+            item['performers'] = []
 
-            if meta['performers_data']:
-                item['performers_data'] = meta['performers_data']
+        item['performers'] = [p.strip() for p in item['performers'] if p and p.strip()]
 
-            item['duration'] = meta['duration']
-            item['image'] = meta['image']
-            item['image_blob'] = self.get_image_blob_from_link(item['image'])
-            item['url'] = meta['url']
-            item['site'] = meta['site']
-            item['parent'] = "Swag Live"
-            item['network'] = "Swag Live"
-            item['type'] = "Scene"
-            trailer_url = f"https://public.swag.live/messages/{meta['id']}/{scene['assetIds'][0]}/trailer.mp4"
-            if self.check_url_exists(trailer_url):
-                item['trailer'] = trailer_url
+        if meta['performers_data']:
+            item['performers_data'] = meta['performers_data']
 
-            item['title'] = self.cleanup_title(clean(scene['i18nTitle']['en'].replace('{username}', ' ').replace('\\\\n', ' ').replace('\\n', ' '), no_emoji=True))
-            item['description'] = self.cleanup_description(clean(scene['i18nCaption']['en'].replace('{username}', ' ').replace('\\n', ' '), no_emoji=True))
+        item['duration'] = meta['duration']
+        item['image'] = meta['image']
+        item['image_blob'] = self.get_image_blob_from_link(item['image'])
+        item['url'] = meta['url']
+        item['site'] = meta['site']
+        item['parent'] = "Swag Live"
+        item['network'] = "Swag Live"
+        item['type'] = "Scene"
 
-            yield self.check_item(item, self.days)
+        meta['item'] = item.copy()
+        trans_url = f"https://api.swag.live/translations?lang=en&group=message-{item['id']}&v=2"
 
-        except Exception as ex:
-            print(f"Exception on scene '{meta['url']}':", ex)
-            print(script_text)
+        yield scrapy.Request(trans_url, callback=self.parse_translations, meta=meta)
+
+    def parse_translations(self, response):
+        meta = response.meta
+        item = meta['item']
+        jsondata = response.json()
+        item['title'] = ''
+        item['description'] = ''
+
+        for translation in jsondata:
+            if "title" in translation:
+                item['title'] = self.cleanup_title(clean(jsondata[translation]['value'], no_emoji=True))
+            if "description" in translation:
+                item['description'] = self.cleanup_description(clean(jsondata[translation]['value'], no_emoji=True))
+
+        item['title'] = self.cleanup_title(item['title'].replace('{username}', ' ').replace('\\n', ' ').replace("<>", "").strip())
+        item['description'] = self.cleanup_description(item['description'].replace('{username}', ' ').replace('\\n', ' ').replace("<>", "").strip())
+
+        yield self.check_item(item, self.days)
 
     def check_url_exists(self, url):
         try:

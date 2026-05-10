@@ -24,7 +24,7 @@ class FakingsWorkSpider(BaseSceneScraper):
         'pagination': '/en/buscar/%s.htm'
     }
 
-    def start_requests(self):
+    async def start(self):
         if not hasattr(self, 'start_urls'):
             raise AttributeError('start_urls missing')
 

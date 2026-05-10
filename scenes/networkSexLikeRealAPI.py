@@ -16,7 +16,7 @@ class SexLikeRealSpider(BaseSceneScraper):
         'https://api.sexlikereal.com'
     ]
 
-    headers = {"client-type": "web"}
+    headers = {"client-type": "web", "Project": "1"}
 
     selector_map = {
         'title': "//title/text()",
@@ -27,13 +27,13 @@ class SexLikeRealSpider(BaseSceneScraper):
         'external_id': '(?:scenes|shemale|gay)\\/(.+)',
         'image': '//meta[@name="twitter:image1"]/@content or //meta[@name="twitter:image2"]/@content or //meta[@name="twitter:image3"]/@content or //meta[@name="twitter:image"]/@content',
         'trailer': '',
-        # ~ 'pagination': '/scenes?type`=premium&sort=most_recent&page=%s'
         'pagination': '/v3/scenes?page=%s&perPage=24&sort=recent&type=new'
+        # 'pagination': '/v3/scenes?studios=89&page=%s&perPage=24&sort=mostRecent'
         # 'pagination': '/v3/scenes?studios=245&page=%s&perPage=24&sort=mostRecent'
         # 'pagination': '/v3/scenes?studios=556&page=%s&perPage=24&sort=mostRecent'
     }
 
-    def start_requests(self):
+    async def start(self):
         ip = get('https://api.ipify.org').content.decode('utf8')
         print('My public IP address is: {}'.format(ip))
 
@@ -116,11 +116,11 @@ class SexLikeRealSpider(BaseSceneScraper):
 
             shortsite = re.sub(r'[^a-z0-9]', '', item['site'].lower())
             raw_matches = ['18vr', 'arporn', 'babevr', 'baberoticavr', 'badoink', 'blowvr', 'czechvr', 'emilybloom', 'fuckpassvr', 'girlsway',
-                        'joibabes', 'kinkvr', 'milfvr', 'naughtyamerica', 'only3x', 'passionsonly', 'peterskingdom', 'porncorn',
+                        'jeffsmodels', 'joibabes', 'kinkvr', 'milfvr', 'naughtyamerica', 'only3x', 'passionsonly', 'peterskingdom', 'porncorn',
                         'porncornvr', 'povmasters', 'puretaboo', 'realjamvr', 'realvr', 'realitylovers', 'sexbabesvr', 'sinsvr', 'slrmilfvr',
                         'stripzvr', 'swallowbay', 'tranzvr', 'vrcosplayx', 'vrbangers', 'vrbgay', 'vrbtrans',
                         'vrconk', 'vrhush', 'vrlatina', 'virtualrealamateur', 'virtualrealpassion', 'virtualrealporn',
-                        'virtualrealtrans', 'virtualtaboo', 'wankitnowvr', 'wankzvr']
+                        'virtualrealtrans', 'virtualtaboo', 'wankitnowvr', 'wankzvr', 'wearecrazy', 'lustreality']
 
             matches = [re.sub(r'[^a-z0-9]', '', x) for x in raw_matches]
 

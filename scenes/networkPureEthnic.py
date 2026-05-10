@@ -7,9 +7,12 @@ class NetworkPureEthnicSpider(BaseSceneScraper):
     name = 'PureEthnic'
     network = 'PureEthnic'
 
+    # Site Down, 2026-05-03
+
     start_urls = [
-        'https://www.pureethnic.com',
+        # 'https://www.pureethnic.com',
     ]
+
 
     selector_map = {
         'title': './/comment()[contains(., "Title")]/following-sibling::a[1]/text()',
